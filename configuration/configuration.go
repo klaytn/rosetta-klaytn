@@ -69,15 +69,15 @@ const (
 	// DefaultKlaytnNodeURL is the default URL for
 	// a running geth node. This is used
 	// when KlaytnNodeEnv is not populated.
-	DefaultKlaytnNodeURL = "http://localhost:8545"
+	DefaultKlaytnNodeURL = "http://localhost:8551"
 
 	// SkipAdminEnv is an optional environment variable
 	// to skip `admin` calls which are typically not supported
 	// by hosted node services. When not set, defaults to false.
 	SkipAdminEnv = "SKIP_ADMIN"
 
-	// MiddlewareVersion is the version of rosetta-ethereum.
-	MiddlewareVersion = "0.0.4"
+	// MiddlewareVersion is the version of rosetta-klaytn.
+	MiddlewareVersion = "0.0.1"
 )
 
 // Configuration determines how
@@ -137,10 +137,10 @@ func LoadConfiguration() (*Configuration, error) {
 	}
 
 	config.KlaytnNodeURL = DefaultKlaytnNodeURL
-	envGethURL := os.Getenv(KlaytnNodeEnv)
-	if len(envGethURL) > 0 {
+	envKlaytnNodeURL := os.Getenv(KlaytnNodeEnv)
+	if len(envKlaytnNodeURL) > 0 {
 		config.RemoteNode = true
-		config.KlaytnNodeURL = envGethURL
+		config.KlaytnNodeURL = envKlaytnNodeURL
 	}
 
 	config.SkipAdmin = false

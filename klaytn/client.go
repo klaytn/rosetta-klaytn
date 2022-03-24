@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"github.com/klaytn/klaytn"
 	"github.com/klaytn/klaytn/blockchain/types"
+	"github.com/klaytn/klaytn/blockchain/types/account"
 	"github.com/klaytn/klaytn/common"
 	"github.com/klaytn/klaytn/networks/p2p"
 	"github.com/klaytn/klaytn/networks/rpc"
@@ -59,7 +60,7 @@ type Client struct {
 	tc *cn.TraceConfig
 
 	c JSONRPC
-	g GraphQL
+	//g GraphQL
 
 	traceSemaphore *semaphore.Weighted
 
@@ -80,12 +81,12 @@ func NewClient(url string, params *params.ChainConfig, skipAdminCalls bool) (*Cl
 		return nil, fmt.Errorf("%w: unable to load trace config", err)
 	}
 
-	g, err := newGraphQLClient(url)
-	if err != nil {
-		return nil, fmt.Errorf("%w: unable to create GraphQL client", err)
-	}
+	//g, err := newGraphQLClient(url)
+	//if err != nil {
+	//	return nil, fmt.Errorf("%w: unable to create GraphQL client", err)
+	//}
 
-	return &Client{params, tc, c, g, semaphore.NewWeighted(maxTraceConcurrency), skipAdminCalls}, nil
+	return &Client{params, tc, c, semaphore.NewWeighted(maxTraceConcurrency), skipAdminCalls}, nil
 }
 
 // Close shuts down the RPC client connection.
@@ -1343,58 +1344,33 @@ type graphqlBalance struct {
 // the balance was fetched).
 func (kc *Client) Balance(
 	ctx context.Context,
-	account *RosettaTypes.AccountIdentifier,
+	accountIdf *RosettaTypes.AccountIdentifier,
 	block *RosettaTypes.PartialBlockIdentifier,
 ) (*RosettaTypes.AccountBalanceResponse, error) {
-	blockQuery := ""
+	blockQuery := "latest"
+	blockQueryMethod := "klay_getBlockByNumber"
 	if block != nil {
 		if block.Hash != nil {
-			blockQuery = fmt.Sprintf(`hash: "%s"`, *block.Hash)
+			blockQuery = *block.Hash
+			blockQueryMethod = "klay_getBlockByHash"
 		}
 		if block.Hash == nil && block.Index != nil {
-			blockQuery = fmt.Sprintf("number: %d", *block.Index)
+			blockQuery = strconv.FormatInt(*block.Index, 16)
 		}
 	}
 
-	// TODO-Klaytn: Should we use graph ql only for this?
-	result, err := kc.g.Query(ctx, fmt.Sprintf(`{
-			block(%s){
-				hash
-				number
-				account(address:"%s"){
-					balance
-					transactionCount
-					code
-				}
-			}
-		}`, blockQuery, account.Address))
-	if err != nil {
+	var accountInfo account.Account
+	if err := kc.c.CallContext(ctx, &accountInfo, "klay_getAccount", accountIdf.Address, blockQuery); err != nil {
 		return nil, err
 	}
 
-	var bal graphqlBalance
-	if err := json.Unmarshal([]byte(result), &bal); err != nil {
+	var blockInfo types.Block
+	if err := kc.c.CallContext(ctx, &blockInfo, blockQueryMethod, accountIdf.Address, blockQuery); err != nil {
 		return nil, err
 	}
 
-	if len(bal.Errors) > 0 {
-		return nil, errors.New(RosettaTypes.PrintStruct(bal.Errors))
-	}
-
-	balance, ok := new(big.Int).SetString(bal.Data.Block.Account.Balance[2:], 16)
-	if !ok {
-		return nil, fmt.Errorf(
-			"could not extract account balance from %s",
-			bal.Data.Block.Account.Balance,
-		)
-	}
-	nonce, ok := new(big.Int).SetString(bal.Data.Block.Account.Nonce[2:], 16)
-	if !ok {
-		return nil, fmt.Errorf(
-			"could not extract account nonce from %s",
-			bal.Data.Block.Account.Nonce,
-		)
-	}
+	balance := accountInfo.GetBalance()
+	nonce := accountInfo.GetNonce()
 
 	return &RosettaTypes.AccountBalanceResponse{
 		Balances: []*RosettaTypes.Amount{
@@ -1404,12 +1380,12 @@ func (kc *Client) Balance(
 			},
 		},
 		BlockIdentifier: &RosettaTypes.BlockIdentifier{
-			Hash:  bal.Data.Block.Hash,
-			Index: bal.Data.Block.Number,
+			Hash:  blockInfo.Hash().String(),
+			Index: blockInfo.Number().Int64(),
 		},
 		Metadata: map[string]interface{}{
-			"nonce": nonce.Int64(),
-			"code":  bal.Data.Block.Account.Code,
+			"nonce": nonce,
+			//"code":  bal.Data.Block.Account.Code,
 		},
 	}, nil
 }
