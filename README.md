@@ -1,73 +1,143 @@
-# Repo template
+<p align="center">
+  <a href="https://www.rosetta-api.org">
+    <img width="90%" alt="Rosetta" src="https://www.rosetta-api.org/img/rosetta_header.png">
+  </a>
+</p>
+<h3 align="center">
+   Rosetta Klaytn
+</h3>
 
-Template repository to help setup new projects in ground-x.
+<p align="center"><b>
+ROSETTA-KLAYTN IS CONSIDERED <a href="https://en.wikipedia.org/wiki/Software_release_life_cycle#Alpha">ALPHA SOFTWARE</a>.
+USE AT YOUR OWN RISK! COINBASE ASSUMES NO RESPONSIBILITY OR LIABILITY IF THERE IS A BUG IN THIS IMPLEMENTATION.
+</b></p>
 
-## Checklist
+## Overview
+`rosetta-klaytn` provides a reference implementation of the Rosetta API for Klaytn in Golang. If you haven't heard of the Rosetta API, you can find more information [here](https://rosetta-api.org).
 
-- [ ] PR 리뷰어로 등록될 프로젝트 담당 개발자 지정 `.github/CODEOWNERS`
-- [ ] 테스트 구성 (unit, lint, coverage, integration, e2e, sanity)
-- [ ] (Optional) example-Dockerfile 참고하여 Dockerfile 작성
-- [ ] branch policy 설정(Dev, Master) 확인
-- [ ] CI/CD Pipeline 설정
-- [ ] example-REAME.md 참고하여 README 작성 
+## Features
+* Comprehensive tracking of all ETH balance changes
+* Stateless, offline, curve-based transaction construction (with address checksum validation)
+* Atomic balance lookups using go-ethereum's GraphQL Endpoint
+* Idempotent access to all transaction traces and receipts
 
-# Category
+## System Requirements
+`rosetta-klaytn` has been tested on an [AWS c5.2xlarge instance](https://aws.amazon.com/ec2/instance-types/c5).
+This instance type has 8 vCPU and 16 GB of RAM. If you use a computer with less than 16 GB of RAM,
+it is possible that `rosetta-klaytn` will exit with an OOM error.
 
-## GX 공통 개발 프로세스
-- 프로젝트 레포의 fork를 떠서 개발을 한다.
-- 개인의 repo에서 ground-x/project dev(dev가 없을 경우 master) branch로 PR을 올려 코드 리뷰를 한다.
-- 2명 이상의 approve 후에 머지를 한다.
+### Recommended OS Settings
+To increase the load `rosetta-klaytn` can handle, it is recommended to tune your OS
+settings to allow for more connections. On a linux-based OS, you can run the following
+commands ([source](http://www.tweaked.io/guide/kernel)):
+```text
+sysctl -w net.ipv4.tcp_tw_reuse=1
+sysctl -w net.core.rmem_max=16777216
+sysctl -w net.core.wmem_max=16777216
+sysctl -w net.ipv4.tcp_max_syn_backlog=10000
+sysctl -w net.core.somaxconn=10000
+sysctl -p (when done)
+```
+_We have not tested `rosetta-klaytn` with `net.ipv4.tcp_tw_recycle` and do not recommend
+enabling it._
 
-참고: [Standard CI/CD pipeline](https://groundx.atlassian.net/wiki/spaces/PG/pages/324305133/Standard+CI+CD+Pipeline)
+You should also modify your open file settings to `100000`. This can be done on a linux-based OS
+with the command: `ulimit -n 100000`.
 
-## CI/CD pipeline
-CI/CD pipeline은 환경이 얼마나 필요하냐에 따라 크게 두가지로 분류.
+## Usage
+As specified in the [Rosetta API Principles](https://www.rosetta-api.org/docs/automated_deployment.html),
+all Rosetta implementations must be deployable via Docker and support running via either an
+[`online` or `offline` mode](https://www.rosetta-api.org/docs/node_deployment.html#multiple-modes).
 
-### One branch
-master 브랜치 하나를 가지고 태깅으로 production에 배포. 주로 개발 공수가 많이 안들어가는 static site의 경우가 이에 해당.
+**YOU MUST INSTALL DOCKER FOR THE FOLLOWING INSTRUCTIONS TO WORK. YOU CAN DOWNLOAD
+DOCKER [HERE](https://www.docker.com/get-started).**
 
-환경
-- Prod
-- (optional) dev
+### Install
+Running the following commands will create a Docker image called `rosetta-klaytn:latest`.
 
-배포
-- dev: master branch PR merge(코드 리뷰)
-- prod: master branch에서 `/env/prod/{{ prefix }}` 태그가 push 될때 마다 
-Example
-- klaytn-homepage, groundx-homepage, kaikas-mobile-homepage.. etc.
+#### From GitHub
+To download the pre-built Docker image from the latest release, run:
+```text
+curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-klaytn/master/install.sh | sh -s
+```
 
-### Multi branch
-dev, master 브랜치를 여러개 사용해서 여러 환경에 배포. QA환경(rc)이 추가되고 performance, staging 환경이 추가될 수 있음. 주로 개발 공수가 꽤 들어가는 major project일 경우 이에 해당.
+_Do not try to install rosetta-klaytn using GitHub Packages!_
 
-환경
-- dev, QA, Prod
-- (optional) performance, staging
 
-배포
-- dev: dev branch PR merge(코드 리뷰)
-- QA: rc tagging ex, `v1.1.0-rc.1`
-- staging: master branch PR merge(QA Sign-off) -- performance 환경이 추가될 수 있음.
-- prod: approve by circleci console(alert to slack channel #tech_release)
-Example
-- go-klip-backend, klip-front, kas-auth, kaikas-pixeplex, klaytn, caver-js, caver-java, wallet-api.. etc. 
+#### From Source
+After cloning this repository, run:
+```text
+make build-local
+```
 
-### Hotfix
-hotfix가 필요할땐 [hotfix process](https://groundx.atlassian.net/wiki/spaces/PG/pages/770998428/Standard+CI+CD+Pipeline+-+Hotfix+Differences) 대로 진행.
+### Run
+Running the following commands will start a Docker container in
+[detached mode](https://docs.docker.com/engine/reference/run/#detached--d) with
+a data directory at `<working directory>/klaytn-data` and the Rosetta API accessible
+at port `8080`.
 
-master branch에서 `hotfix/v1.1.0`라는 브랜치 생성. 해당 브랜치로 PR 생성하여 코드리뷰 진행
-- live product인 경우: hotfix 브랜치 PR 머지시 QA에 배포
-- klaytn 같은 binary인 경우: PR 머지하여 hotfix 브랜치에서 rc 생성시 rc 버전 배포
+#### Configuration Environment Variables
+* `MODE` (required) - Determines if Rosetta can make outbound connections. Options: `ONLINE` or `OFFLINE`.
+* `NETWORK` (required) - Klaytn network to launch and/or communicate with. Options: `MAINNET` or `BAOBAB`.
+* `PORT`(required) - Which port to use for Rosetta.
+* `KLAYTN_NODE` (optional) - Point to a remote `klaytn` node instead of initializing one
+* `SKIP_ADMIN` (optional, default: `FALSE`) - Instruct Rosetta to not use the `geth` `admin` RPC calls. This is typically disabled by hosted blockchain node services.
 
-## Tests
-- Unit test
-- Integration test
-- Sanity Check
+#### Mainnet:Online
+```text
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/klaytn-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+```
+_If you cloned the repository, you can run `make run-mainnet-online`._
 
-More deails: [Project Test Types](https://groundx.atlassian.net/wiki/spaces/PG/pages/795836631/Project+Test+Types+Draft)
+#### Mainnet:Online (Remote)
+```text
+docker run -d --rm --ulimit "nofile=100000:100000" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -e "GETH=<NODE URL>" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+```
+_If you cloned the repository, you can run `make run-mainnet-remote geth=<NODE URL>`._
 
-## Docker image
-CI나 로컬 환경을 위해 도커 이미지가 필요하다면 가이드라인을 참고. [Recommended Docker Base Images](https://groundx.atlassian.net/wiki/spaces/PG/pages/809697425/Recommended+Docker+Base+Images).
-기본적으로 build 하기 위한 이미지, run 하는 이미지를 분리하여 작성(예, [example-Dockerfile](https://github.com/ground-x/repo-template/blob/master/example-Dockerfile))
+#### Mainnet:Offline
+```text
+docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
+```
+_If you cloned the repository, you can run `make run-mainnet-offline`._
 
-### Pre-Built CircleCI Docker Images
-https://circleci.com/docs/2.0/circleci-images/#latest-image-tags-by-language
+#### Testnet:Online
+```text
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/klaytn-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+```
+_If you cloned the repository, you can run `make run-testnet-online`._
+
+#### Testnet:Online (Remote)
+```text
+docker run -d --rm --ulimit "nofile=100000:100000" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -e "GETH=<NODE URL>" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+```
+_If you cloned the repository, you can run `make run-testnet-remote geth=<NODE URL>`._
+
+#### Testnet:Offline
+```text
+docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
+```
+_If you cloned the repository, you can run `make run-testnet-offline`._
+
+## Testing with rosetta-cli
+To validate `rosetta-klaytn`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
+and run one of the following commands:
+* `rosetta-cli check:data --configuration-file rosetta-cli-conf/testnet/config.json` - This command validates that the Data API implementation is correct using the klaytn `testnet` node. It also ensures that the implementation does not miss any balance-changing operations.
+* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/testnet/config.json` - This command validates the Construction API implementation. It also verifies transaction construction, signing, and submissions to the `testnet` network.
+* `rosetta-cli check:data --configuration-file rosetta-cli-conf/mainnet/config.json` - This command validates that the Data API implementation is correct using the klaytn `mainnet` node. It also ensures that the implementation does not miss any balance-changing operations.
+
+## Issues
+Interested in helping fix issues in this repository? You can find to-dos in the [Issues](https://github.com/klaytn/rosetta-klaytn/issues) section. Be sure to reach out on our [community](https://community.rosetta-api.org) before you tackle anything on this list.
+
+## Development
+* `make deps` to install dependencies
+* `make test` to run tests
+* `make lint` to lint the source code
+* `make salus` to check for security concerns
+* `make build-local` to build a Docker image from the local context
+* `make coverage-local` to generate a coverage report
+
+## License
+This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
+
+© 2021 Coinbase
