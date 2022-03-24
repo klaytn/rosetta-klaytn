@@ -25,7 +25,7 @@ import (
 
 const (
 	// NodeVersion is the version of klaytn we are using.
-	NodeVersion = "1.8.1"
+	NodeVersion = "1.8.2"
 
 	// Blockchain is Klaytn.
 	Blockchain string = "Klaytn"
@@ -91,14 +91,6 @@ const (
 	// historical balance is supported.
 	HistoricalBalanceSupported = true
 
-	// UnclesRewardMultiplier is the uncle reward
-	// multiplier.
-	UnclesRewardMultiplier = 32
-
-	// MaxUncleDepth is the maximum depth for
-	// an uncle to be rewarded.
-	MaxUncleDepth = 8
-
 	// GenesisBlockIndex is the index of the
 	// genesis block.
 	GenesisBlockIndex = int64(0)
@@ -108,7 +100,7 @@ const (
 	TransferGasLimit = int64(21000) //nolint:gomnd
 
 	// KlaytnNodeArguments are the arguments to start a klaytn node instance.
-	KlaytnNodeArguments = `--config=/app/ethereum/geth.toml --gcmode=archive --graphql`
+	KlaytnNodeArguments = `--config=/app/klaytn/kend.toml --gcmode=archive --graphql`
 
 	// IncludeMempoolCoins does not apply to rosetta-klaytn as it is not UTXO-based.
 	IncludeMempoolCoins = false

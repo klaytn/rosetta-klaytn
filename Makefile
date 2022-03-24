@@ -43,7 +43,7 @@ build-release:
 
 update-bootstrap-balances:
 	go run main.go utils:generate-bootstrap ethereum/genesis_files/mainnet.json rosetta-cli-conf/mainnet/bootstrap_balances.json;
-	go run main.go utils:generate-bootstrap ethereum/genesis_files/testnet.json rosetta-cli-conf/testnet/bootstrap_balances.json;
+	go run main.go utils:generate-bootstrap ethereum/genesis_files/baobab.json rosetta-cli-conf/testnet/bootstrap_balances.json;
 
 run-mainnet-online:
 	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/ethereum-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-ethereum:latest
@@ -107,6 +107,6 @@ coverage-local:
 mocks:
 	rm -rf mocks;
 	mockery --dir services --all --case underscore --outpkg services --output mocks/services;
-	mockery --dir ethereum --all --case underscore --outpkg ethereum --output mocks/ethereum;
+	mockery --dir klaytn --all --case underscore --outpkg klaytn --output mocks/klaytn;
 	${ADDLICENSE_INSTALL}
 	${ADDLICENCE_SCRIPT} .;
