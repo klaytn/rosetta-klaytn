@@ -18,16 +18,16 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"github.com/klaytn/klaytn/common"
+	"github.com/klaytn/klaytn/params"
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"math/big"
 	"testing"
 
-	"github.com/coinbase/rosetta-ethereum/configuration"
-	"github.com/coinbase/rosetta-ethereum/ethereum"
-	mocks "github.com/coinbase/rosetta-ethereum/mocks/services"
+	"github.com/klaytn/rosetta-klaytn/configuration"
+	mocks "github.com/klaytn/rosetta-klaytn/mocks/services"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -52,14 +52,14 @@ func forceMarshalMap(t *testing.T, i interface{}) map[string]interface{} {
 
 func TestConstructionService(t *testing.T) {
 	networkIdentifier = &types.NetworkIdentifier{
-		Network:    ethereum.RopstenNetwork,
-		Blockchain: ethereum.Blockchain,
+		Network:    klaytn.BaobabNetwork,
+		Blockchain: klaytn.Blockchain,
 	}
 
 	cfg := &configuration.Configuration{
 		Mode:    configuration.Online,
 		Network: networkIdentifier,
-		Params:  params.RopstenChainConfig,
+		Params:  params.BaobabChainConfig,
 	}
 
 	mockClient := &mocks.Client{}
@@ -135,7 +135,7 @@ func TestConstructionService(t *testing.T) {
 		SuggestedFee: []*types.Amount{
 			{
 				Value:    "21000000000000",
-				Currency: ethereum.Currency,
+				Currency: klaytn.Currency,
 			},
 		},
 	}, metadataResponse)

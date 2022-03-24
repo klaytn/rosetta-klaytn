@@ -28,18 +28,18 @@ test:
 	${TEST_SCRIPT}
 
 build:
-	docker build -t rosetta-ethereum:latest https://github.com/coinbase/rosetta-ethereum.git
+	docker build -t rosetta-klaytn:latest https://github.com/klaytn/rosetta-klaytn.git
 
 build-local:
-	docker build -t rosetta-ethereum:latest .
+	docker build -t rosetta-klaytn:latest .
 
 build-release:
 	# make sure to always set version with vX.X.X
 	docker build -t rosetta-ethereum:$(version) .;
 	docker save rosetta-ethereum:$(version) | gzip > rosetta-ethereum-$(version).tar.gz;
 
-update-tracer:
-	curl https://raw.githubusercontent.com/ethereum/go-ethereum/master/eth/tracers/js/internal/tracers/call_tracer_js.js -o ethereum/call_tracer.js
+#update-tracer:
+#	curl https://raw.githubusercontent.com/ethereum/go-ethereum/master/eth/tracers/js/internal/tracers/call_tracer_js.js -o ethereum/call_tracer.js
 
 update-bootstrap-balances:
 	go run main.go utils:generate-bootstrap ethereum/genesis_files/mainnet.json rosetta-cli-conf/mainnet/bootstrap_balances.json;

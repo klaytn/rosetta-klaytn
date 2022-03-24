@@ -17,11 +17,10 @@ package services
 import (
 	"context"
 	"errors"
-
-	"github.com/coinbase/rosetta-ethereum/configuration"
-	"github.com/coinbase/rosetta-ethereum/ethereum"
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-klaytn/configuration"
 )
 
 // CallAPIService implements the server.CallAPIServicer interface.
@@ -48,17 +47,17 @@ func (s *CallAPIService) Call(
 	}
 
 	response, err := s.client.Call(ctx, request)
-	if errors.Is(err, ethereum.ErrCallParametersInvalid) {
+	if errors.Is(err, klaytn.ErrCallParametersInvalid) {
 		return nil, wrapErr(ErrCallParametersInvalid, err)
 	}
-	if errors.Is(err, ethereum.ErrCallOutputMarshal) {
+	if errors.Is(err, klaytn.ErrCallOutputMarshal) {
 		return nil, wrapErr(ErrCallOutputMarshal, err)
 	}
-	if errors.Is(err, ethereum.ErrCallMethodInvalid) {
+	if errors.Is(err, klaytn.ErrCallMethodInvalid) {
 		return nil, wrapErr(ErrCallMethodInvalid, err)
 	}
 	if err != nil {
-		return nil, wrapErr(ErrGeth, err)
+		return nil, wrapErr(ErrKlaytnClient, err)
 	}
 
 	return response, nil

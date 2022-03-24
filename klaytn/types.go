@@ -12,43 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package ethereum
+package klaytn
 
 import (
 	"context"
 	"fmt"
+	"github.com/klaytn/klaytn/networks/rpc"
+	"github.com/klaytn/klaytn/params"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rpc"
 )
 
 const (
-	// NodeVersion is the version of geth we are using.
-	NodeVersion = "1.9.24"
+	// NodeVersion is the version of klaytn we are using.
+	NodeVersion = "1.8.1"
 
-	// Blockchain is Ethereum.
-	Blockchain string = "Ethereum"
+	// Blockchain is Klaytn.
+	Blockchain string = "Klaytn"
 
 	// MainnetNetwork is the value of the network
-	// in MainnetNetworkIdentifier.
+	// in MainnetNetworkIdentifier (which is Cypress).
 	MainnetNetwork string = "Mainnet"
 
-	// RopstenNetwork is the value of the network
-	// in RopstenNetworkIdentifier.
-	RopstenNetwork string = "Ropsten"
-
-	// RinkebyNetwork is the value of the network
-	// in RinkebyNetworkNetworkIdentifier.
-	RinkebyNetwork string = "Rinkeby"
-
-	// GoerliNetwork is the value of the network
-	// in GoerliNetworkNetworkIdentifier.
-	GoerliNetwork string = "Goerli"
+	// BaobabNetwork is the value of the network
+	// in BaobabNetworkIdentifier.
+	BaobabNetwork string = "Baobab"
 
 	// Symbol is the symbol value
 	// used in Currency.
-	Symbol = "ETH"
+	Symbol = "KLAY"
 
 	// Decimals is the decimals value
 	// used in Currency.
@@ -57,10 +49,6 @@ const (
 	// MinerRewardOpType is used to describe
 	// a miner block reward.
 	MinerRewardOpType = "MINER_REWARD"
-
-	// UncleRewardOpType is used to describe
-	// an uncle block reward.
-	UncleRewardOpType = "UNCLE_REWARD"
 
 	// FeeOpType is used to represent fee operations.
 	FeeOpType = "FEE"
@@ -119,48 +107,31 @@ const (
 	// of a transfer.
 	TransferGasLimit = int64(21000) //nolint:gomnd
 
-	// MainnetGethArguments are the arguments to start a mainnet geth instance.
-	MainnetGethArguments = `--config=/app/ethereum/geth.toml --gcmode=archive --graphql`
+	// KlaytnNodeArguments are the arguments to start a klaytn node instance.
+	KlaytnNodeArguments = `--config=/app/ethereum/geth.toml --gcmode=archive --graphql`
 
-	// IncludeMempoolCoins does not apply to rosetta-ethereum as it is not UTXO-based.
+	// IncludeMempoolCoins does not apply to rosetta-klaytn as it is not UTXO-based.
 	IncludeMempoolCoins = false
 )
 
 var (
-	// RopstenGethArguments are the arguments to start a ropsten geth instance.
-	RopstenGethArguments = fmt.Sprintf("%s --ropsten", MainnetGethArguments)
+	// MainnetKlaytnNodeArguments are the arguments to start a Mainnet(Cypress) Klaytn node instance.
+	MainnetKlaytnNodeArguments = fmt.Sprintf("%s --cypress", KlaytnNodeArguments)
 
-	// RinkebyGethArguments are the arguments to start a rinkeby geth instance.
-	RinkebyGethArguments = fmt.Sprintf("%s --rinkeby", MainnetGethArguments)
-
-	// GoerliGethArguments are the arguments to start a ropsten geth instance.
-	GoerliGethArguments = fmt.Sprintf("%s --goerli", MainnetGethArguments)
+	// BaobabKlaytnNodeArguments are the arguments to start a Baobab Klaytn node instance.
+	BaobabKlaytnNodeArguments = fmt.Sprintf("%s --baobab", KlaytnNodeArguments)
 
 	// MainnetGenesisBlockIdentifier is the *types.BlockIdentifier
-	// of the mainnet genesis block.
+	// of the cypress genesis block.
 	MainnetGenesisBlockIdentifier = &types.BlockIdentifier{
-		Hash:  params.MainnetGenesisHash.Hex(),
+		Hash:  params.CypressGenesisHash.Hex(),
 		Index: GenesisBlockIndex,
 	}
 
-	// RopstenGenesisBlockIdentifier is the *types.BlockIdentifier
-	// of the Ropsten genesis block.
-	RopstenGenesisBlockIdentifier = &types.BlockIdentifier{
-		Hash:  params.RopstenGenesisHash.Hex(),
-		Index: GenesisBlockIndex,
-	}
-
-	// RinkebyGenesisBlockIdentifier is the *types.BlockIdentifier
-	// of the Ropsten genesis block.
-	RinkebyGenesisBlockIdentifier = &types.BlockIdentifier{
-		Hash:  params.RinkebyGenesisHash.Hex(),
-		Index: GenesisBlockIndex,
-	}
-
-	// GoerliGenesisBlockIdentifier is the *types.BlockIdentifier
-	// of the Goerli genesis block.
-	GoerliGenesisBlockIdentifier = &types.BlockIdentifier{
-		Hash:  params.GoerliGenesisHash.Hex(),
+	// BaobabGenesisBlockIdentifier is the *types.BlockIdentifier
+	// of the Baobab genesis block.
+	BaobabGenesisBlockIdentifier = &types.BlockIdentifier{
+		Hash:  params.BaobabGenesisHash.Hex(),
 		Index: GenesisBlockIndex,
 	}
 
@@ -174,7 +145,6 @@ var (
 	// OperationTypes are all suppoorted operation types.
 	OperationTypes = []string{
 		MinerRewardOpType,
-		UncleRewardOpType,
 		FeeOpType,
 		CallOpType,
 		CreateOpType,
@@ -200,21 +170,21 @@ var (
 
 	// CallMethods are all supported call methods.
 	CallMethods = []string{
-		"eth_getBlockByNumber",
-		"eth_getTransactionReceipt",
-		"eth_call",
-		"eth_estimateGas",
+		"klay_getBlockByNumber",
+		"klay_getTransactionReceipt",
+		"klay_call",
+		"klay_estimateGas",
 	}
 )
 
-// JSONRPC is the interface for accessing go-ethereum's JSON RPC endpoint.
+// JSONRPC is the interface for accessing Klaytn's JSON RPC endpoint.
 type JSONRPC interface {
 	CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error
 	BatchCallContext(ctx context.Context, b []rpc.BatchElem) error
 	Close()
 }
 
-// GraphQL is the interface for accessing go-ethereum's GraphQL endpoint.
+// GraphQL is the interface for accessing Klaytn's GraphQL endpoint.
 type GraphQL interface {
 	Query(ctx context.Context, input string) (string, error)
 }

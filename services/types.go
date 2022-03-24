@@ -17,12 +17,13 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"github.com/klaytn/klaytn/common"
 	"math/big"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	ethTypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/klaytn/klaytn/common/hexutil"
+
+	klayTypes "github.com/klaytn/klaytn/blockchain/types"
 )
 
 // Client is used by the services to get block
@@ -57,7 +58,7 @@ type Client interface {
 
 	SuggestGasPrice(ctx context.Context) (*big.Int, error)
 
-	SendTransaction(ctx context.Context, tx *ethTypes.Transaction) error
+	SendTransaction(ctx context.Context, tx *klayTypes.Transaction) error
 
 	GetMempool(ctx context.Context) (*types.MempoolResponse, error)
 

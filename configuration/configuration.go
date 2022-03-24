@@ -17,13 +17,12 @@ package configuration
 import (
 	"errors"
 	"fmt"
+	"github.com/klaytn/klaytn/params"
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"os"
 	"strconv"
 
-	"github.com/coinbase/rosetta-ethereum/ethereum"
-
 	"github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/ethereum/go-ethereum/params"
 )
 
 // Mode is the setting that determines if
@@ -39,20 +38,11 @@ const (
 	// to make outbound connections.
 	Offline Mode = "OFFLINE"
 
-	// Mainnet is the Ethereum Mainnet.
+	// Mainnet is the Klaytn Mainnet.
 	Mainnet string = "MAINNET"
 
-	// Ropsten is the Ethereum Ropsten testnet.
-	Ropsten string = "ROPSTEN"
-
-	// Rinkeby is the Ethereum Rinkeby testnet.
-	Rinkeby string = "RINKEBY"
-
-	// Goerli is the Ethereum Görli testnet.
-	Goerli string = "GOERLI"
-
-	// Testnet defaults to `Ropsten` for backwards compatibility.
-	Testnet string = "TESTNET"
+	// Baobab is the Klaytn Baobab testnet.
+	Baobab string = "BAOBAB"
 
 	// DataDirectory is the default location for all
 	// persistent data.
@@ -71,20 +61,20 @@ const (
 	// implementation.
 	PortEnv = "PORT"
 
-	// GethEnv is an optional environment variable
-	// used to connect rosetta-ethereum to an already
-	// running geth node.
-	GethEnv = "GETH"
+	// KlaytnNodeEnv is an optional environment variable
+	// used to connect rosetta-klaytn to an already
+	// running klaytn client node.
+	KlaytnNodeEnv = "KLAYTN_NODE"
 
-	// DefaultGethURL is the default URL for
+	// DefaultKlaytnNodeURL is the default URL for
 	// a running geth node. This is used
-	// when GethEnv is not populated.
-	DefaultGethURL = "http://localhost:8545"
+	// when KlaytnNodeEnv is not populated.
+	DefaultKlaytnNodeURL = "http://localhost:8545"
 
-	// SkipGethAdminEnv is an optional environment variable
-	// to skip geth `admin` calls which are typically not supported
+	// SkipAdminEnv is an optional environment variable
+	// to skip `admin` calls which are typically not supported
 	// by hosted node services. When not set, defaults to false.
-	SkipGethAdminEnv = "SKIP_GETH_ADMIN"
+	SkipAdminEnv = "SKIP_ADMIN"
 
 	// MiddlewareVersion is the version of rosetta-ethereum.
 	MiddlewareVersion = "0.0.4"
@@ -95,11 +85,11 @@ type Configuration struct {
 	Mode                   Mode
 	Network                *types.NetworkIdentifier
 	GenesisBlockIdentifier *types.BlockIdentifier
-	GethURL                string
-	RemoteGeth             bool
+	KlaytnNodeURL          string
+	RemoteNode             bool
 	Port                   int
-	GethArguments          string
-	SkipGethAdmin          bool
+	KlaytnNodeArguments    string
+	SkipAdmin              bool
 
 	// Block Reward Data
 	Params *params.ChainConfig
@@ -126,57 +116,41 @@ func LoadConfiguration() (*Configuration, error) {
 	switch networkValue {
 	case Mainnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: ethereum.Blockchain,
-			Network:    ethereum.MainnetNetwork,
+			Blockchain: klaytn.Blockchain,
+			Network:    klaytn.MainnetNetwork,
 		}
-		config.GenesisBlockIdentifier = ethereum.MainnetGenesisBlockIdentifier
-		config.Params = params.MainnetChainConfig
-		config.GethArguments = ethereum.MainnetGethArguments
-	case Testnet, Ropsten:
+		config.GenesisBlockIdentifier = klaytn.MainnetGenesisBlockIdentifier
+		config.Params = params.CypressChainConfig
+		config.KlaytnNodeArguments = klaytn.MainnetKlaytnNodeArguments
+	case Baobab:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: ethereum.Blockchain,
-			Network:    ethereum.RopstenNetwork,
+			Blockchain: klaytn.Blockchain,
+			Network:    klaytn.BaobabNetwork,
 		}
-		config.GenesisBlockIdentifier = ethereum.RopstenGenesisBlockIdentifier
-		config.Params = params.RopstenChainConfig
-		config.GethArguments = ethereum.RopstenGethArguments
-	case Rinkeby:
-		config.Network = &types.NetworkIdentifier{
-			Blockchain: ethereum.Blockchain,
-			Network:    ethereum.RinkebyNetwork,
-		}
-		config.GenesisBlockIdentifier = ethereum.RinkebyGenesisBlockIdentifier
-		config.Params = params.RinkebyChainConfig
-		config.GethArguments = ethereum.RinkebyGethArguments
-	case Goerli:
-		config.Network = &types.NetworkIdentifier{
-			Blockchain: ethereum.Blockchain,
-			Network:    ethereum.GoerliNetwork,
-		}
-		config.GenesisBlockIdentifier = ethereum.GoerliGenesisBlockIdentifier
-		config.Params = params.GoerliChainConfig
-		config.GethArguments = ethereum.GoerliGethArguments
+		config.GenesisBlockIdentifier = klaytn.BaobabGenesisBlockIdentifier
+		config.Params = params.BaobabChainConfig
+		config.KlaytnNodeArguments = klaytn.BaobabKlaytnNodeArguments
 	case "":
 		return nil, errors.New("NETWORK must be populated")
 	default:
 		return nil, fmt.Errorf("%s is not a valid network", networkValue)
 	}
 
-	config.GethURL = DefaultGethURL
-	envGethURL := os.Getenv(GethEnv)
+	config.KlaytnNodeURL = DefaultKlaytnNodeURL
+	envGethURL := os.Getenv(KlaytnNodeEnv)
 	if len(envGethURL) > 0 {
-		config.RemoteGeth = true
-		config.GethURL = envGethURL
+		config.RemoteNode = true
+		config.KlaytnNodeURL = envGethURL
 	}
 
-	config.SkipGethAdmin = false
-	envSkipGethAdmin := os.Getenv(SkipGethAdminEnv)
-	if len(envSkipGethAdmin) > 0 {
-		val, err := strconv.ParseBool(envSkipGethAdmin)
+	config.SkipAdmin = false
+	envSkipAdmin := os.Getenv(SkipAdminEnv)
+	if len(envSkipAdmin) > 0 {
+		val, err := strconv.ParseBool(envSkipAdmin)
 		if err != nil {
-			return nil, fmt.Errorf("%w: unable to parse SKIP_GETH_ADMIN %s", err, envSkipGethAdmin)
+			return nil, fmt.Errorf("%w: unable to parse SKIP_ADMIN %s", err, envSkipAdmin)
 		}
-		config.SkipGethAdmin = val
+		config.SkipAdmin = val
 	}
 
 	portValue := os.Getenv(PortEnv)

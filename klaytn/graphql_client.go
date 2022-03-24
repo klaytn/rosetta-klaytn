@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package ethereum
+package klaytn
 
 import (
 	"bytes"
@@ -33,7 +33,7 @@ const (
 )
 
 // GraphQLClient is a client used to make graphQL
-// queries to geth's graphql endpoint.
+// queries to Klaytn's graphql endpoint.
 type GraphQLClient struct {
 	client *http.Client
 	url    string

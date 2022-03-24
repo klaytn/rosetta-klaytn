@@ -17,9 +17,9 @@ package services
 import (
 	"context"
 
-	"github.com/coinbase/rosetta-ethereum/configuration"
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-klaytn/configuration"
 )
 
 // MempoolAPIService implements the server.MempoolAPIServicer interface.
@@ -50,7 +50,7 @@ func (s *MempoolAPIService) Mempool(
 
 	response, err := s.client.GetMempool(ctx)
 	if err != nil {
-		return nil, wrapErr(ErrGeth, err)
+		return nil, wrapErr(ErrKlaytnClient, err)
 	}
 
 	return response, nil

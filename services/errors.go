@@ -24,7 +24,7 @@ var (
 	Errors = []*types.Error{
 		ErrUnimplemented,
 		ErrUnavailableOffline,
-		ErrGeth,
+		ErrKlaytnClient,
 		ErrUnableToDecompressPubkey,
 		ErrUnclearIntent,
 		ErrUnableToParseIntermediateResult,
@@ -33,9 +33,8 @@ var (
 		ErrCallParametersInvalid,
 		ErrCallOutputMarshal,
 		ErrCallMethodInvalid,
-		ErrBlockOrphaned,
 		ErrInvalidAddress,
-		ErrGethNotReady,
+		ErrKlaytnClientNotReady,
 		ErrInvalidInput,
 	}
 
@@ -53,11 +52,11 @@ var (
 		Message: "Endpoint unavailable offline",
 	}
 
-	// ErrGeth is returned when geth
+	// ErrKlaytnClient is returned when Klaytn Node
 	// errors on a request.
-	ErrGeth = &types.Error{
+	ErrKlaytnClient = &types.Error{
 		Code:    2, //nolint
-		Message: "geth error",
+		Message: "klaytn client error",
 	}
 
 	// ErrUnableToDecompressPubkey is returned when
@@ -120,17 +119,6 @@ var (
 		Message: "Call method invalid",
 	}
 
-	// ErrBlockOrphaned is returned when a block being
-	// processed is orphaned and it is not possible
-	// to gather all receipts. At some point in the future,
-	// it may become possible to gather all receipts if the
-	// block becomes part of the canonical chain again.
-	ErrBlockOrphaned = &types.Error{
-		Code:      11, //nolint
-		Message:   "Block orphaned",
-		Retriable: true,
-	}
-
 	// ErrInvalidAddress is returned when an address
 	// is not valid.
 	ErrInvalidAddress = &types.Error{
@@ -138,11 +126,11 @@ var (
 		Message: "Invalid address",
 	}
 
-	// ErrGethNotReady is returned when geth
+	// ErrKlaytnClientNotReady is returned when Klaytn client
 	// cannot yet serve any queries.
-	ErrGethNotReady = &types.Error{
+	ErrKlaytnClientNotReady = &types.Error{
 		Code:      13, //nolint
-		Message:   "geth not ready",
+		Message:   "Klaytn client not ready",
 		Retriable: true,
 	}
 

@@ -1,14 +1,20 @@
-module github.com/coinbase/rosetta-ethereum
+module github.com/klaytn/rosetta-klaytn
 
 require (
-	github.com/OneOfOne/xxhash v1.2.5 // indirect
-	github.com/coinbase/rosetta-sdk-go v0.7.2
-	github.com/ethereum/go-ethereum v1.10.16
+	github.com/coinbase/rosetta-sdk-go v0.7.4
 	github.com/fatih/color v1.13.0
-	github.com/go-kit/kit v0.9.0 // indirect
-	github.com/spf13/cobra v1.2.1
+	github.com/go-stack/stack v1.8.1 // indirect
+	github.com/golang/mock v1.5.0 // indirect
+	github.com/json-iterator/go v1.1.11 // indirect
+	github.com/klaytn/klaytn v1.8.2
+	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
+	github.com/spf13/cobra v1.4.0
 	github.com/stretchr/testify v1.7.0
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.8.0 // indirect
+	go.uber.org/zap v1.21.0 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
 )
 
 go 1.16

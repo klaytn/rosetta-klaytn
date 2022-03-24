@@ -16,12 +16,8 @@ package services
 
 import (
 	"context"
-	"errors"
-
-	"github.com/coinbase/rosetta-ethereum/configuration"
-	"github.com/coinbase/rosetta-ethereum/ethereum"
-
 	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-klaytn/configuration"
 )
 
 // BlockAPIService implements the server.BlockAPIServicer interface.
@@ -51,11 +47,8 @@ func (s *BlockAPIService) Block(
 	}
 
 	block, err := s.client.Block(ctx, request.BlockIdentifier)
-	if errors.Is(err, ethereum.ErrBlockOrphaned) {
-		return nil, wrapErr(ErrBlockOrphaned, err)
-	}
 	if err != nil {
-		return nil, wrapErr(ErrGeth, err)
+		return nil, wrapErr(ErrKlaytnClient, err)
 	}
 
 	return &types.BlockResponse{
@@ -74,7 +67,7 @@ func (s *BlockAPIService) BlockTransaction(
 
 	tx, err := s.client.Transaction(ctx, request.BlockIdentifier, request.TransactionIdentifier)
 	if err != nil {
-		return nil, wrapErr(ErrGeth, err)
+		return nil, wrapErr(ErrKlaytnClient, err)
 	}
 
 	return &types.BlockTransactionResponse{

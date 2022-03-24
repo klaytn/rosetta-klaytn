@@ -16,23 +16,22 @@ package configuration
 
 import (
 	"errors"
+	"github.com/klaytn/klaytn/params"
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"os"
 	"testing"
 
-	"github.com/coinbase/rosetta-ethereum/ethereum"
-
 	"github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/ethereum/go-ethereum/params"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestLoadConfiguration(t *testing.T) {
 	tests := map[string]struct {
-		Mode          string
-		Network       string
-		Port          string
-		Geth          string
-		SkipGethAdmin string
+		Mode      string
+		Network   string
+		Port      string
+		Geth      string
+		SkipAdmin string
 
 		cfg *Configuration
 		err error
@@ -50,118 +49,65 @@ func TestLoadConfiguration(t *testing.T) {
 			err:     errors.New("PORT must be populated"),
 		},
 		"all set (mainnet)": {
-			Mode:          string(Online),
-			Network:       Mainnet,
-			Port:          "1000",
-			SkipGethAdmin: "FALSE",
+			Mode:      string(Online),
+			Network:   Mainnet,
+			Port:      "1000",
+			SkipAdmin: "FALSE",
 			cfg: &Configuration{
 				Mode: Online,
 				Network: &types.NetworkIdentifier{
-					Network:    ethereum.MainnetNetwork,
-					Blockchain: ethereum.Blockchain,
+					Network:    klaytn.MainnetNetwork,
+					Blockchain: klaytn.Blockchain,
 				},
-				Params:                 params.MainnetChainConfig,
-				GenesisBlockIdentifier: ethereum.MainnetGenesisBlockIdentifier,
+				Params:                 params.CypressChainConfig,
+				GenesisBlockIdentifier: klaytn.MainnetGenesisBlockIdentifier,
 				Port:                   1000,
-				GethURL:                DefaultGethURL,
-				GethArguments:          ethereum.MainnetGethArguments,
-				SkipGethAdmin:          false,
+				KlaytnNodeURL:          DefaultKlaytnNodeURL,
+				KlaytnNodeArguments:    klaytn.MainnetKlaytnNodeArguments,
+				SkipAdmin:              false,
 			},
 		},
 		"all set (mainnet) + geth": {
-			Mode:          string(Online),
-			Network:       Mainnet,
-			Port:          "1000",
-			Geth:          "http://blah",
-			SkipGethAdmin: "TRUE",
+			Mode:      string(Online),
+			Network:   Mainnet,
+			Port:      "1000",
+			Geth:      "http://blah",
+			SkipAdmin: "TRUE",
 			cfg: &Configuration{
 				Mode: Online,
 				Network: &types.NetworkIdentifier{
-					Network:    ethereum.MainnetNetwork,
-					Blockchain: ethereum.Blockchain,
+					Network:    klaytn.MainnetNetwork,
+					Blockchain: klaytn.Blockchain,
 				},
-				Params:                 params.MainnetChainConfig,
-				GenesisBlockIdentifier: ethereum.MainnetGenesisBlockIdentifier,
+				Params:                 params.CypressChainConfig,
+				GenesisBlockIdentifier: klaytn.MainnetGenesisBlockIdentifier,
 				Port:                   1000,
-				GethURL:                "http://blah",
-				RemoteGeth:             true,
-				GethArguments:          ethereum.MainnetGethArguments,
-				SkipGethAdmin:          true,
+				KlaytnNodeURL:          "http://blah",
+				RemoteNode:             true,
+				KlaytnNodeArguments:    klaytn.MainnetKlaytnNodeArguments,
+				SkipAdmin:              true,
 			},
 		},
-		"all set (ropsten)": {
+		"all set (baobab)": {
 			Mode:    string(Online),
-			Network: Ropsten,
+			Network: Baobab,
 			Port:    "1000",
 			cfg: &Configuration{
 				Mode: Online,
 				Network: &types.NetworkIdentifier{
-					Network:    ethereum.RopstenNetwork,
-					Blockchain: ethereum.Blockchain,
+					Network:    klaytn.BaobabNetwork,
+					Blockchain: klaytn.Blockchain,
 				},
-				Params:                 params.RopstenChainConfig,
-				GenesisBlockIdentifier: ethereum.RopstenGenesisBlockIdentifier,
+				Params:                 params.BaobabChainConfig,
+				GenesisBlockIdentifier: klaytn.BaobabGenesisBlockIdentifier,
 				Port:                   1000,
-				GethURL:                DefaultGethURL,
-				GethArguments:          ethereum.RopstenGethArguments,
-			},
-		},
-		"all set (rinkeby)": {
-			Mode:    string(Online),
-			Network: Rinkeby,
-			Port:    "1000",
-			cfg: &Configuration{
-				Mode: Online,
-				Network: &types.NetworkIdentifier{
-					Network:    ethereum.RinkebyNetwork,
-					Blockchain: ethereum.Blockchain,
-				},
-				Params:                 params.RinkebyChainConfig,
-				GenesisBlockIdentifier: ethereum.RinkebyGenesisBlockIdentifier,
-				Port:                   1000,
-				GethURL:                DefaultGethURL,
-				GethArguments:          ethereum.RinkebyGethArguments,
-			},
-		},
-		"all set (goerli)": {
-			Mode:    string(Online),
-			Network: Goerli,
-			Port:    "1000",
-			cfg: &Configuration{
-				Mode: Online,
-				Network: &types.NetworkIdentifier{
-					Network:    ethereum.GoerliNetwork,
-					Blockchain: ethereum.Blockchain,
-				},
-				Params:                 params.GoerliChainConfig,
-				GenesisBlockIdentifier: ethereum.GoerliGenesisBlockIdentifier,
-				Port:                   1000,
-				GethURL:                DefaultGethURL,
-				GethArguments:          ethereum.GoerliGethArguments,
-			},
-		},
-		"all set (testnet)": {
-			Mode:          string(Online),
-			Network:       Testnet,
-			Port:          "1000",
-			SkipGethAdmin: "TRUE",
-			cfg: &Configuration{
-				Mode: Online,
-				Network: &types.NetworkIdentifier{
-					Network:    ethereum.RopstenNetwork,
-					Blockchain: ethereum.Blockchain,
-				},
-				Params:                 params.RopstenChainConfig,
-				GenesisBlockIdentifier: ethereum.RopstenGenesisBlockIdentifier,
-				Port:                   1000,
-				GethURL:                DefaultGethURL,
-				GethArguments:          ethereum.RopstenGethArguments,
-				SkipGethAdmin:          true,
+				KlaytnNodeURL:          DefaultKlaytnNodeURL,
+				KlaytnNodeArguments:    klaytn.BaobabKlaytnNodeArguments,
 			},
 		},
 		"invalid mode": {
 			Mode:    "bad mode",
-			Network: Ropsten,
+			Network: Baobab,
 			Port:    "1000",
 			err:     errors.New("bad mode is not a valid mode"),
 		},
@@ -173,7 +119,7 @@ func TestLoadConfiguration(t *testing.T) {
 		},
 		"invalid port": {
 			Mode:    string(Offline),
-			Network: Ropsten,
+			Network: Baobab,
 			Port:    "bad port",
 			err:     errors.New("unable to parse port bad port"),
 		},
@@ -184,8 +130,8 @@ func TestLoadConfiguration(t *testing.T) {
 			os.Setenv(ModeEnv, test.Mode)
 			os.Setenv(NetworkEnv, test.Network)
 			os.Setenv(PortEnv, test.Port)
-			os.Setenv(GethEnv, test.Geth)
-			os.Setenv(SkipGethAdminEnv, test.SkipGethAdmin)
+			os.Setenv(KlaytnNodeEnv, test.Geth)
+			os.Setenv(SkipAdminEnv, test.SkipAdmin)
 
 			cfg, err := LoadConfiguration()
 			if test.err != nil {

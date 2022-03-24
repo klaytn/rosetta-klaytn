@@ -12,33 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package ethereum
+package klaytn
 
 import (
 	"fmt"
+	"github.com/klaytn/klaytn/node/cn"
 	"io/ioutil"
-
-	"github.com/ethereum/go-ethereum/eth/tracers"
 )
 
 // convert raw eth data from client to rosetta
 
 const (
-	tracerPath = "ethereum/call_tracer.js"
+	tracerPath = "klaytn/call_tracer.js"
 )
 
 var (
 	tracerTimeout = "120s"
 )
 
-func loadTraceConfig() (*tracers.TraceConfig, error) {
+func loadTraceConfig() (*cn.TraceConfig, error) {
 	loadedFile, err := ioutil.ReadFile(tracerPath)
 	if err != nil {
 		return nil, fmt.Errorf("%w: could not load tracer file", err)
 	}
 
 	loadedTracer := string(loadedFile)
-	return &tracers.TraceConfig{
+	return &cn.TraceConfig{
 		Timeout: &tracerTimeout,
 		Tracer:  &loadedTracer,
 	}, nil

@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package ethereum
+package klaytn
 
 import (
+	"github.com/klaytn/klaytn/common"
 	"log"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 // ChecksumAddress ensures an Ethereum hex address
 // is in Checksum Format. If the address cannot be converted,
 // it returns !ok.
 func ChecksumAddress(address string) (string, bool) {
-	addr, err := common.NewMixedcaseAddressFromString(address)
-	if err != nil {
+	if isHexAddress := common.IsHexAddress(address); isHexAddress == false {
 		return "", false
 	}
 
-	return addr.Address().Hex(), true
+	addr := common.HexToAddress(address)
+
+	return addr.Hex(), true
 }
 
 // MustChecksum ensures an address can be converted

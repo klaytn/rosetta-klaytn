@@ -1,6 +1,6 @@
 {
   "network": {
-    "blockchain": "Ethereum",
+    "blockchain": "Klaytn",
     "network": "Mainnet"
   },
   "data_directory": "cli-data",

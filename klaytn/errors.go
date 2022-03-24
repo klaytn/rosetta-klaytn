@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package ethereum
+package klaytn
 
 import "errors"
 
 // Client errors
 var (
-	ErrBlockOrphaned         = errors.New("block orphaned")
 	ErrCallParametersInvalid = errors.New("call parameters invalid")
 	ErrCallOutputMarshal     = errors.New("call output marshal")
 	ErrCallMethodInvalid     = errors.New("call method invalid")

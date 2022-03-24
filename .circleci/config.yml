@@ -18,7 +18,7 @@ executors:
     docker:
       - image: cimg/go:1.16
         user: root # go directory is owned by root
-    working_directory: /go/src/github.com/coinbase/rosetta-ethereum
+    working_directory: /go/src/github.com/klaytn/rosetta-klaytn
     environment:
       - GO111MODULE: "on"
 

@@ -36,16 +36,17 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 # Compile geth
 FROM golang-builder as geth-builder
 
+# TODO-Klaytn: Have to change below with Klaytn
 # VERSION: go-ethereum v.1.10.8
-RUN git clone https://github.com/ethereum/go-ethereum \
-  && cd go-ethereum \
-  && git checkout 26675454bf93bf904be7a43cce6b3f550115ff90
-
-RUN cd go-ethereum \
-  && make geth
-
-RUN mv go-ethereum/build/bin/geth /app/geth \
-  && rm -rf go-ethereum
+#RUN git clone https://github.com/ethereum/go-ethereum \
+#  && cd go-ethereum \
+#  && git checkout 26675454bf93bf904be7a43cce6b3f550115ff90
+#
+#RUN cd go-ethereum \
+#  && make geth
+#
+#RUN mv go-ethereum/build/bin/geth /app/geth \
+#  && rm -rf go-ethereum
 
 # Compile rosetta-ethereum
 FROM golang-builder as rosetta-builder

@@ -16,11 +16,11 @@ package services
 
 import (
 	"context"
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"testing"
 
-	"github.com/coinbase/rosetta-ethereum/configuration"
-	"github.com/coinbase/rosetta-ethereum/ethereum"
-	mocks "github.com/coinbase/rosetta-ethereum/mocks/services"
+	"github.com/klaytn/rosetta-klaytn/configuration"
+	mocks "github.com/klaytn/rosetta-klaytn/mocks/services"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/stretchr/testify/assert"
@@ -35,17 +35,17 @@ var (
 			MiddlewareVersion: &middlewareVersion,
 		},
 		Allow: &types.Allow{
-			OperationStatuses:       ethereum.OperationStatuses,
-			OperationTypes:          ethereum.OperationTypes,
+			OperationStatuses:       klaytn.OperationStatuses,
+			OperationTypes:          klaytn.OperationTypes,
 			Errors:                  Errors,
-			HistoricalBalanceLookup: ethereum.HistoricalBalanceSupported,
-			CallMethods:             ethereum.CallMethods,
+			HistoricalBalanceLookup: klaytn.HistoricalBalanceSupported,
+			CallMethods:             klaytn.CallMethods,
 		},
 	}
 
 	networkIdentifier = &types.NetworkIdentifier{
-		Network:    ethereum.MainnetNetwork,
-		Blockchain: ethereum.Blockchain,
+		Network:    klaytn.MainnetNetwork,
+		Blockchain: klaytn.Blockchain,
 	}
 )
 
@@ -80,7 +80,7 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:                   configuration.Online,
 		Network:                networkIdentifier,
-		GenesisBlockIdentifier: ethereum.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: klaytn.MainnetGenesisBlockIdentifier,
 	}
 	mockClient := &mocks.Client{}
 	servicer := NewNetworkAPIService(cfg, mockClient)
@@ -122,7 +122,7 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 	networkStatus, err := servicer.NetworkStatus(ctx, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, &types.NetworkStatusResponse{
-		GenesisBlockIdentifier: ethereum.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: klaytn.MainnetGenesisBlockIdentifier,
 		CurrentBlockIdentifier: currentBlock,
 		CurrentBlockTimestamp:  currentTime,
 		Peers:                  peers,

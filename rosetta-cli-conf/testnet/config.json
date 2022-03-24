@@ -1,7 +1,7 @@
 {
   "network": {
-    "blockchain": "Ethereum",
-    "network": "Ropsten"
+    "blockchain": "Klaytn",
+    "network": "Baobab"
   },
   "data_directory": "cli-data",
   "http_timeout": 300,

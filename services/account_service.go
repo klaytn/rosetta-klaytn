@@ -17,7 +17,7 @@ package services
 import (
 	"context"
 
-	"github.com/coinbase/rosetta-ethereum/configuration"
+	"github.com/klaytn/rosetta-klaytn/configuration"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
@@ -54,7 +54,7 @@ func (s *AccountAPIService) AccountBalance(
 		request.BlockIdentifier,
 	)
 	if err != nil {
-		return nil, wrapErr(ErrGeth, err)
+		return nil, wrapErr(ErrKlaytnClient, err)
 	}
 
 	return balanceResponse, nil

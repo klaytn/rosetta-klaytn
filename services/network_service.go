@@ -16,12 +16,11 @@ package services
 
 import (
 	"context"
-
-	"github.com/coinbase/rosetta-ethereum/configuration"
-	"github.com/coinbase/rosetta-ethereum/ethereum"
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-klaytn/configuration"
 )
 
 // NetworkAPIService implements the server.NetworkAPIServicer interface.
@@ -58,16 +57,16 @@ func (s *NetworkAPIService) NetworkOptions(
 ) (*types.NetworkOptionsResponse, *types.Error) {
 	return &types.NetworkOptionsResponse{
 		Version: &types.Version{
-			NodeVersion:       ethereum.NodeVersion,
+			NodeVersion:       klaytn.NodeVersion,
 			RosettaVersion:    types.RosettaAPIVersion,
 			MiddlewareVersion: types.String(configuration.MiddlewareVersion),
 		},
 		Allow: &types.Allow{
 			Errors:                  Errors,
-			OperationTypes:          ethereum.OperationTypes,
-			OperationStatuses:       ethereum.OperationStatuses,
-			HistoricalBalanceLookup: ethereum.HistoricalBalanceSupported,
-			CallMethods:             ethereum.CallMethods,
+			OperationTypes:          klaytn.OperationTypes,
+			OperationStatuses:       klaytn.OperationStatuses,
+			HistoricalBalanceLookup: klaytn.HistoricalBalanceSupported,
+			CallMethods:             klaytn.CallMethods,
 		},
 	}, nil
 }
@@ -83,11 +82,11 @@ func (s *NetworkAPIService) NetworkStatus(
 
 	currentBlock, currentTime, syncStatus, peers, err := s.client.Status(ctx)
 	if err != nil {
-		return nil, wrapErr(ErrGeth, err)
+		return nil, wrapErr(ErrKlaytnClient, err)
 	}
 
 	if currentTime < asserter.MinUnixEpoch {
-		return nil, ErrGethNotReady
+		return nil, ErrKlaytnClientNotReady
 	}
 
 	return &types.NetworkStatusResponse{

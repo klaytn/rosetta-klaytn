@@ -12,30 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package ethereum
+package klaytn
 
 import (
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/klaytn/klaytn"
+	"github.com/klaytn/klaytn/blockchain/types"
+	"github.com/klaytn/klaytn/common"
+	"github.com/klaytn/klaytn/networks/p2p"
+	"github.com/klaytn/klaytn/networks/rpc"
+	"github.com/klaytn/klaytn/node/cn"
+	"github.com/klaytn/klaytn/params"
 	"io/ioutil"
 	"math/big"
 	"reflect"
 	"sort"
 	"testing"
 
-	mocks "github.com/coinbase/rosetta-ethereum/mocks/ethereum"
+	mocks "github.com/klaytn/rosetta-klaytn/mocks/ethereum"
 
 	RosettaTypes "github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth/tracers"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/klaytn/klaytn/common/hexutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/sync/semaphore"
@@ -68,7 +68,7 @@ func TestStatus_NotReady(t *testing.T) {
 	assert.Equal(t, int64(-1), timestamp)
 	assert.Nil(t, syncStatus)
 	assert.Nil(t, peers)
-	assert.True(t, errors.Is(err, ethereum.NotFound))
+	assert.True(t, errors.Is(err, klaytn.NotFound))
 
 	mockJSONRPC.AssertExpectations(t)
 	mockGraphQL.AssertExpectations(t)
@@ -1159,14 +1159,14 @@ func TestCall_InvalidMethod(t *testing.T) {
 	mockGraphQL.AssertExpectations(t)
 }
 
-func testTraceConfig() (*tracers.TraceConfig, error) {
+func testTraceConfig() (*cn.TraceConfig, error) {
 	loadedFile, err := ioutil.ReadFile("call_tracer.js")
 	if err != nil {
 		return nil, fmt.Errorf("%w: could not load tracer file", err)
 	}
 
 	loadedTracer := string(loadedFile)
-	return &tracers.TraceConfig{
+	return &cn.TraceConfig{
 		Timeout: &tracerTimeout,
 		Tracer:  &loadedTracer,
 	}, nil
@@ -1182,7 +1182,7 @@ func TestBlock_Current(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1254,7 +1254,7 @@ func TestBlock_Hash(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1330,7 +1330,7 @@ func TestBlock_Index(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1404,7 +1404,7 @@ func TestBlock_FirstBlock(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1487,7 +1487,7 @@ func TestTransaction_Hash(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1619,7 +1619,7 @@ func TestBlock_10994(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1725,7 +1725,7 @@ func TestBlock_10991(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1830,7 +1830,7 @@ func TestBlock_239782(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1936,7 +1936,7 @@ func TestBlock_363415(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -2048,7 +2048,7 @@ func TestBlock_363753(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -2160,7 +2160,7 @@ func TestBlock_468179(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -2272,7 +2272,7 @@ func TestBlock_363366(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -2385,7 +2385,7 @@ func TestBlock_468194(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -2499,7 +2499,7 @@ func TestBlock_13998626(t *testing.T) {
 		c:              mockJSONRPC,
 		g:              mockGraphQL,
 		tc:             tc,
-		p:              params.RopstenChainConfig,
+		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 

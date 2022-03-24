@@ -6,11 +6,11 @@ import (
 	context "context"
 	big "math/big"
 
-	common "github.com/ethereum/go-ethereum/common"
-
-	coretypes "github.com/ethereum/go-ethereum/core/types"
+	common "github.com/klaytn/klaytn/common"
 
 	mock "github.com/stretchr/testify/mock"
+
+	coretypes "github.com/klaytn/klaytn/blockchain/types"
 
 	types "github.com/coinbase/rosetta-sdk-go/types"
 )
