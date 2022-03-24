@@ -1,7 +1,7 @@
 module github.com/klaytn/rosetta-klaytn
 
 require (
-	github.com/coinbase/rosetta-sdk-go v0.7.4
+	github.com/coinbase/rosetta-sdk-go v0.7.5
 	github.com/fatih/color v1.13.0
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/golang/mock v1.5.0 // indirect
