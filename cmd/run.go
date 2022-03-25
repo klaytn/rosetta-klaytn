@@ -26,9 +26,9 @@ import (
 	"github.com/klaytn/rosetta-klaytn/configuration"
 	"github.com/klaytn/rosetta-klaytn/services"
 
-	"github.com/coinbase/rosetta-sdk-go/asserter"
-	"github.com/coinbase/rosetta-sdk-go/server"
-	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/asserter"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/server"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )

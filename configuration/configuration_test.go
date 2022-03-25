@@ -21,7 +21,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/stretchr/testify/assert"
 )
 

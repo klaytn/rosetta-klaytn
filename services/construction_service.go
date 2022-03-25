@@ -27,8 +27,8 @@ import (
 	klayTypes "github.com/klaytn/klaytn/blockchain/types"
 	"github.com/klaytn/rosetta-klaytn/configuration"
 
-	"github.com/coinbase/rosetta-sdk-go/parser"
-	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/parser"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 )
 
 // ConstructionAPIService implements the server.ConstructionAPIServicer interface.

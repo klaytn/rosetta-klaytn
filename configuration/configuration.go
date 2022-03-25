@@ -22,7 +22,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 )
 
 // Mode is the setting that determines if

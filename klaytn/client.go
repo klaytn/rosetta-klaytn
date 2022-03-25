@@ -34,7 +34,7 @@ import (
 	"strconv"
 	"time"
 
-	RosettaTypes "github.com/coinbase/rosetta-sdk-go/types"
+	RosettaTypes "github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/klaytn/klaytn/common/hexutil"
 	"golang.org/x/sync/semaphore"
 )

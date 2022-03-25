@@ -17,8 +17,8 @@ package services
 import (
 	"context"
 
-	"github.com/coinbase/rosetta-sdk-go/server"
-	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/server"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/klaytn/rosetta-klaytn/configuration"
 )
 

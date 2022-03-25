@@ -18,8 +18,8 @@ import (
 	"context"
 	"github.com/klaytn/rosetta-klaytn/klaytn"
 
-	"github.com/coinbase/rosetta-sdk-go/asserter"
-	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/asserter"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/klaytn/rosetta-klaytn/configuration"
 )
 
