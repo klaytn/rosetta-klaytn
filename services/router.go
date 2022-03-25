@@ -19,8 +19,8 @@ import (
 
 	"github.com/klaytn/rosetta-klaytn/configuration"
 
-	"github.com/coinbase/rosetta-sdk-go/asserter"
-	"github.com/coinbase/rosetta-sdk-go/server"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/asserter"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/server"
 )
 
 // NewBlockchainRouter creates a Mux http.Handler from a collection

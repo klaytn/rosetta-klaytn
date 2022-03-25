@@ -20,7 +20,7 @@ import (
 	"github.com/klaytn/klaytn/common"
 	"math/big"
 
-	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/klaytn/klaytn/common/hexutil"
 
 	klayTypes "github.com/klaytn/klaytn/blockchain/types"

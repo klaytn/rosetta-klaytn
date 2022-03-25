@@ -19,7 +19,7 @@ import (
 
 	"github.com/klaytn/rosetta-klaytn/configuration"
 
-	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 )
 
 // AccountAPIService implements the server.AccountAPIServicer interface.

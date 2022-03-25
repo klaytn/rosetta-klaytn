@@ -32,10 +32,10 @@ import (
 	"sort"
 	"testing"
 
-	mocks "github.com/klaytn/rosetta-klaytn/mocks/ethereum"
+	mocks "github.com/klaytn/rosetta-klaytn/mocks/klaytn"
 
-	RosettaTypes "github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/klaytn/klaytn/common/hexutil"
+	RosettaTypes "github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/sync/semaphore"
@@ -46,8 +46,8 @@ func TestStatus_NotReady(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -79,8 +79,8 @@ func TestStatus_NotSyncing(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -199,8 +199,8 @@ func TestStatus_NotSyncing_SkipAdminCalls(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 		skipAdminCalls: true,
 	}
@@ -276,8 +276,8 @@ func TestStatus_Syncing(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -401,8 +401,8 @@ func TestStatus_Syncing_SkipAdminCalls(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 		skipAdminCalls: true,
 	}
@@ -483,8 +483,8 @@ func TestBalance(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -546,8 +546,8 @@ func TestBalance_Historical_Hash(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -614,8 +614,8 @@ func TestBalance_Historical_Index(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -679,8 +679,8 @@ func TestBalance_InvalidAddress(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -725,8 +725,8 @@ func TestBalance_InvalidHash(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -775,8 +775,8 @@ func TestCall_GetBlockByNumber(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -833,8 +833,8 @@ func TestCall_GetBlockByNumber_InvalidArgs(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -861,8 +861,8 @@ func TestCall_GetTransactionReceipt(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -926,8 +926,8 @@ func TestCall_GetTransactionReceipt_InvalidArgs(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -950,8 +950,8 @@ func TestCall_Call(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1015,8 +1015,8 @@ func TestCall_Call_InvalidArgs(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1045,8 +1045,8 @@ func TestCall_EstimateGas(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1112,8 +1112,8 @@ func TestCall_EstimateGas_InvalidArgs(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1140,8 +1140,8 @@ func TestCall_InvalidMethod(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -1179,8 +1179,8 @@ func TestBlock_Current(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -1251,8 +1251,8 @@ func TestBlock_Hash(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -1327,8 +1327,8 @@ func TestBlock_Index(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -1401,8 +1401,8 @@ func TestBlock_FirstBlock(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -1484,8 +1484,8 @@ func TestTransaction_Hash(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -1616,8 +1616,8 @@ func TestBlock_10994(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -1722,8 +1722,8 @@ func TestBlock_10991(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -1827,8 +1827,8 @@ func TestBlock_239782(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -1933,8 +1933,8 @@ func TestBlock_363415(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -2045,8 +2045,8 @@ func TestBlock_363753(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -2157,8 +2157,8 @@ func TestBlock_468179(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -2269,8 +2269,8 @@ func TestBlock_363366(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -2382,8 +2382,8 @@ func TestBlock_468194(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -2496,8 +2496,8 @@ func TestBlock_13998626(t *testing.T) {
 	tc, err := testTraceConfig()
 	assert.NoError(t, err)
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -2607,8 +2607,8 @@ func TestPendingNonceAt(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -2645,8 +2645,8 @@ func TestSuggestGasPrice(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -2680,8 +2680,8 @@ func TestSendTransaction(t *testing.T) {
 	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -2713,7 +2713,7 @@ func TestSendTransaction(t *testing.T) {
 
 func TestGetMempool(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
-	mockGraphQL := &mocks.GraphQL{}
+	//mockGraphQL := &mocks.GraphQL{}
 	ctx := context.Background()
 	expectedMempool := &RosettaTypes.MempoolResponse{
 		TransactionIdentifiers: []*RosettaTypes.TransactionIdentifier{
@@ -2737,8 +2737,8 @@ func TestGetMempool(t *testing.T) {
 	}
 
 	c := &Client{
-		c:              mockJSONRPC,
-		g:              mockGraphQL,
+		c: mockJSONRPC,
+		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 

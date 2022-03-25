@@ -19,7 +19,7 @@ import (
 	"errors"
 	"github.com/klaytn/rosetta-klaytn/klaytn"
 
-	"github.com/coinbase/rosetta-sdk-go/types"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/klaytn/rosetta-klaytn/configuration"
 )
 
