@@ -1529,21 +1529,12 @@ func (kc *Client) Call(
 			return nil, fmt.Errorf("%w:tx_hash missing from params", ErrCallParametersInvalid)
 		}
 
-		receipt, err := kc.transactionReceipt(ctx, common.HexToHash(input.TxHash))
-		if err != nil {
-			return nil, err
-		}
-
-		// We cannot use RosettaTypes.MarshalMap because Klaytn uses a custom
-		// marshaler to convert *types.Receipt to JSON.
-		jsonOutput, err := receipt.MarshalJSON()
-		if err != nil {
-			return nil, fmt.Errorf("%w: %s", ErrCallOutputMarshal, err.Error())
-		}
-
+		// Use RPC call directly to avoid struggle with nil contract address in the test code.
+		// types.Receipt has empty common.Address{} instead of nil.
 		var receiptMap map[string]interface{}
-		if err := json.Unmarshal(jsonOutput, &receiptMap); err != nil {
-			return nil, fmt.Errorf("%w: %s", ErrCallOutputMarshal, err.Error())
+		err := kc.c.CallContext(ctx, &receiptMap, "klay_getTransactionReceipt", input.TxHash)
+		if err == nil && receiptMap == nil {
+			return nil, klaytn.NotFound
 		}
 
 		// We must encode data over the wire so we can unmarshal correctly
