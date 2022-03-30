@@ -46,9 +46,9 @@ const (
 	// used in Currency.
 	Decimals = 18
 
-	// MinerRewardOpType is used to describe
-	// a miner block reward.
-	MinerRewardOpType = "MINER_REWARD"
+	// BlockRewardOpType is used to describe
+	// a block reward.
+	BlockRewardOpType = "BLOCK_REWARD"
 
 	// FeeOpType is used to represent fee operations.
 	FeeOpType = "FEE"
@@ -136,7 +136,7 @@ var (
 
 	// OperationTypes are all suppoorted operation types.
 	OperationTypes = []string{
-		MinerRewardOpType,
+		BlockRewardOpType,
 		FeeOpType,
 		CallOpType,
 		CreateOpType,

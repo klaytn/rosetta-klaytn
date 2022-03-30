@@ -27,15 +27,17 @@ import (
 	"github.com/klaytn/klaytn/networks/rpc"
 	"github.com/klaytn/klaytn/node/cn"
 	"github.com/klaytn/klaytn/params"
+	"github.com/klaytn/klaytn/reward"
 	"github.com/klaytn/klaytn/rlp"
 	"log"
 	"math/big"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
-	RosettaTypes "github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/klaytn/klaytn/common/hexutil"
+	RosettaTypes "github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"golang.org/x/sync/semaphore"
 )
 
@@ -51,16 +53,14 @@ const (
 )
 
 // Client allows for querying a set of specific Ethereum endpoints in an
-// idempotent manner. Client relies on the klay_*, debug_*, admin_*, and txpool_*
-// methods and on the graphql endpoint.
+// idempotent manner. Client relies on the klay_*, debug_*, admin_*, governance_*, and txpool_* methods.
 //
-// Client borrows HEAVILY from https://github.com/klaytn/klaytntree/master/ethclient.
+// Client borrows HEAVILY from https://github.com/klaytn/klaytn/blob/dev/client/klay_client.go
 type Client struct {
 	p  *params.ChainConfig
 	tc *cn.TraceConfig
 
 	c JSONRPC
-	//g GraphQL
 
 	traceSemaphore *semaphore.Weighted
 
@@ -80,11 +80,6 @@ func NewClient(url string, params *params.ChainConfig, skipAdminCalls bool) (*Cl
 	if err != nil {
 		return nil, fmt.Errorf("%w: unable to load trace config", err)
 	}
-
-	//g, err := newGraphQLClient(url)
-	//if err != nil {
-	//	return nil, fmt.Errorf("%w: unable to create GraphQL client", err)
-	//}
 
 	return &Client{params, tc, c, semaphore.NewWeighted(maxTraceConcurrency), skipAdminCalls}, nil
 }
@@ -152,6 +147,16 @@ func (kc *Client) PendingNonceAt(ctx context.Context, account common.Address) (u
 func (kc *Client) SuggestGasPrice(ctx context.Context) (*big.Int, error) {
 	var hex hexutil.Big
 	if err := kc.c.CallContext(ctx, &hex, "klay_gasPrice"); err != nil {
+		return nil, err
+	}
+	return (*big.Int)(&hex), nil
+}
+
+// GasPriceAt retrieves the suggested gas price to allow a timely
+// execution of a transaction at the given block height.
+func (kc *Client) GasPriceAt(ctx context.Context, blockNumber int64) (*big.Int, error) {
+	var hex hexutil.Big
+	if err := kc.c.CallContext(ctx, &hex, "klay_gasPriceAt", toBlockNumArg(big.NewInt(blockNumber))); err != nil {
 		return nil, err
 	}
 	return (*big.Int)(&hex), nil
@@ -262,15 +267,12 @@ func (kc *Client) Transaction(
 
 	loadedTx := body.LoadedTransaction()
 	loadedTx.Transaction = body.tx
-	feeAmount, feeBurned, err := calculateGas(body.tx, receipt, *header)
+	feeAmount, feeBurned, err := kc.calculateGas(ctx, body.tx, receipt, *header)
 	if err != nil {
 		return nil, err
 	}
 	loadedTx.FeeAmount = feeAmount
 	loadedTx.FeeBurned = feeBurned
-	// TODO-Klaytn: We need to return Block Proposer
-	//loadedTx.Miner = MustChecksum(header.Coinbase.Hex())
-	loadedTx.Miner = ""
 	loadedTx.Receipt = receipt
 
 	if addTraces {
@@ -278,7 +280,13 @@ func (kc *Client) Transaction(
 		loadedTx.RawTrace = rawTraces
 	}
 
-	tx, err := kc.populateTransaction(loadedTx)
+	rewardRatioMap, _, err := kc.getRewardAndRatioInfo(ctx, toBlockNumArg(header.Number), header.Rewardbase.String())
+	if err != nil {
+		return nil, fmt.Errorf("%w: cannot get reward ratio %v", err, header)
+	}
+	// Since populateTransaction calculates the transaction fee calculation,
+	// the addresses receiving the fee and the fee distribution ratios must be passed together as parameters.
+	tx, err := kc.populateTransaction(loadedTx, rewardRatioMap)
 	if err != nil {
 		return nil, fmt.Errorf("%w: cannot parse %s", err, loadedTx.Transaction.Hash().Hex())
 	}
@@ -340,54 +348,6 @@ func (kc *Client) blockHeaderByHash(ctx context.Context, hash string) (*types.He
 type rpcBlock struct {
 	Hash         common.Hash      `json:"hash"`
 	Transactions []rpcTransaction `json:"transactions"`
-	UncleHashes  []common.Hash    `json:"uncles"`
-}
-
-func (kc *Client) getUncles(
-	ctx context.Context,
-	head *types.Header,
-	body *rpcBlock,
-) ([]*types.Header, error) {
-	if head.TxHash == types.EmptyRootHash && len(body.Transactions) > 0 {
-		return nil, fmt.Errorf(
-			"server returned non-empty transaction list but block header indicates no transactions",
-		)
-	}
-	if head.TxHash != types.EmptyRootHash && len(body.Transactions) == 0 {
-		return nil, fmt.Errorf(
-			"server returned empty transaction list but block header indicates transactions",
-		)
-	}
-	// Load uncles because they are not included in the block response.
-	var uncles []*types.Header
-	if len(body.UncleHashes) > 0 {
-		uncles = make([]*types.Header, len(body.UncleHashes))
-		reqs := make([]rpc.BatchElem, len(body.UncleHashes))
-		for i := range reqs {
-			reqs[i] = rpc.BatchElem{
-				Method: "klay_getUncleByBlockHashAndIndex",
-				Args:   []interface{}{body.Hash, hexutil.EncodeUint64(uint64(i))},
-				Result: &uncles[i],
-			}
-		}
-		if err := kc.c.BatchCallContext(ctx, reqs); err != nil {
-			return nil, err
-		}
-		for i := range reqs {
-			if reqs[i].Error != nil {
-				return nil, reqs[i].Error
-			}
-			if uncles[i] == nil {
-				return nil, fmt.Errorf(
-					"got null header for uncle %d of block %x",
-					i,
-					body.Hash[:],
-				)
-			}
-		}
-	}
-
-	return uncles, nil
 }
 
 func (kc *Client) getBlock(
@@ -418,7 +378,7 @@ func (kc *Client) getBlock(
 	}
 
 	// Get all transaction receipts
-	receipts, err := kc.getBlockReceipts(ctx, body.Hash, body.Transactions)
+	receipts, err := kc.getBlockReceipts(ctx, body.Transactions)
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: could not get receipts for %x", err, body.Hash[:])
 	}
@@ -427,7 +387,8 @@ func (kc *Client) getBlock(
 	//
 	// We fetch traces last because we want to avoid limiting the number of other
 	// block-related data fetches we perform concurrently (we limit the number of
-	// concurrent traces that are computed to 16 to avoid overwhelming geth).
+	// concurrent traces that are computed to 16 to avoid overwhelming Node).
+	// TODO-Klaytn: Need to make sure those logic is fine with Klaytn
 	var traces []*rpcCall
 	var rawTraces []*rpcRawCall
 	var addTraces bool
@@ -451,15 +412,12 @@ func (kc *Client) getBlock(
 		loadedTxs[i] = tx.LoadedTransaction()
 		loadedTxs[i].Transaction = txs[i]
 
-		feeAmount, feeBurned, err := calculateGas(txs[i], receipt, head)
+		feeAmount, feeBurned, err := kc.calculateGas(ctx, txs[i], receipt, head)
 		if err != nil {
 			return nil, nil, err
 		}
 		loadedTxs[i].FeeAmount = feeAmount
 		loadedTxs[i].FeeBurned = feeBurned
-		// TODO-Klaytn: We need to return Block Proposer
-		//loadedTxs[i].Miner = MustChecksum(head.Coinbase.Hex())
-		loadedTxs[i].Miner = ""
 		loadedTxs[i].Receipt = receipt
 
 		// Continue if calls does not exist (occurs at genesis)
@@ -474,7 +432,33 @@ func (kc *Client) getBlock(
 	return types.NewBlockWithHeader(&head).WithBody(txs), loadedTxs, nil
 }
 
-func calculateGas(
+// getBaseFee returns a `baseFeePerGas` field from Header RPC output.
+func (kc *Client) getBaseFee(ctx context.Context, block string) (*big.Int, error) {
+	header := make(map[string]interface{})
+	err := kc.c.CallContext(ctx, &header, "klay_getHeaderByNumber", block)
+	if err != nil {
+		return nil, err
+	}
+	if err == nil && header == nil {
+		return nil, klaytn.NotFound
+	}
+
+	bf, found := header["baseFeePerGas"].(string)
+	if !found {
+		// If header rpc output does not have `baseFeePerGas`,
+		// return nil to handle the situation where the base fee is not supported.
+		return nil, nil
+	}
+	baseFee, ok := new(big.Int).SetString(bf, 16)
+	if !ok {
+		return nil, errors.New("could not convert base fee type to big.Int")
+	}
+	return baseFee, nil
+}
+
+// calculateGas calculates the fee amount and burn amount of the transaction.
+func (kc *Client) calculateGas(
+	ctx context.Context,
 	tx *types.Transaction,
 	txReceipt *types.Receipt,
 	head types.Header,
@@ -482,9 +466,12 @@ func calculateGas(
 	*big.Int, *big.Int, error,
 ) {
 	gasUsed := new(big.Int).SetUint64(txReceipt.GasUsed)
-	// TODO-Klaytn: We need to get base fee with other way
-	//baseFee := head.BaseFee
-	baseFee := new(big.Int).SetUint64(0)
+	// Klaytn types.Header does not have `BaseFee` field.
+	// To get baseFee, we need to use rpc output.
+	baseFee, err := kc.getBaseFee(ctx, toBlockNumArg(head.Number))
+	if err != nil {
+		return nil, nil, fmt.Errorf("%w: failure getting base fee", err)
+	}
 	gasPrice, err := effectiveGasPrice(tx, baseFee)
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: failure getting effective gas price", err)
@@ -501,11 +488,11 @@ func calculateGas(
 // effectiveGasPrice returns the price of gas charged to this transaction to be included in the
 // block.
 func effectiveGasPrice(tx *types.Transaction, baseFee *big.Int) (*big.Int, error) {
-	if tx.Type() != eip1559TxType {
+	if tx.Type() != types.TxTypeEthereumDynamicFee {
 		return tx.GasPrice(), nil
 	}
-	// For EIP-1559 the gas price is determined by the base fee & miner tip instead
-	// of the tx-specified gas price.
+	// For EIP-1559 (TxTypeEthereumDynamicFee) the gas price is determined
+	// by the base fee & gas tip instead of the tx-specified gas price.
 	tip := tx.EffectiveGasTip(baseFee)
 	return new(big.Int).Add(tip, baseFee), nil
 }
@@ -566,7 +553,6 @@ func (kc *Client) getBlockTraces(
 
 func (kc *Client) getBlockReceipts(
 	ctx context.Context,
-	blockHash common.Hash,
 	txs []rpcTransaction,
 ) ([]*types.Receipt, error) {
 	receipts := make([]*types.Receipt, len(txs))
@@ -605,7 +591,7 @@ type rpcRawCall struct {
 	Result json.RawMessage `json:"result"`
 }
 
-// Call is an Ethereum debug trace.
+// Call is an Klaytn debug trace.
 type Call struct {
 	Type         string         `json:"type"`
 	From         common.Address `json:"from"`
@@ -876,13 +862,13 @@ func (tx *rpcTransaction) UnmarshalJSON(msg []byte) error {
 }
 
 func (tx *rpcTransaction) LoadedTransaction() *loadedTransaction {
-	ethTx := &loadedTransaction{
+	klayTx := &loadedTransaction{
 		Transaction: tx.tx,
 		From:        tx.txExtraInfo.From,
 		BlockNumber: tx.txExtraInfo.BlockNumber,
 		BlockHash:   tx.txExtraInfo.BlockHash,
 	}
-	return ethTx
+	return klayTx
 }
 
 type loadedTransaction struct {
@@ -892,7 +878,6 @@ type loadedTransaction struct {
 	BlockHash   *common.Hash
 	FeeAmount   *big.Int
 	FeeBurned   *big.Int // nil if no fees were burned
-	Miner       string
 	Status      bool
 
 	Trace    *Call
@@ -900,67 +885,110 @@ type loadedTransaction struct {
 	Receipt  *types.Receipt
 }
 
-func feeOps(tx *loadedTransaction) []*RosettaTypes.Operation {
-	var minerEarnedAmount *big.Int
-	if tx.FeeBurned == nil {
-		minerEarnedAmount = tx.FeeAmount
-	} else {
-		minerEarnedAmount = new(big.Int).Sub(tx.FeeAmount, tx.FeeBurned)
-	}
-	ops := []*RosettaTypes.Operation{
-		{
-			OperationIdentifier: &RosettaTypes.OperationIdentifier{
-				Index: 0,
-			},
-			Type:   FeeOpType,
-			Status: RosettaTypes.String(SuccessStatus),
-			Account: &RosettaTypes.AccountIdentifier{
-				Address: MustChecksum(tx.From.String()),
-			},
-			Amount: &RosettaTypes.Amount{
-				Value:    new(big.Int).Neg(minerEarnedAmount).String(),
-				Currency: Currency,
-			},
-		},
-
-		{
-			OperationIdentifier: &RosettaTypes.OperationIdentifier{
-				Index: 1,
-			},
-			RelatedOperations: []*RosettaTypes.OperationIdentifier{
-				{
-					Index: 0,
-				},
-			},
-			Type:   FeeOpType,
-			Status: RosettaTypes.String(SuccessStatus),
-			Account: &RosettaTypes.AccountIdentifier{
-				Address: MustChecksum(tx.Miner),
-			},
-			Amount: &RosettaTypes.Amount{
-				Value:    minerEarnedAmount.String(),
-				Currency: Currency,
-			},
-		},
-	}
-	if tx.FeeBurned == nil {
-		return ops
-	}
-	burntOp := &RosettaTypes.Operation{
+func createSuccessFeeOperation(idx int64, account string, amount *big.Int) *RosettaTypes.Operation {
+	return &RosettaTypes.Operation{
 		OperationIdentifier: &RosettaTypes.OperationIdentifier{
-			Index: 2, // nolint:gomnd
+			Index: idx,
 		},
 		Type:   FeeOpType,
 		Status: RosettaTypes.String(SuccessStatus),
 		Account: &RosettaTypes.AccountIdentifier{
-			Address: MustChecksum(tx.From.String()),
+			Address: MustChecksum(account),
 		},
 		Amount: &RosettaTypes.Amount{
-			Value:    new(big.Int).Neg(tx.FeeBurned).String(),
+			Value:    amount.String(),
 			Currency: Currency,
 		},
 	}
-	return append(ops, burntOp)
+}
+
+// feeOps returns the transaction's fee operations.
+// In the case of Klaytn, depending on the transaction type, the address where the fee is paid may be different.
+// In addition, transaction fees must be allocated to CN, KIR, and KGF addresses according to a fixed rate.
+func feeOps(tx *loadedTransaction, rewardRatioMap map[string]*big.Int) ([]*RosettaTypes.Operation, error) {
+	var proposerEarnedAmount *big.Int
+	if tx.FeeBurned == nil {
+		proposerEarnedAmount = tx.FeeAmount
+	} else {
+		proposerEarnedAmount = new(big.Int).Sub(tx.FeeAmount, tx.FeeBurned)
+	}
+
+	// There are three cases
+	// 1. Basic tx: sender will pay all tx fee
+	// 2. Fee Delegation tx: fee payer will pay all tx fee
+	// 3. Partial Fee Delegation tx: sender and fee payer will pay tx fee
+	ops := []*RosettaTypes.Operation{}
+
+	// FD(Fee Delegation), FDR(Partial Fee Delegation)
+	if tx.Transaction.Type().IsFeeDelegatedTransaction() {
+		feePayerAddress, err := tx.Transaction.FeePayer()
+		if err != nil {
+			return nil, fmt.Errorf("could not extract fee payer from %v", tx.Transaction)
+		}
+		if tx.Transaction.Type().IsFeeDelegatedWithRatioTransaction() {
+			// Partial Fee Delegation transaction (sender and fee payer will pay the tx fee)
+			ratio, ok := tx.Transaction.FeeRatio()
+			if !ok {
+				return nil, fmt.Errorf("could not extract fee ratio from %v", tx.Transaction)
+			}
+			senderRatio := big.NewInt(int64(100 - ratio))
+			feePayerRatio := big.NewInt(int64(ratio))
+
+			// fee * ratio / 100
+			senderAmount := new(big.Int).Div(new(big.Int).Mul(proposerEarnedAmount, senderRatio), big.NewInt(100))
+			feePayerAmount := new(big.Int).Div(new(big.Int).Mul(proposerEarnedAmount, feePayerRatio), big.NewInt(100))
+
+			// Set sender tx fee payment and fee payer tx fee payment.
+			opsForFDR := []*RosettaTypes.Operation{
+				createSuccessFeeOperation(0, tx.From.String(), new(big.Int).Neg(senderAmount)),
+				createSuccessFeeOperation(1, feePayerAddress.String(), new(big.Int).Neg(feePayerAmount)),
+			}
+			ops = append(ops, opsForFDR...)
+
+			// If tx.FeeBurned is not nil, append the burnt operations.
+			if tx.FeeBurned != nil {
+				senderBurnAmount := new(big.Int).Div(new(big.Int).Mul(tx.FeeBurned, senderRatio), big.NewInt(100))
+				feePayerBurnAmount := new(big.Int).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100))
+				burntOps := []*RosettaTypes.Operation{
+					createSuccessFeeOperation(2, tx.From.String(), new(big.Int).Neg(senderBurnAmount)),
+					createSuccessFeeOperation(3, feePayerAddress.String(), new(big.Int).Neg(feePayerBurnAmount)),
+				}
+				ops = append(ops, burntOps...)
+			}
+		} else {
+			// Fee Delegation transaction (fee payer will pay the tx fee)
+			op := createSuccessFeeOperation(0, feePayerAddress.String(), new(big.Int).Neg(proposerEarnedAmount))
+			ops = append(ops, op)
+
+			// If FeeBurned is not nil, add a burnt operation.
+			if tx.FeeBurned != nil {
+				burntOp := createSuccessFeeOperation(1, feePayerAddress.String(), new(big.Int).Neg(tx.FeeBurned))
+				ops = append(ops, burntOp)
+			}
+		}
+	} else {
+		// Basic transaction (sender will pay the tx fee)
+		op := createSuccessFeeOperation(0, tx.From.String(), new(big.Int).Neg(proposerEarnedAmount))
+		ops = append(ops, op)
+
+		// If FeeBurned is not nil, add a burnt operation.
+		if tx.FeeBurned != nil {
+			burntOp := createSuccessFeeOperation(1, tx.From.String(), new(big.Int).Neg(tx.FeeBurned))
+			ops = append(ops, burntOp)
+		}
+	}
+
+	// Transaction fee reward is also allocated to CN, KGF, and KIR addresses according to the ratios.
+	idx := len(ops)
+	for addr, ratio := range rewardRatioMap {
+		// reward * ratio / 100
+		partialReward := new(big.Int).Div(new(big.Int).Mul(proposerEarnedAmount, ratio), big.NewInt(100))
+		op := createSuccessFeeOperation(int64(idx), addr, partialReward)
+		ops = append(ops, op)
+		idx++
+	}
+
+	return ops, nil
 }
 
 // transactionReceipt returns the receipt of a transaction by transaction hash.
@@ -971,15 +999,14 @@ func (kc *Client) transactionReceipt(
 ) (*types.Receipt, error) {
 	var r *types.Receipt
 	err := kc.c.CallContext(ctx, &r, "klay_getTransactionReceipt", txHash)
-	if err == nil {
-		if r == nil {
-			return nil, klaytn.NotFound
-		}
+	if err == nil && r == nil {
+		return nil, klaytn.NotFound
 	}
 
 	return r, err
 }
 
+// blockByNumber returns the block by number.
 func (kc *Client) blockByNumber(
 	ctx context.Context,
 	index *int64,
@@ -994,16 +1021,14 @@ func (kc *Client) blockByNumber(
 
 	r := make(map[string]interface{})
 	err := kc.c.CallContext(ctx, &r, "klay_getBlockByNumber", blockIndex, showTxDetails)
-	if err == nil {
-		if r == nil {
-			return nil, klaytn.NotFound
-		}
+	if err == nil && r == nil {
+		return nil, klaytn.NotFound
 	}
 
 	return r, err
 }
 
-// contractCall returns the data specified by the given contract method
+// contractCall returns the data specified by the given contract method.
 func (kc *Client) contractCall(
 	ctx context.Context,
 	params map[string]interface{},
@@ -1129,7 +1154,7 @@ func (kc *Client) getParsedBlock(
 		}
 	}
 
-	txs, err := kc.populateTransactions(blockIdentifier, block, loadedTransactions)
+	txs, err := kc.populateTransactions(block, loadedTransactions)
 	if err != nil {
 		return nil, err
 	}
@@ -1147,7 +1172,6 @@ func convertTime(time uint64) int64 {
 }
 
 func (kc *Client) populateTransactions(
-	blockIdentifier *RosettaTypes.BlockIdentifier,
 	block *types.Block,
 	loadedTransactions []*loadedTransaction,
 ) ([]*RosettaTypes.Transaction, error) {
@@ -1156,17 +1180,17 @@ func (kc *Client) populateTransactions(
 		len(block.Transactions())+1, // include reward tx
 	)
 
-	// TODO-Klaytn: Have to check whether using rewardbase is fine or not
-	// Compute reward transaction (block reward)
-	miner := block.Rewardbase().String()
-	transactions[0] = kc.blockRewardTransaction(
-		blockIdentifier,
-		miner,
-	)
+	var err error
+	var rewardRatioMap map[string]*big.Int
+	transactions[0], rewardRatioMap, err = kc.blockRewardTransaction(block)
+	if err != nil {
+		return nil, fmt.Errorf("cannot calculate block(%s) reward: %w", block.Hash().String(), err)
+	}
 
 	for i, tx := range loadedTransactions {
 		transaction, err := kc.populateTransaction(
 			tx,
+			rewardRatioMap,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("%w: cannot parse %s", err, tx.Transaction.Hash().Hex())
@@ -1180,18 +1204,22 @@ func (kc *Client) populateTransactions(
 
 func (kc *Client) populateTransaction(
 	tx *loadedTransaction,
+	rewardRatioMap map[string]*big.Int,
 ) (*RosettaTypes.Transaction, error) {
 	var ops []*RosettaTypes.Operation
 
 	// Compute fee operations
-	feeOps := feeOps(tx)
-	ops = append(ops, feeOps...)
+	feeOperations, err := feeOps(tx, rewardRatioMap)
+	if err != nil {
+		return nil, err
+	}
+	ops = append(ops, feeOperations...)
 
 	// Compute trace operations
 	traces := flattenTraces(tx.Trace, []*flatCall{})
 
-	traceOps := traceOps(traces, len(ops))
-	ops = append(ops, traceOps...)
+	traceOperations := traceOps(traces, len(ops))
+	ops = append(ops, traceOperations...)
 
 	// Marshal receipt and trace data
 	// TODO: replace with marshalJSONMap (used in `services`)
@@ -1226,60 +1254,133 @@ func (kc *Client) populateTransaction(
 	return populatedTransaction, nil
 }
 
-// miningReward returns the mining reward
-// for a given block height.
-//
-// Source:
-// https://github.com/ethereum/go-ethereum/blob/master/consensus/ethash/consensus.go#L646-L653
-func (kc *Client) miningReward(
-	currentBlock *big.Int,
-) int64 {
-	// TODO-Klaytn: Have to implement reward logic for Klaytn
-	//blockReward := ethash.FrontierBlockReward.Int64()
-	//if kc.p.IsByzantium(currentBlock) {
-	//	blockReward = ethash.ByzantiumBlockReward.Int64()
-	//}
-	//
-	//if kc.p.IsConstantinople(currentBlock) {
-	//	blockReward = ethash.ConstantinopleBlockReward.Int64()
-	//}
+// getRewardAndRatioInfo returns the block minting reward and reward ratio of the given block height.
+// In order to obtain the minting amount per block and rate per block and kir and kgf addresses, blockReward uses the governance API.
+func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewardbase string) (map[string]*big.Int, *big.Int, error) {
+	govItems := make(map[string]interface{})
+	// Call `governance_itemsAt` to get reward ratio.
+	err := kc.c.CallContext(ctx, &govItems, "governance_itemsAt", block)
+	if err != nil {
+		return nil, nil, err
+	}
 
-	blockReward := int64(0)
-	return blockReward
+	// `governance_itemsAt` has a field `reward.ratio`
+	// where the reward ratios of cn, kgf and kir are defined using the `/` delimiter.
+	var cnRatio, kgfRatio, kirRatio *big.Int
+	ratio, found := govItems["reward.ratio"].(string)
+	if !found {
+		return nil, nil, fmt.Errorf("could not extract reward.ratio from %v", govItems)
+	}
+
+	// Split "34/54/12" to ["34", "54", "12"]
+	ratios := strings.Split(ratio, "/")
+	if len(ratios) != 3 {
+		return nil, nil, fmt.Errorf("could not parse reward ratio from %v", ratio)
+	}
+
+	_, ok := cnRatio.SetString(ratios[0], 10)
+	if !ok {
+		return nil, nil, fmt.Errorf("could not convert CN reward ratio string to int type from %s", ratios[0])
+	}
+	_, ok = kgfRatio.SetString(ratios[1], 10)
+	if !ok {
+		return nil, nil, fmt.Errorf("could not convert KGF reward ratio string to int type from %s", ratios[1])
+	}
+	_, ok = kirRatio.SetString(ratios[2], 10)
+	if !ok {
+		return nil, nil, fmt.Errorf("could not convert KIR reward ratio string to int type from %s", ratios[2])
+	}
+
+	// In `governance_itemsAt`, there is a field `reward.mintingamount`
+	// which is the amount of Peb minted when a block is generated. (e.g., "9600000000000000000")
+	var mintingAmount *big.Int
+	minted, found := govItems["reward.mintingamount"].(string)
+	if !found {
+		return nil, nil, fmt.Errorf("could not extract reward.mintingamount from %v", govItems)
+	}
+	_, ok = mintingAmount.SetString(minted, 10)
+	if !ok {
+		return nil, nil, fmt.Errorf("could not convert minting amount type from %s", minted)
+	}
+
+	// Call `governance_getStakingInfo` to get KIR and KGF addresses.
+	var stakingInfo reward.StakingInfo
+	err = kc.c.CallContext(ctx, &stakingInfo, "governance_getStakingInfo", block)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// TODO-Klaytn: Have to use stakingInfo.KGFAddr instead of stakingInfo.PoCAddr
+	kirAddress := stakingInfo.KIRAddr.String()
+	kgfAddress := stakingInfo.PoCAddr.String()
+
+	// Set the reward assigned to each address in rewardMap.
+	rewardRatioMap := map[string]*big.Int{}
+	rewardRatioMap[rewardbase] = cnRatio
+	rewardRatioMap[kgfAddress] = kgfRatio
+	rewardRatioMap[kirAddress] = kirRatio
+
+	return rewardRatioMap, mintingAmount, nil
+}
+
+// blockReward returns the block reward information of the given block height.
+// The block reward is distributed to cn, kir, and kgf according to the defined ratio.
+func (kc *Client) blockMintingReward(
+	currentBlock *types.Block,
+) (map[string]*big.Int, map[string]*big.Int, error) {
+	ctx := context.Background()
+
+	var err error
+	rewardRatioMap, mintingAmount, err := kc.getRewardAndRatioInfo(ctx, toBlockNumArg(currentBlock.Number()), currentBlock.Rewardbase().String())
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to get reward ratio info: %s", err.Error())
+	}
+
+	// Set the block minting reward amount assigned to each address in rewardMap.
+	rewardAmountMap := map[string]*big.Int{}
+	for addr, ratio := range rewardRatioMap {
+		// reward * ratio / 100
+		rewardAmountMap[addr] = new(big.Int).Div(new(big.Int).Mul(mintingAmount, ratio), big.NewInt(100))
+	}
+
+	return rewardAmountMap, rewardRatioMap, nil
 }
 
 func (kc *Client) blockRewardTransaction(
-	blockIdentifier *RosettaTypes.BlockIdentifier,
-	miner string,
-) *RosettaTypes.Transaction {
+	block *types.Block,
+) (*RosettaTypes.Transaction, map[string]*big.Int, error) {
 	var ops []*RosettaTypes.Operation
-	miningReward := kc.miningReward(big.NewInt(blockIdentifier.Index))
-
-	// Calculate miner rewards
-	minerReward := miningReward
-
-	miningRewardOp := &RosettaTypes.Operation{
-		OperationIdentifier: &RosettaTypes.OperationIdentifier{
-			Index: 0,
-		},
-		Type:   MinerRewardOpType,
-		Status: RosettaTypes.String(SuccessStatus),
-		Account: &RosettaTypes.AccountIdentifier{
-			Address: MustChecksum(miner),
-		},
-		Amount: &RosettaTypes.Amount{
-			Value:    strconv.FormatInt(minerReward, 10),
-			Currency: Currency,
-		},
+	rewardAmountMap, rewardRatioMap, err := kc.blockMintingReward(block)
+	if err != nil {
+		return nil, nil, err
 	}
-	ops = append(ops, miningRewardOp)
+
+	idx := int64(0)
+	for addr, r := range rewardAmountMap {
+		miningRewardOp := &RosettaTypes.Operation{
+			OperationIdentifier: &RosettaTypes.OperationIdentifier{
+				Index: idx,
+			},
+			Type:   BlockRewardOpType,
+			Status: RosettaTypes.String(SuccessStatus),
+			Account: &RosettaTypes.AccountIdentifier{
+				Address: MustChecksum(addr),
+			},
+			Amount: &RosettaTypes.Amount{
+				Value:    r.String(),
+				Currency: Currency,
+			},
+		}
+		ops = append(ops, miningRewardOp)
+		idx++
+	}
 
 	return &RosettaTypes.Transaction{
 		TransactionIdentifier: &RosettaTypes.TransactionIdentifier{
-			Hash: blockIdentifier.Hash,
+			Hash: block.Hash().String(),
 		},
 		Operations: ops,
-	}
+	}, rewardRatioMap, nil
 }
 
 type rpcProgress struct {
@@ -1317,31 +1418,11 @@ func (kc *Client) syncProgress(ctx context.Context) (*klaytn.SyncProgress, error
 	}, nil
 }
 
-type graphqlBalance struct {
-	Errors []struct {
-		Message string   `json:"message"`
-		Path    []string `json:"path"`
-	} `json:"errors"`
-	Data struct {
-		Block struct {
-			Hash    string `json:"hash"`
-			Number  int64  `json:"number"`
-			Account struct {
-				Balance string `json:"balance"`
-				Nonce   string `json:"transactionCount"`
-				Code    string `json:"code"`
-			} `json:"account"`
-		} `json:"block"`
-	} `json:"data"`
-}
-
 // Balance returns the balance of a *RosettaTypes.AccountIdentifier
 // at a *RosettaTypes.PartialBlockIdentifier.
 //
-// We must use graphql to get the balance atomically (the
-// rpc method for balance does not allow for querying
-// by block hash nor return the block hash where
-// the balance was fetched).
+// Currently, Klaytn does not support graphQL, so it uses multiple RPC calls.
+// Since Balance RPC Call supports block information as a parameter, there is no need to use graphQL.
 func (kc *Client) Balance(
 	ctx context.Context,
 	accountIdf *RosettaTypes.AccountIdentifier,
@@ -1355,37 +1436,39 @@ func (kc *Client) Balance(
 			blockQueryMethod = "klay_getBlockByHash"
 		}
 		if block.Hash == nil && block.Index != nil {
-			blockQuery = strconv.FormatInt(*block.Index, 16)
+			blockQuery = "0x" + strconv.FormatInt(*block.Index, 16)
 		}
 	}
 
-	var accountInfo account.Account
+	var accountInfo account.AccountSerializer
 	if err := kc.c.CallContext(ctx, &accountInfo, "klay_getAccount", accountIdf.Address, blockQuery); err != nil {
 		return nil, err
 	}
 
-	var blockInfo types.Block
-	if err := kc.c.CallContext(ctx, &blockInfo, blockQueryMethod, accountIdf.Address, blockQuery); err != nil {
+	balance := accountInfo.GetAccount().GetBalance().String()
+	nonce := accountInfo.GetAccount().GetNonce()
+
+	var blockInfo types.Header
+	if err := kc.c.CallContext(ctx, &blockInfo, blockQueryMethod, blockQuery, false); err != nil {
 		return nil, err
 	}
 
-	balance := accountInfo.GetBalance()
-	nonce := accountInfo.GetNonce()
+	blockHash := blockInfo.Hash().String()
+	blockNumber := blockInfo.Number.Int64()
 
 	return &RosettaTypes.AccountBalanceResponse{
 		Balances: []*RosettaTypes.Amount{
 			{
-				Value:    balance.String(),
+				Value:    balance,
 				Currency: Currency,
 			},
 		},
 		BlockIdentifier: &RosettaTypes.BlockIdentifier{
-			Hash:  blockInfo.Hash().String(),
-			Index: blockInfo.Number().Int64(),
+			Hash:  blockHash,
+			Index: blockNumber,
 		},
 		Metadata: map[string]interface{}{
-			"nonce": nonce,
-			//"code":  bal.Data.Block.Account.Code,
+			"nonce": int64(nonce),
 		},
 	}, nil
 }
@@ -1451,7 +1534,7 @@ func (kc *Client) Call(
 			return nil, err
 		}
 
-		// We cannot use RosettaTypes.MarshalMap because geth uses a custom
+		// We cannot use RosettaTypes.MarshalMap because Klaytn uses a custom
 		// marshaler to convert *types.Receipt to JSON.
 		jsonOutput, err := receipt.MarshalJSON()
 		if err != nil {
