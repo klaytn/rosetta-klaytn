@@ -451,7 +451,7 @@ func (kc *Client) getBaseFee(ctx context.Context, block string) (*big.Int, error
 	}
 	baseFee, ok := new(big.Int).SetString(bf, 16)
 	if !ok {
-		return nil, errors.New("could not convert base fee type to big.Int")
+		return nil, errors.New("could not convert base fee to big.Int")
 	}
 	return baseFee, nil
 }
