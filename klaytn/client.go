@@ -284,7 +284,7 @@ func (kc *Client) Transaction(
 	if err != nil {
 		return nil, fmt.Errorf("%w: cannot get reward ratio %v", err, header)
 	}
-	// Since populateTransaction calculates the transaction fee calculation,
+	// Since populateTransaction calculates the transaction fee,
 	// the addresses receiving the fee and the fee distribution ratios must be passed together as parameters.
 	tx, err := kc.populateTransaction(loadedTx, rewardRatioMap)
 	if err != nil {
