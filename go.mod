@@ -9,6 +9,7 @@ require (
 	github.com/klaytn/rosetta-sdk-go-klaytn v0.7.5
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
 	github.com/spf13/cobra v1.4.0
+	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.1
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
