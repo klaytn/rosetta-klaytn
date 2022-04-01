@@ -280,13 +280,13 @@ func (kc *Client) Transaction(
 		loadedTx.RawTrace = rawTraces
 	}
 
-	rewardRatioMap, _, err := kc.getRewardAndRatioInfo(ctx, toBlockNumArg(header.Number), header.Rewardbase.String())
+	rewardAddresses, rewardRatioMap, _, err := kc.getRewardAndRatioInfo(ctx, toBlockNumArg(header.Number), header.Rewardbase.String())
 	if err != nil {
 		return nil, fmt.Errorf("%w: cannot get reward ratio %v", err, header)
 	}
 	// Since populateTransaction calculates the transaction fee,
 	// the addresses receiving the fee and the fee distribution ratios must be passed together as parameters.
-	tx, err := kc.populateTransaction(loadedTx, rewardRatioMap)
+	tx, err := kc.populateTransaction(loadedTx, rewardAddresses, rewardRatioMap)
 	if err != nil {
 		return nil, fmt.Errorf("%w: cannot parse %s", err, loadedTx.Transaction.Hash().Hex())
 	}
@@ -905,7 +905,7 @@ func createSuccessFeeOperation(idx int64, account string, amount *big.Int) *Rose
 // feeOps returns the transaction's fee operations.
 // In the case of Klaytn, depending on the transaction type, the address where the fee is paid may be different.
 // In addition, transaction fees must be allocated to CN, KIR, and KGF addresses according to a fixed rate.
-func feeOps(tx *loadedTransaction, rewardRatioMap map[string]*big.Int) ([]*RosettaTypes.Operation, error) {
+func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[string]*big.Int) ([]*RosettaTypes.Operation, error) {
 	var proposerEarnedAmount *big.Int
 	if tx.FeeBurned == nil {
 		proposerEarnedAmount = tx.FeeAmount
@@ -980,9 +980,9 @@ func feeOps(tx *loadedTransaction, rewardRatioMap map[string]*big.Int) ([]*Roset
 
 	// Transaction fee reward is also allocated to CN, KGF, and KIR addresses according to the ratios.
 	idx := len(ops)
-	for addr, ratio := range rewardRatioMap {
+	for _, addr := range rewardAddresses {
 		// reward * ratio / 100
-		partialReward := new(big.Int).Div(new(big.Int).Mul(proposerEarnedAmount, ratio), big.NewInt(100))
+		partialReward := new(big.Int).Div(new(big.Int).Mul(proposerEarnedAmount, rewardRatioMap[addr]), big.NewInt(100))
 		op := createSuccessFeeOperation(int64(idx), addr, partialReward)
 		ops = append(ops, op)
 		idx++
@@ -1182,7 +1182,8 @@ func (kc *Client) populateTransactions(
 
 	var err error
 	var rewardRatioMap map[string]*big.Int
-	transactions[0], rewardRatioMap, err = kc.blockRewardTransaction(block)
+	var rewardAddresses []string
+	transactions[0], rewardAddresses, rewardRatioMap, err = kc.blockRewardTransaction(block)
 	if err != nil {
 		return nil, fmt.Errorf("cannot calculate block(%s) reward: %w", block.Hash().String(), err)
 	}
@@ -1190,6 +1191,7 @@ func (kc *Client) populateTransactions(
 	for i, tx := range loadedTransactions {
 		transaction, err := kc.populateTransaction(
 			tx,
+			rewardAddresses,
 			rewardRatioMap,
 		)
 		if err != nil {
@@ -1204,12 +1206,13 @@ func (kc *Client) populateTransactions(
 
 func (kc *Client) populateTransaction(
 	tx *loadedTransaction,
+	rewardAddresses []string,
 	rewardRatioMap map[string]*big.Int,
 ) (*RosettaTypes.Transaction, error) {
 	var ops []*RosettaTypes.Operation
 
 	// Compute fee operations
-	feeOperations, err := feeOps(tx, rewardRatioMap)
+	feeOperations, err := feeOps(tx, rewardAddresses, rewardRatioMap)
 	if err != nil {
 		return nil, err
 	}
@@ -1256,61 +1259,63 @@ func (kc *Client) populateTransaction(
 
 // getRewardAndRatioInfo returns the block minting reward and reward ratio of the given block height.
 // In order to obtain the minting amount per block and rate per block and kir and kgf addresses, blockReward uses the governance API.
-func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewardbase string) (map[string]*big.Int, *big.Int, error) {
+func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewardbase string) ([]string, map[string]*big.Int, *big.Int, error) {
 	govItems := make(map[string]interface{})
 	// Call `governance_itemsAt` to get reward ratio.
 	err := kc.c.CallContext(ctx, &govItems, "governance_itemsAt", block)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	// `governance_itemsAt` has a field `reward.ratio`
 	// where the reward ratios of cn, kgf and kir are defined using the `/` delimiter.
 	ratio, found := govItems["reward.ratio"].(string)
 	if !found {
-		return nil, nil, fmt.Errorf("could not extract reward.ratio from %v", govItems)
+		return nil, nil, nil, fmt.Errorf("could not extract reward.ratio from %v", govItems)
 	}
 
 	// Split "34/54/12" to ["34", "54", "12"]
 	ratios := strings.Split(ratio, "/")
 	if len(ratios) != 3 {
-		return nil, nil, fmt.Errorf("could not parse reward ratio from %v", ratio)
+		return nil, nil, nil, fmt.Errorf("could not parse reward ratio from %v", ratio)
 	}
 
 	cnRatio, ok := new(big.Int).SetString(ratios[0], 10)
 	if !ok {
-		return nil, nil, fmt.Errorf("could not convert CN reward ratio string to int type from %s", ratios[0])
+		return nil, nil, nil, fmt.Errorf("could not convert CN reward ratio string to int type from %s", ratios[0])
 	}
 	kgfRatio, ok := new(big.Int).SetString(ratios[1], 10)
 	if !ok {
-		return nil, nil, fmt.Errorf("could not convert KGF reward ratio string to int type from %s", ratios[1])
+		return nil, nil, nil, fmt.Errorf("could not convert KGF reward ratio string to int type from %s", ratios[1])
 	}
 	kirRatio, ok := new(big.Int).SetString(ratios[2], 10)
 	if !ok {
-		return nil, nil, fmt.Errorf("could not convert KIR reward ratio string to int type from %s", ratios[2])
+		return nil, nil, nil, fmt.Errorf("could not convert KIR reward ratio string to int type from %s", ratios[2])
 	}
 
 	// In `governance_itemsAt`, there is a field `reward.mintingamount`
 	// which is the amount of Peb minted when a block is generated. (e.g., "9600000000000000000")
 	minted, found := govItems["reward.mintingamount"].(string)
 	if !found {
-		return nil, nil, fmt.Errorf("could not extract reward.mintingamount from %v", govItems)
+		return nil, nil, nil, fmt.Errorf("could not extract reward.mintingamount from %v", govItems)
 	}
 	mintingAmount, ok := new(big.Int).SetString(minted, 10)
 	if !ok {
-		return nil, nil, fmt.Errorf("could not convert minting amount type from %s", minted)
+		return nil, nil, nil, fmt.Errorf("could not convert minting amount type from %s", minted)
 	}
 
 	// Call `governance_getStakingInfo` to get KIR and KGF addresses.
 	var stakingInfo reward.StakingInfo
 	err = kc.c.CallContext(ctx, &stakingInfo, "governance_getStakingInfo", block)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	// TODO-Klaytn: Have to use stakingInfo.KGFAddr instead of stakingInfo.PoCAddr
 	kirAddress := stakingInfo.KIRAddr.String()
 	kgfAddress := stakingInfo.PoCAddr.String()
+
+	rewardAddresses := []string{rewardbase, kgfAddress, kirAddress}
 
 	// Set the reward assigned to each address in rewardMap.
 	rewardRatioMap := map[string]*big.Int{}
@@ -1318,20 +1323,20 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 	rewardRatioMap[kgfAddress] = kgfRatio
 	rewardRatioMap[kirAddress] = kirRatio
 
-	return rewardRatioMap, mintingAmount, nil
+	return rewardAddresses, rewardRatioMap, mintingAmount, nil
 }
 
 // blockReward returns the block reward information of the given block height.
 // The block reward is distributed to cn, kir, and kgf according to the defined ratio.
 func (kc *Client) blockMintingReward(
 	currentBlock *types.Block,
-) (map[string]*big.Int, map[string]*big.Int, error) {
+) ([]string, map[string]*big.Int, map[string]*big.Int, error) {
 	ctx := context.Background()
 
 	var err error
-	rewardRatioMap, mintingAmount, err := kc.getRewardAndRatioInfo(ctx, toBlockNumArg(currentBlock.Number()), currentBlock.Rewardbase().String())
+	rewardAddresses, rewardRatioMap, mintingAmount, err := kc.getRewardAndRatioInfo(ctx, toBlockNumArg(currentBlock.Number()), currentBlock.Rewardbase().String())
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to get reward ratio info: %s", err.Error())
+		return nil, nil, nil, fmt.Errorf("failed to get reward ratio info: %s", err.Error())
 	}
 
 	// Set the block minting reward amount assigned to each address in rewardMap.
@@ -1341,20 +1346,20 @@ func (kc *Client) blockMintingReward(
 		rewardAmountMap[addr] = new(big.Int).Div(new(big.Int).Mul(mintingAmount, ratio), big.NewInt(100))
 	}
 
-	return rewardAmountMap, rewardRatioMap, nil
+	return rewardAddresses, rewardAmountMap, rewardRatioMap, nil
 }
 
 func (kc *Client) blockRewardTransaction(
 	block *types.Block,
-) (*RosettaTypes.Transaction, map[string]*big.Int, error) {
+) (*RosettaTypes.Transaction, []string, map[string]*big.Int, error) {
 	var ops []*RosettaTypes.Operation
-	rewardAmountMap, rewardRatioMap, err := kc.blockMintingReward(block)
+	rewardAddresses, rewardAmountMap, rewardRatioMap, err := kc.blockMintingReward(block)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	idx := int64(0)
-	for addr, r := range rewardAmountMap {
+	for _, addr := range rewardAddresses {
 		miningRewardOp := &RosettaTypes.Operation{
 			OperationIdentifier: &RosettaTypes.OperationIdentifier{
 				Index: idx,
@@ -1365,7 +1370,7 @@ func (kc *Client) blockRewardTransaction(
 				Address: MustChecksum(addr),
 			},
 			Amount: &RosettaTypes.Amount{
-				Value:    r.String(),
+				Value:    rewardAmountMap[addr].String(),
 				Currency: Currency,
 			},
 		}
@@ -1378,7 +1383,7 @@ func (kc *Client) blockRewardTransaction(
 			Hash: block.Hash().String(),
 		},
 		Operations: ops,
-	}, rewardRatioMap, nil
+	}, rewardAddresses, rewardRatioMap, nil
 }
 
 type rpcProgress struct {
