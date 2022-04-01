@@ -1266,7 +1266,6 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 
 	// `governance_itemsAt` has a field `reward.ratio`
 	// where the reward ratios of cn, kgf and kir are defined using the `/` delimiter.
-	var cnRatio, kgfRatio, kirRatio *big.Int
 	ratio, found := govItems["reward.ratio"].(string)
 	if !found {
 		return nil, nil, fmt.Errorf("could not extract reward.ratio from %v", govItems)
@@ -1278,27 +1277,26 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 		return nil, nil, fmt.Errorf("could not parse reward ratio from %v", ratio)
 	}
 
-	_, ok := cnRatio.SetString(ratios[0], 10)
+	cnRatio, ok := new(big.Int).SetString(ratios[0], 10)
 	if !ok {
 		return nil, nil, fmt.Errorf("could not convert CN reward ratio string to int type from %s", ratios[0])
 	}
-	_, ok = kgfRatio.SetString(ratios[1], 10)
+	kgfRatio, ok := new(big.Int).SetString(ratios[1], 10)
 	if !ok {
 		return nil, nil, fmt.Errorf("could not convert KGF reward ratio string to int type from %s", ratios[1])
 	}
-	_, ok = kirRatio.SetString(ratios[2], 10)
+	kirRatio, ok := new(big.Int).SetString(ratios[2], 10)
 	if !ok {
 		return nil, nil, fmt.Errorf("could not convert KIR reward ratio string to int type from %s", ratios[2])
 	}
 
 	// In `governance_itemsAt`, there is a field `reward.mintingamount`
 	// which is the amount of Peb minted when a block is generated. (e.g., "9600000000000000000")
-	var mintingAmount *big.Int
 	minted, found := govItems["reward.mintingamount"].(string)
 	if !found {
 		return nil, nil, fmt.Errorf("could not extract reward.mintingamount from %v", govItems)
 	}
-	_, ok = mintingAmount.SetString(minted, 10)
+	mintingAmount, ok := new(big.Int).SetString(minted, 10)
 	if !ok {
 		return nil, nil, fmt.Errorf("could not convert minting amount type from %s", minted)
 	}
