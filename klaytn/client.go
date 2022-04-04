@@ -1142,8 +1142,8 @@ func (kc *Client) getParsedBlock(
 	}
 
 	blockIdentifier := &RosettaTypes.BlockIdentifier{
-		Hash:  block.Hash().String(),
-		Index: block.Number().Int64(),
+		Hash:  block.Header().Hash().String(),
+		Index: block.Header().Number.Int64(),
 	}
 
 	parentBlockIdentifier := blockIdentifier
@@ -1175,15 +1175,17 @@ func (kc *Client) populateTransactions(
 	block *types.Block,
 	loadedTransactions []*loadedTransaction,
 ) ([]*RosettaTypes.Transaction, error) {
-	transactions := make(
-		[]*RosettaTypes.Transaction,
-		len(block.Transactions())+1, // include reward tx
-	)
+	transactions := []*RosettaTypes.Transaction{}
 
 	var err error
 	var rewardRatioMap map[string]*big.Int
 	var rewardAddresses []string
-	transactions[0], rewardAddresses, rewardRatioMap, err = kc.blockRewardTransaction(block)
+	var rewardTx *RosettaTypes.Transaction
+	// Genesis block does not distribute the block rewards. So skip this process for genesis block.
+	if block.Number().Int64() != GenesisBlockIndex {
+		rewardTx, rewardAddresses, rewardRatioMap, err = kc.blockRewardTransaction(block)
+		transactions = append(transactions, rewardTx)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("cannot calculate block(%s) reward: %w", block.Hash().String(), err)
 	}
