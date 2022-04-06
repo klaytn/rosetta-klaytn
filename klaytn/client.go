@@ -267,7 +267,7 @@ func (kc *Client) Transaction(
 
 	loadedTx := body.LoadedTransaction()
 	loadedTx.Transaction = body.tx
-	feeAmount, feeBurned, err := kc.calculateGas(ctx, body.tx, receipt, *header)
+	_, feeAmount, feeBurned, err := kc.calculateGas(ctx, body.tx, receipt, *header, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -403,6 +403,7 @@ func (kc *Client) getBlock(
 	// Convert all txs to loaded txs
 	txs := make([]*types.Transaction, len(body.Transactions))
 	loadedTxs := make([]*loadedTransaction, len(body.Transactions))
+	var baseFee *big.Int
 	for i, tx := range body.Transactions {
 		txs[i] = tx.tx
 		receipt := receipts[i]
@@ -412,7 +413,8 @@ func (kc *Client) getBlock(
 		loadedTxs[i] = tx.LoadedTransaction()
 		loadedTxs[i].Transaction = txs[i]
 
-		feeAmount, feeBurned, err := kc.calculateGas(ctx, txs[i], receipt, head)
+		var feeAmount, feeBurned *big.Int
+		baseFee, feeAmount, feeBurned, err = kc.calculateGas(ctx, txs[i], receipt, head, baseFee)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -449,6 +451,9 @@ func (kc *Client) getBaseFee(ctx context.Context, block string) (*big.Int, error
 		// return nil to handle the situation where the base fee is not supported.
 		return nil, nil
 	}
+	if strings.Contains(bf, "0x") {
+		bf = strings.Replace(bf, "0x", "", 1)
+	}
 	baseFee, ok := new(big.Int).SetString(bf, 16)
 	if !ok {
 		return nil, errors.New("could not convert base fee to big.Int")
@@ -462,27 +467,31 @@ func (kc *Client) calculateGas(
 	tx *types.Transaction,
 	txReceipt *types.Receipt,
 	head types.Header,
+	baseFee *big.Int,
 ) (
-	*big.Int, *big.Int, error,
+	*big.Int, *big.Int, *big.Int, error,
 ) {
 	gasUsed := new(big.Int).SetUint64(txReceipt.GasUsed)
 	// Klaytn types.Header does not have `BaseFee` field.
 	// To get baseFee, we need to use rpc output.
-	baseFee, err := kc.getBaseFee(ctx, toBlockNumArg(head.Number))
-	if err != nil {
-		return nil, nil, fmt.Errorf("%w: failure getting base fee", err)
+	if baseFee == nil {
+		var err error
+		baseFee, err = kc.getBaseFee(ctx, toBlockNumArg(head.Number))
+		if err != nil {
+			return nil, nil, nil, fmt.Errorf("%w: failure getting base fee", err)
+		}
 	}
 	gasPrice, err := effectiveGasPrice(tx, baseFee)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: failure getting effective gas price", err)
+		return nil, nil, nil, fmt.Errorf("%w: failure getting effective gas price", err)
 	}
 	feeAmount := new(big.Int).Mul(gasUsed, gasPrice)
 	var feeBurned *big.Int
-	if baseFee != nil { // EIP-1559
+	if baseFee != nil && baseFee.Cmp(big.NewInt(0)) != 0 { // EIP-1559
 		feeBurned = new(big.Int).Mul(gasUsed, baseFee)
 	}
 
-	return feeAmount, feeBurned, nil
+	return baseFee, feeAmount, feeBurned, nil
 }
 
 // effectiveGasPrice returns the price of gas charged to this transaction to be included in the
@@ -902,6 +911,29 @@ func createSuccessFeeOperation(idx int64, account string, amount *big.Int) *Rose
 	}
 }
 
+func createSuccessFeeOperationWithRelatedOperations(idx int64, relatedOperationsIdx []int64, account string, amount *big.Int) *RosettaTypes.Operation {
+	op := RosettaTypes.Operation{
+		OperationIdentifier: &RosettaTypes.OperationIdentifier{
+			Index: idx,
+		},
+		RelatedOperations: []*RosettaTypes.OperationIdentifier{},
+		Type:              FeeOpType,
+		Status:            RosettaTypes.String(SuccessStatus),
+		Account: &RosettaTypes.AccountIdentifier{
+			Address: MustChecksum(account),
+		},
+		Amount: &RosettaTypes.Amount{
+			Value:    amount.String(),
+			Currency: Currency,
+		},
+	}
+	for _, rid := range relatedOperationsIdx {
+		ridOp := RosettaTypes.OperationIdentifier{Index: rid}
+		op.RelatedOperations = append(op.RelatedOperations, &ridOp)
+	}
+	return &op
+}
+
 // feeOps returns the transaction's fee operations.
 // In the case of Klaytn, depending on the transaction type, the address where the fee is paid may be different.
 // In addition, transaction fees must be allocated to CN, KIR, and KGF addresses according to a fixed rate.
@@ -980,10 +1012,11 @@ func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[
 
 	// Transaction fee reward is also allocated to CN, KGF, and KIR addresses according to the ratios.
 	idx := len(ops)
+	relatedOpId := []int64{0}
 	for _, addr := range rewardAddresses {
 		// reward * ratio / 100
 		partialReward := new(big.Int).Div(new(big.Int).Mul(proposerEarnedAmount, rewardRatioMap[addr]), big.NewInt(100))
-		op := createSuccessFeeOperation(int64(idx), addr, partialReward)
+		op := createSuccessFeeOperationWithRelatedOperations(int64(idx), relatedOpId, addr, partialReward)
 		ops = append(ops, op)
 		idx++
 	}
@@ -1190,7 +1223,7 @@ func (kc *Client) populateTransactions(
 		return nil, fmt.Errorf("cannot calculate block(%s) reward: %w", block.Hash().String(), err)
 	}
 
-	for i, tx := range loadedTransactions {
+	for _, tx := range loadedTransactions {
 		transaction, err := kc.populateTransaction(
 			tx,
 			rewardAddresses,
@@ -1200,7 +1233,7 @@ func (kc *Client) populateTransactions(
 			return nil, fmt.Errorf("%w: cannot parse %s", err, tx.Transaction.Hash().Hex())
 		}
 
-		transactions[i+1] = transaction
+		transactions = append(transactions, transaction)
 	}
 
 	return transactions, nil
@@ -1236,6 +1269,12 @@ func (kc *Client) populateTransaction(
 	var receiptMap map[string]interface{}
 	if err := json.Unmarshal(receiptBytes, &receiptMap); err != nil {
 		return nil, err
+	}
+
+	// If the contractAddress of receiptMap is an empty address,
+	// it is replaced with nil and returned.
+	if contractAddress, ok := receiptMap["contractAddress"].(string); ok && common.EmptyAddress(common.HexToAddress(contractAddress)) {
+		receiptMap["contractAddress"] = nil
 	}
 
 	var traceMap map[string]interface{}
