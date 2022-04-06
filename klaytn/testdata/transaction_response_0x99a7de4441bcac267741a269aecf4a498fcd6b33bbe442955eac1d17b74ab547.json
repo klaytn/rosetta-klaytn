@@ -1,0 +1,154 @@
+{
+  "transaction": {
+    "transaction_identifier": {
+      "hash": "0x99a7de4441bcac267741a269aecf4a498fcd6b33bbe442955eac1d17b74ab547"
+    },
+    "operations": [
+      {
+        "operation_identifier": {
+          "index": 0
+        },
+        "type": "FEE",
+        "status": "SUCCESS",
+        "account": {
+          "address": "0x71Dad06129027eFb0b31D2710a1259Dd5b736A91"
+        },
+        "amount": {
+          "value": "-15750000000000000",
+          "currency": {
+            "symbol": "KLAY",
+            "decimals": 18
+          }
+        }
+      },
+      {
+        "operation_identifier": {
+          "index": 1
+        },
+        "related_operations": [
+          {
+            "index": 0
+          }
+        ],
+        "type": "FEE",
+        "status": "SUCCESS",
+        "account": {
+          "address": "0xB2bd3178AFFCcD9F9F5189457f1Cad7D17A01c9D"
+        },
+        "amount": {
+          "value": "5355000000000000",
+          "currency": {
+            "symbol": "KLAY",
+            "decimals": 18
+          }
+        }
+      },
+      {
+        "operation_identifier": {
+          "index": 2
+        },
+        "related_operations": [
+          {
+            "index": 0
+          }
+        ],
+        "type": "FEE",
+        "status": "SUCCESS",
+        "account": {
+          "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
+        },
+        "amount": {
+          "value": "8505000000000000",
+          "currency": {
+            "symbol": "KLAY",
+            "decimals": 18
+          }
+        }
+      },
+      {
+        "operation_identifier": {
+          "index": 3
+        },
+        "related_operations": [
+          {
+            "index": 0
+          }
+        ],
+        "type": "FEE",
+        "status": "SUCCESS",
+        "account": {
+          "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
+        },
+        "amount": {
+          "value": "1890000000000000",
+          "currency": {
+            "symbol": "KLAY",
+            "decimals": 18
+          }
+        }
+      },
+      {
+        "operation_identifier": {
+          "index": 4
+        },
+        "type": "CALL",
+        "status": "SUCCESS",
+        "account": {
+          "address": "0x71Dad06129027eFb0b31D2710a1259Dd5b736A91"
+        },
+        "amount": {
+          "value": "-41000000000000000",
+          "currency": {
+            "symbol": "KLAY",
+            "decimals": 18
+          }
+        }
+      },
+      {
+        "operation_identifier": {
+          "index": 5
+        },
+        "related_operations": [
+          {
+            "index": 4
+          }
+        ],
+        "type": "CALL",
+        "status": "SUCCESS",
+        "account": {
+          "address": "0xd5B7712E56Ef6938a857dEF6416D1Bd55501b010"
+        },
+        "amount": {
+          "value": "41000000000000000",
+          "currency": {
+            "symbol": "KLAY",
+            "decimals": 18
+          }
+        }
+      }
+    ],
+    "metadata": {
+      "gas_limit": "0x6691b7",
+      "gas_price": "0xae9f7bcc00",
+      "receipt": {
+        "status": "0x1",
+        "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "logs": [],
+        "transactionHash": "0x99a7de4441bcac267741a269aecf4a498fcd6b33bbe442955eac1d17b74ab547",
+        "contractAddress": null,
+        "gasUsed": "0x5208"
+      },
+      "trace": {
+        "from": "0x71dad06129027efb0b31d2710a1259dd5b736a91",
+        "gas": "0x6691b7",
+        "gasUsed": "0x0",
+        "input": "0x",
+        "output": "0x",
+        "time": "13.5µs",
+        "to": "0xd5b7712e56ef6938a857def6416d1bd55501b010",
+        "type": "CALL",
+        "value": "0x91a94863ca8000"
+      }
+    }
+  }
+}

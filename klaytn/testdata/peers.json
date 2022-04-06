@@ -1,50 +1,65 @@
 [
   {
-    "enode": "enode://5654cc39fd278c994c451434dfa7b1a44977c52018a87e911368b54daf795955d5a2dc2ece98be5a7e8d0eb245c8ef573c92e04e8b15363f9c713a8127fe7c7b@35.183.116.112:57510",
-    "id": "16dedaa93519f9ba41a50d77876aae4bfcddfa7cecf232b9abe3ab5bf0b871f3",
-    "name": "Geth/v1.9.22-stable-c71a7e26/linux-amd64/go1.15",
     "caps": [
-      "eth/63",
-      "eth/64",
-      "eth/65"
+      "istanbul/64"
     ],
-    "network": {
-      "localAddress": "172.31.2.163:30303",
-      "remoteAddress": "35.183.116.112:57510",
-      "inbound": true,
-      "trusted": false,
-      "static": false
-    },
+    "id": "5cb3a87e20d10d4721bd99a73a5683e7e83b8a518cf6cfdd4098e2b5b5b4f58f928e58ca89e87ec93e10601977733cab0514b9766bb26fce3af9e329c57053c3",
+    "name": "Klaytn/v1.8.2+556f2311f3/linux-amd64/go1.13.1",
+    "networks": [
+      {
+        "inbound": true,
+        "localAddress": "10.117.2.245:32323",
+        "nodeType": "cn",
+        "remoteAddress": "10.117.2.168:57922",
+        "static": false,
+        "trusted": false
+      },
+      {
+        "inbound": true,
+        "localAddress": "10.117.2.245:32324",
+        "nodeType": "cn",
+        "remoteAddress": "10.117.2.168:44880",
+        "static": false,
+        "trusted": false
+      }
+    ],
     "protocols": {
-      "eth": {
-        "difficulty": 31779242235308530,
-        "head": "0x4a01c35e3e2627bf5a735bc9c7f336cb1e6450f93955473008ff64cf01feeef8",
-        "version": 65
+      "istanbul": {
+        "blockscore": 376,
+        "head": "0xd0291b3fdac3e4c3e6b3ece33fb43e79cfa7af74daafa37565d13e6e0b623c8e",
+        "version": 64
       }
     }
   },
   {
-    "enr": "enr:-Je4QICGSLfIHa7vX3bdWnKqWIS7YwmLUP6JVqU5nBhxPpH_X_Uz1pZwVS8a48uESHay1nvz9FtxLYFftpMr3wvFZJ4Qg2V0aMfGhGcn75CAgmlkgnY0gmlwhK6Beg2Jc2VjcDI1NmsxoQO-rRJ4FVv6vdUfBKboljVtovVoeqH1UL68VAgoV5UiuIN0Y3CCdl-DdWRwgnZf",
-    "enode": "enode://bead1278155bfabdd51f04a6e896356da2f5687aa1f550bebc540828579522b87e22c67edf90efa651582e40c8c8037eb0f998208cab4a69b52c5e3387671b59@174.129.122.13:30303",
-    "id": "1b75a634fbc9198d73413a0ced02837707d1fd09e4e90b8b90a0abac57113299",
-    "name": "Geth/v1.9.15-omnibus-75eb5240/linux-amd64/go1.14.4",
     "caps": [
-      "eth/63",
-      "eth/64",
-      "eth/65"
+      "istanbul/64"
     ],
-    "network": {
-      "localAddress": "172.31.2.163:37908",
-      "remoteAddress": "174.129.122.13:30303",
-      "inbound": false,
-      "trusted": false,
-      "static": false
-    },
+    "id": "9fa2e2c701f2492ac4950824903b402727ea3c19f8b86b5c399d546c5a7d9dc7b1cfdbcadf498acd18ffde617950947512fff70bd67e45e9482f3d4273e70230",
+    "name": "Klaytn/v1.8.2+556f2311f3/linux-amd64/go1.13.1",
+    "networks": [
+      {
+        "inbound": true,
+        "localAddress": "10.117.2.245:32323",
+        "nodeType": "pn",
+        "remoteAddress": "10.117.2.11:5816",
+        "static": false,
+        "trusted": false
+      },
+      {
+        "inbound": true,
+        "localAddress": "10.117.2.245:32324",
+        "nodeType": "pn",
+        "remoteAddress": "10.117.2.11:47572",
+        "static": false,
+        "trusted": false
+      }
+    ],
     "protocols": {
-      "eth": {
-        "difficulty": 31779248439556308,
-        "head": "0x562415e43630bb6d79176ea2fa35ff2a54cee276b678b755831886b1029911bd",
-        "version": 65
+      "istanbul": {
+        "blockscore": 27,
+        "head": "0x2a74c861c70533fab2323d06f30d731baef985a1c569143e3a3b847ac0f3b638",
+        "version": 64
       }
     }
   }

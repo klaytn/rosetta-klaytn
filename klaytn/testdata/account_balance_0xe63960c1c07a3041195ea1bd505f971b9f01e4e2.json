@@ -1,0 +1,12 @@
+{
+  "accType": 1,
+  "account": {
+    "balance": "0x2324c0d180077",
+    "humanReadable": false,
+    "key": {
+      "key": {},
+      "keyType": 1
+    },
+    "nonce": 0
+  }
+}
