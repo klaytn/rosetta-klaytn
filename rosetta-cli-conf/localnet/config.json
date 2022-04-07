@@ -1,9 +1,9 @@
 {
   "network": {
     "blockchain": "Klaytn",
-    "network": "Baobab"
+    "network": "Local"
   },
-  "online_url": "http://localhost:8080",
+  "online_url": "http://localhost:9090",
   "data_directory": "cli-data",
   "http_timeout": 300,
   "max_retries": 15,
@@ -18,9 +18,9 @@
     "constructor_dsl_file": "klaytn.ros",
     "prefunded_accounts": [
       {
-        "privkey": "",
+        "privkey": "4367aeca3984c23f4d6b1b35a0edaa195d7847536f99a50a0bf178330a0ce075",
         "account_identifier": {
-          "address": ""
+          "address": "0xcA7A99380131e6C76cfa622396347107aeEDCA2D"
         },
         "curve_type": "secp256k1",
         "currency": {
@@ -29,9 +29,31 @@
         }
       },
       {
-        "privkey": "",
+        "privkey": "051a20db11017de2eae364baa5b0828f4a559546f65a21103b0b674c62843062",
         "account_identifier": {
-          "address": ""
+          "address": "0x3e2aC308cD78aC2Fe162F9522DEb2b56d9Da9499"
+        },
+        "curve_type": "secp256k1",
+        "currency": {
+          "symbol": "KLAY",
+          "decimals": 18
+        }
+      },
+      {
+        "privkey": "89405274a7451be9c9c769e2d9bbc876460f5bfdb8766513e0738b059dbc60e5",
+        "account_identifier": {
+          "address": "0xF7CCb6e6eF8386582c917604c0983D70dd555c0c"
+        },
+        "curve_type": "secp256k1",
+        "currency": {
+          "symbol": "KLAY",
+          "decimals": 18
+        }
+      },
+      {
+        "privkey": "a3dbf0879f13b0e81e004fab284b325d16e20bfb7bd825e11349221e3dec39b7",
+        "account_identifier": {
+          "address": "0xE19A5e72E8448978dbbaeE284a140f67a08aC2A4"
         },
         "curve_type": "secp256k1",
         "currency": {

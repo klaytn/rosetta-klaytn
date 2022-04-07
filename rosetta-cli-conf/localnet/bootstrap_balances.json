@@ -1,0 +1,62 @@
+[
+ {
+  "account_identifier": {
+   "address": "0x9712f943b296758aaae79944ec975884188d3a96"
+  },
+  "currency": {
+   "symbol": "ETH",
+   "decimals": 18
+  },
+  "value": "100000000000000000000000000000000000000000000000000"
+ },
+ {
+  "account_identifier": {
+   "address": "0xcA7A99380131e6C76cfa622396347107aeEDCA2D"
+  },
+  "currency": {
+   "symbol": "ETH",
+   "decimals": 18
+  },
+  "value": "100000000000000000000000000000000000000000000000000"
+ },
+ {
+  "account_identifier": {
+   "address": "0x3e2aC308cD78aC2Fe162F9522DEb2b56d9Da9499"
+  },
+  "currency": {
+   "symbol": "ETH",
+   "decimals": 18
+  },
+  "value": "100000000000000000000000000000000000000000000000000"
+ },
+ {
+  "account_identifier": {
+   "address": "0xF7CCb6e6eF8386582c917604c0983D70dd555c0c"
+  },
+  "currency": {
+   "symbol": "ETH",
+   "decimals": 18
+  },
+  "value": "100000000000000000000000000000000000000000000000000"
+ },
+ {
+  "account_identifier": {
+   "address": "0xE19A5e72E8448978dbbaeE284a140f67a08aC2A4"
+  },
+  "currency": {
+   "symbol": "ETH",
+   "decimals": 18
+  },
+  "value": "100000000000000000000000000000000000000000000000000"
+ },
+ {
+  "account_identifier": {
+   "address": "0x2eaaD2bF70a070aaA2e007BEEe99C6148F47718E"
+  },
+  "currency": {
+   "symbol": "ETH",
+   "decimals": 18
+  },
+  "value": "100000000000000000000000000000000000000000000000000"
+ }
+]

@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="baobab" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="rosetta-klaytn" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="run" />
+    <envs>
+      <env name="MODE" value="ONLINE" />
+      <env name="NETWORK" value="BAOBAB" />
+      <env name="PORT" value="9090" />
+      <env name="KLAYTN_NODE" value="http://localhost:8551" />
+    </envs>
+    <kind value="PACKAGE" />
+    <package value="github.com/klaytn/rosetta-klaytn" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>
