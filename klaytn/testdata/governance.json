@@ -1,0 +1,15 @@
+{
+  "governance.governancemode": "single",
+  "governance.governingnode": "0x6573e6b0b1e1841e3569b9783b8192761c7414ea",
+  "governance.unitprice": 25000000000,
+  "istanbul.committeesize": 22,
+  "istanbul.epoch": 30,
+  "istanbul.policy": 2,
+  "reward.deferredtxfee": true,
+  "reward.minimumstake": "5000000",
+  "reward.mintingamount": "9600000000000000000",
+  "reward.proposerupdateinterval": 30,
+  "reward.ratio": "34/54/12",
+  "reward.stakingupdateinterval": 60,
+  "reward.useginicoeff": true
+}

@@ -1,0 +1,23 @@
+{
+  "blockHash": "0x03cb20a342485a5bed95291b8e03fab32f5309ca69d342ef8884213b90bd454f",
+  "blockNumber": "0x5369ac3",
+  "from": "0x71dad06129027efb0b31d2710a1259dd5b736a91",
+  "gas": "0x6691b7",
+  "gasPrice": "0xae9f7bcc00",
+  "hash": "0x99a7de4441bcac267741a269aecf4a498fcd6b33bbe442955eac1d17b74ab547",
+  "input": "0x",
+  "nonce": "0x269",
+  "senderTxHash": "0x99a7de4441bcac267741a269aecf4a498fcd6b33bbe442955eac1d17b74ab547",
+  "signatures": [
+    {
+      "V": "0x7f6",
+      "R": "0x10cf128e38b7a5ce8a7a064077268c8cdd9cd5ba9888c6d21c5c4d9685ec84cf",
+      "S": "0x6120574e16c4a33b53e215f025c8a62c40cbd13ad0bea0e1992118349325b1b8"
+    }
+  ],
+  "to": "0xd5b7712e56ef6938a857def6416d1bd55501b010",
+  "transactionIndex": "0x1",
+  "type": "TxTypeLegacyTransaction",
+  "typeInt": 0,
+  "value": "0x91a94863ca8000"
+}

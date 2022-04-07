@@ -2,32 +2,66 @@
     "block": {
         "block_identifier": {
             "index": 10992,
-            "hash": "0xba9ded5ca1ec9adb9451bf062c9de309d9552fa0f0254a7b982d3daf7ae436ae"
+            "hash": "0xb83667486a9d55238120b71b0f2e0e60e314cf25bb32020a813c6281dd43211e"
         },
         "parent_block_identifier": {
             "index": 10991,
-            "hash": "0x4cd21f49705529e2628f8ae1a248bcd0e3cafd21bf6d741bdee2820af82cff95"
+            "hash": "0x3e6d7595fbc68956933935075a0457ad3c59a6f8054597aff3f45fbf43d77e87"
         },
-        "timestamp": 1479731741000,
+        "timestamp": 1561554888000,
         "transactions": [
             {
                 "transaction_identifier": {
-                    "hash": "0xba9ded5ca1ec9adb9451bf062c9de309d9552fa0f0254a7b982d3daf7ae436ae"
+                    "hash": "0xb83667486a9d55238120b71b0f2e0e60e314cf25bb32020a813c6281dd43211e"
                 },
                 "operations": [
                     {
                         "operation_identifier": {
                             "index": 0
                         },
-                        "type": "MINER_REWARD",
+                        "type": "BLOCK_REWARD",
                         "status": "SUCCESS",
                         "account": {
-                            "address": "0x334391Aa808257952A462d1475562Ee2106a6C90"
+                            "address": "0x99FB17d324fa0e07F23b49d09028Ac0919414dB6"
                         },
                         "amount": {
-                            "value": "5000000000000000000",
+                            "value": "3264000000000000000",
                             "currency": {
-                                "symbol": "ETH",
+                                "symbol": "KLAY",
+                                "decimals": 18
+                            }
+                        }
+                    },
+                    {
+                        "operation_identifier": {
+                            "index": 1
+                        },
+                        "type": "BLOCK_REWARD",
+                        "status": "SUCCESS",
+                        "account": {
+                            "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
+                        },
+                        "amount": {
+                            "value": "5184000000000000000",
+                            "currency": {
+                                "symbol": "KLAY",
+                                "decimals": 18
+                            }
+                        }
+                    },
+                    {
+                        "operation_identifier": {
+                            "index": 2
+                        },
+                        "type": "BLOCK_REWARD",
+                        "status": "SUCCESS",
+                        "account": {
+                            "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
+                        },
+                        "amount": {
+                            "value": "1152000000000000000",
+                            "currency": {
+                                "symbol": "KLAY",
                                 "decimals": 18
                             }
                         }
