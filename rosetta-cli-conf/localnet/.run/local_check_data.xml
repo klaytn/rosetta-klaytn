@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="check:data" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="local:check:data" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="rosetta-cli" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="check:data --configuration-file $PROJECT_DIR$/../../krustuniverse/dopr/rosetta-klaytn/rosetta-cli-conf/testnet/config.json" />
+    <parameters value="local:check:data --configuration-file $PROJECT_DIR$/../../krustuniverse/dopr/rosetta-klaytn/rosetta-cli-conf/localnet/config.json" />
     <kind value="PACKAGE" />
     <package value="github.com/coinbase/rosetta-cli" />
     <directory value="$PROJECT_DIR$" />
