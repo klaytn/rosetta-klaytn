@@ -50,6 +50,10 @@ const (
 	// eip1559TxType is the EthTypes.Transaction.Type() value that indicates this transaction
 	// follows EIP-1559.
 	eip1559TxType = 2
+
+	CNRatioIndex  = 0
+	KGFRatioIndex = 1
+	KIRRatioIndex = 2
 )
 
 // Client allows for querying a set of specific Ethereum endpoints in an
@@ -1013,13 +1017,29 @@ func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[
 	// Transaction fee reward is also allocated to CN, KGF, and KIR addresses according to the ratios.
 	idx := len(ops)
 	relatedOpId := []int64{0}
+	rewardSum := new(big.Int)
+	rewardOperations := []*RosettaTypes.Operation{}
 	for _, addr := range rewardAddresses {
 		// reward * ratio / 100
 		partialReward := new(big.Int).Div(new(big.Int).Mul(proposerEarnedAmount, rewardRatioMap[addr]), big.NewInt(100))
+		rewardSum = new(big.Int).Add(rewardSum, partialReward)
 		op := createSuccessFeeOperationWithRelatedOperations(int64(idx), relatedOpId, addr, partialReward)
-		ops = append(ops, op)
+		rewardOperations = append(rewardOperations, op)
 		idx++
 	}
+
+	// If there are remaining rewards due to decimal points,
+	// additional rewards are paid to the KGF(known as PoC before) account.
+	remain := new(big.Int).Sub(proposerEarnedAmount, rewardSum)
+	if remain.Cmp(big.NewInt(0)) != 0 {
+		ogReward, ok := new(big.Int).SetString(rewardOperations[KGFRatioIndex].Amount.Value, 10)
+		if !ok {
+			return nil, errors.New("could not add remain rewards to KGF address.")
+		}
+		rewardOperations[KGFRatioIndex].Amount.Value = new(big.Int).Add(ogReward, remain).String()
+	}
+
+	ops = append(ops, rewardOperations...)
 
 	return ops, nil
 }
@@ -1316,20 +1336,21 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 	}
 
 	// Split "34/54/12" to ["34", "54", "12"]
+	// "CNRatio/KGFRatio/KIRRatio"
 	ratios := strings.Split(ratio, "/")
 	if len(ratios) != 3 {
 		return nil, nil, nil, fmt.Errorf("could not parse reward ratio from %v", ratio)
 	}
 
-	cnRatio, ok := new(big.Int).SetString(ratios[0], 10)
+	cnRatio, ok := new(big.Int).SetString(ratios[CNRatioIndex], 10)
 	if !ok {
 		return nil, nil, nil, fmt.Errorf("could not convert CN reward ratio string to int type from %s", ratios[0])
 	}
-	kgfRatio, ok := new(big.Int).SetString(ratios[1], 10)
+	kgfRatio, ok := new(big.Int).SetString(ratios[KGFRatioIndex], 10)
 	if !ok {
 		return nil, nil, nil, fmt.Errorf("could not convert KGF reward ratio string to int type from %s", ratios[1])
 	}
-	kirRatio, ok := new(big.Int).SetString(ratios[2], 10)
+	kirRatio, ok := new(big.Int).SetString(ratios[KIRRatioIndex], 10)
 	if !ok {
 		return nil, nil, nil, fmt.Errorf("could not convert KIR reward ratio string to int type from %s", ratios[2])
 	}
@@ -1382,9 +1403,18 @@ func (kc *Client) blockMintingReward(
 
 	// Set the block minting reward amount assigned to each address in rewardMap.
 	rewardAmountMap := map[string]*big.Int{}
+	rewardSum := big.NewInt(0)
 	for addr, ratio := range rewardRatioMap {
 		// reward * ratio / 100
 		rewardAmountMap[addr] = new(big.Int).Div(new(big.Int).Mul(mintingAmount, ratio), big.NewInt(100))
+		rewardSum = new(big.Int).Add(rewardSum, rewardAmountMap[addr])
+	}
+
+	// If there are remaining rewards due to decimal points,
+	// additional rewards are paid to the KGF(known as PoC before) account.
+	remain := new(big.Int).Sub(mintingAmount, rewardSum)
+	if remain.Cmp(big.NewInt(0)) != 0 {
+		rewardAmountMap[rewardAddresses[KGFRatioIndex]] = new(big.Int).Add(rewardAmountMap[rewardAddresses[KGFRatioIndex]], remain)
 	}
 
 	return rewardAddresses, rewardAmountMap, rewardRatioMap, nil

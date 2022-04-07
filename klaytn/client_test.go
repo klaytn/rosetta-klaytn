@@ -32,6 +32,7 @@ import (
 	"math/big"
 	"reflect"
 	"sort"
+	"strings"
 	"testing"
 
 	mocks "github.com/klaytn/rosetta-klaytn/mocks/klaytn"
@@ -2515,6 +2516,94 @@ func TestBlock_363753(t *testing.T) {
 	assert.Equal(t, correctResp.Block, jsonResp)
 
 	mockJSONRPC.AssertExpectations(t)
+
+	// Additional reward distribution check
+	var gov map[string]interface{}
+	file, err := ioutil.ReadFile("testdata/governance.json")
+	assert.NoError(t, err)
+	err = json.Unmarshal(file, &gov)
+	assert.NoError(t, err)
+
+	minted, ok := gov["reward.mintingamount"].(string)
+	assert.True(t, ok)
+	blockReward, ok := new(big.Int).SetString(minted, 10)
+	assert.True(t, ok)
+
+	var b map[string]interface{}
+	file, err = ioutil.ReadFile("testdata/block_363753.json")
+	assert.NoError(t, err)
+	err = json.Unmarshal(file, &b)
+	assert.NoError(t, err)
+	txsInBlock, ok := b["transactions"].([]interface{})
+	assert.True(t, ok)
+
+	txsFee := big.NewInt(0)
+	txs := []string{
+		"0x586d0a158f29da3d0e8fa4d24596d1a9f6ded03b5ccdb68f40e9372980488fc8",
+		"0x80fb7e6bfa8dae67cf79f21b9e68c5af727ba52f3ab1e5a5be5c8048a9758f56",
+	}
+	for i, hash := range txs {
+		file, err := ioutil.ReadFile(
+			"testdata/tx_receipt_" + hash + ".json",
+		) // nolint
+		assert.NoError(t, err)
+		receipt := new(types.Receipt)
+		assert.NoError(t, receipt.UnmarshalJSON(file))
+
+		gasUsed := new(big.Int).SetUint64(receipt.GasUsed)
+		txInBlock, ok := txsInBlock[i].(map[string]interface{})
+		assert.True(t, ok)
+		gp, ok := txInBlock["gasPrice"].(string)
+		assert.True(t, ok)
+		gasPrice, ok := new(big.Int).SetString(strings.Replace(gp, "0x", "", 1), 16)
+		assert.True(t, ok)
+
+		txsFee = new(big.Int).Add(txsFee, new(big.Int).Mul(gasUsed, gasPrice))
+	}
+
+	totalReward := new(big.Int).Add(blockReward, txsFee)
+	expectedCnReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(34)), big.NewInt(100))
+	expectedKgfReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(54)), big.NewInt(100))
+	expectedKirReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(12)), big.NewInt(100))
+	rewardSum := new(big.Int).Add(new(big.Int).Add(expectedCnReward, expectedKgfReward), expectedKirReward)
+	remainReward := new(big.Int).Sub(totalReward, rewardSum)
+	expectedKgfReward = new(big.Int).Add(expectedKgfReward, remainReward)
+
+	cnReward := big.NewInt(0)
+	kgfReward := big.NewInt(0)
+	kirReward := big.NewInt(0)
+	for i, tx := range correctResp.Block.Transactions {
+		// "i == 0" means block reward
+		if i == 0 {
+			r, ok := new(big.Int).SetString(tx.Operations[0].Amount.Value, 10)
+			assert.True(t, ok)
+			cnReward = new(big.Int).Add(cnReward, r)
+
+			r, ok = new(big.Int).SetString(tx.Operations[1].Amount.Value, 10)
+			assert.True(t, ok)
+			kgfReward = new(big.Int).Add(kgfReward, r)
+
+			r, ok = new(big.Int).SetString(tx.Operations[2].Amount.Value, 10)
+			assert.True(t, ok)
+			kirReward = new(big.Int).Add(kirReward, r)
+		} else {
+			r, ok := new(big.Int).SetString(tx.Operations[1].Amount.Value, 10)
+			assert.True(t, ok)
+			cnReward = new(big.Int).Add(cnReward, r)
+
+			r, ok = new(big.Int).SetString(tx.Operations[2].Amount.Value, 10)
+			assert.True(t, ok)
+			kgfReward = new(big.Int).Add(kgfReward, r)
+
+			r, ok = new(big.Int).SetString(tx.Operations[3].Amount.Value, 10)
+			assert.True(t, ok)
+			kirReward = new(big.Int).Add(kirReward, r)
+		}
+	}
+
+	assert.True(t, cnReward.Cmp(expectedCnReward) == 0)
+	assert.True(t, kgfReward.Cmp(expectedKgfReward) == 0)
+	assert.True(t, kirReward.Cmp(expectedKirReward) == 0)
 }
 
 // Block with complex self-destruct
@@ -2854,6 +2943,95 @@ func TestBlock_363366(t *testing.T) {
 	assert.Equal(t, correctResp.Block, jsonResp)
 
 	mockJSONRPC.AssertExpectations(t)
+
+	// Additional reward distribution check
+	var gov map[string]interface{}
+	file, err := ioutil.ReadFile("testdata/governance.json")
+	assert.NoError(t, err)
+	err = json.Unmarshal(file, &gov)
+	assert.NoError(t, err)
+
+	minted, ok := gov["reward.mintingamount"].(string)
+	assert.True(t, ok)
+	blockReward, ok := new(big.Int).SetString(minted, 10)
+	assert.True(t, ok)
+
+	var b map[string]interface{}
+	file, err = ioutil.ReadFile("testdata/block_363366.json")
+	assert.NoError(t, err)
+	err = json.Unmarshal(file, &b)
+	assert.NoError(t, err)
+	txsInBlock, ok := b["transactions"].([]interface{})
+	assert.True(t, ok)
+
+	txsFee := big.NewInt(0)
+	txs := []string{
+		"0x3f11ca203c7fd814751725c2c5a3efa00bebbbd5e89f406a28b4a36559393b6f",
+		"0x4cc86d845b6ee5c12db00cc75c42e98f8bbf62060bc925942c5ff6a36878549b",
+		"0xf8b84ff00db596c9db15de1a44c939cce36c0dfd60ef6171db6951b11d7d015d",
+	}
+	for i, hash := range txs {
+		file, err := ioutil.ReadFile(
+			"testdata/tx_receipt_" + hash + ".json",
+		) // nolint
+		assert.NoError(t, err)
+		receipt := new(types.Receipt)
+		assert.NoError(t, receipt.UnmarshalJSON(file))
+
+		gasUsed := new(big.Int).SetUint64(receipt.GasUsed)
+		txInBlock, ok := txsInBlock[i].(map[string]interface{})
+		assert.True(t, ok)
+		gp, ok := txInBlock["gasPrice"].(string)
+		assert.True(t, ok)
+		gasPrice, ok := new(big.Int).SetString(strings.Replace(gp, "0x", "", 1), 16)
+		assert.True(t, ok)
+
+		txsFee = new(big.Int).Add(txsFee, new(big.Int).Mul(gasUsed, gasPrice))
+	}
+
+	totalReward := new(big.Int).Add(blockReward, txsFee)
+	expectedCnReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(34)), big.NewInt(100))
+	expectedKgfReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(54)), big.NewInt(100))
+	expectedKirReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(12)), big.NewInt(100))
+	rewardSum := new(big.Int).Add(new(big.Int).Add(expectedCnReward, expectedKgfReward), expectedKirReward)
+	remainReward := new(big.Int).Sub(totalReward, rewardSum)
+	expectedKgfReward = new(big.Int).Add(expectedKgfReward, remainReward)
+
+	cnReward := big.NewInt(0)
+	kgfReward := big.NewInt(0)
+	kirReward := big.NewInt(0)
+	for i, tx := range correctResp.Block.Transactions {
+		// "i == 0" means block reward
+		if i == 0 {
+			r, ok := new(big.Int).SetString(tx.Operations[0].Amount.Value, 10)
+			assert.True(t, ok)
+			cnReward = new(big.Int).Add(cnReward, r)
+
+			r, ok = new(big.Int).SetString(tx.Operations[1].Amount.Value, 10)
+			assert.True(t, ok)
+			kgfReward = new(big.Int).Add(kgfReward, r)
+
+			r, ok = new(big.Int).SetString(tx.Operations[2].Amount.Value, 10)
+			assert.True(t, ok)
+			kirReward = new(big.Int).Add(kirReward, r)
+		} else {
+			r, ok := new(big.Int).SetString(tx.Operations[1].Amount.Value, 10)
+			assert.True(t, ok)
+			cnReward = new(big.Int).Add(cnReward, r)
+
+			r, ok = new(big.Int).SetString(tx.Operations[2].Amount.Value, 10)
+			assert.True(t, ok)
+			kgfReward = new(big.Int).Add(kgfReward, r)
+
+			r, ok = new(big.Int).SetString(tx.Operations[3].Amount.Value, 10)
+			assert.True(t, ok)
+			kirReward = new(big.Int).Add(kirReward, r)
+		}
+	}
+
+	assert.True(t, cnReward.Cmp(expectedCnReward) == 0)
+	assert.True(t, kgfReward.Cmp(expectedKgfReward) == 0)
+	assert.True(t, kirReward.Cmp(expectedKirReward) == 0)
 }
 
 // Block with blackholed funds
