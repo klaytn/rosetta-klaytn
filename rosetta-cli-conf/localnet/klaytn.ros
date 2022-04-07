@@ -1,0 +1,45 @@
+transfer(10){
+  transfer{
+    transfer.network = {"network":"Local", "blockchain":"Klaytn"};
+    currency = {"symbol":"KLAY", "decimals":18};
+    sender = find_balance({
+      "minimum_balance":{
+        "value": "10000000000000000",
+        "currency": {{currency}}
+      }
+    });
+
+    // Set the recipient_amount as some value <= sender.balance-max_fee
+    max_fee = "84000000000000";
+    available_amount = {{sender.balance.value}} - {{max_fee}};
+    recipient_amount = random_number({"minimum": "1", "maximum": {{available_amount}}});
+    print_message({"recipient_amount":{{recipient_amount}}});
+
+    random_key = generate_key({"curve_type": "secp256k1"});
+    random_recipient = derive({"network_identifier": {{transfer.network}}, "public_key": {{random_key.public_key}}});
+
+    // Find recipient and construct operations
+    sender_amount = 0 - {{recipient_amount}};
+    transfer.confirmation_depth = "1";
+    transfer.operations = [
+      {
+        "operation_identifier":{"index":0},
+        "type":"CALL",
+        "account":{{sender.account_identifier}},
+        "amount":{
+          "value":{{sender_amount}},
+          "currency":{{currency}}
+        }
+      },
+      {
+        "operation_identifier":{"index":1},
+        "type":"CALL",
+        "account":{"address": {{random_recipient.address}}},
+        "amount":{
+          "value":{{recipient_amount}},
+          "currency":{{currency}}
+        }
+      }
+    ];
+  }
+}

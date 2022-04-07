@@ -17,8 +17,10 @@ package configuration
 import (
 	"errors"
 	"fmt"
+	"github.com/klaytn/klaytn/common"
 	"github.com/klaytn/klaytn/params"
 	"github.com/klaytn/rosetta-klaytn/klaytn"
+	"math/big"
 	"os"
 	"strconv"
 
@@ -43,6 +45,9 @@ const (
 
 	// Baobab is the Klaytn Baobab testnet.
 	Baobab string = "BAOBAB"
+
+	// Local is a local private network for testing purpose.
+	Local string = "LOCAL"
 
 	// DataDirectory is the default location for all
 	// persistent data.
@@ -130,6 +135,42 @@ func LoadConfiguration() (*Configuration, error) {
 		config.GenesisBlockIdentifier = klaytn.BaobabGenesisBlockIdentifier
 		config.Params = params.BaobabChainConfig
 		config.KlaytnNodeArguments = klaytn.BaobabKlaytnNodeArguments
+	case Local:
+		config.Network = &types.NetworkIdentifier{
+			Blockchain: klaytn.Blockchain,
+			Network:    "Local",
+		}
+		config.GenesisBlockIdentifier = &types.BlockIdentifier{
+			Index: klaytn.GenesisBlockIndex,
+			Hash:  "0xb9d1d87259d7c7badd0a4ce2268a2fce81c7fe944905ac04dd2e7872a20b2087",
+		}
+		mintingAmount, _ := new(big.Int).SetString("9600000000000000000", 10)
+		config.Params = &params.ChainConfig{
+			ChainID:                  big.NewInt(int64(940625)),
+			IstanbulCompatibleBlock:  big.NewInt(0),
+			LondonCompatibleBlock:    big.NewInt(0),
+			EthTxTypeCompatibleBlock: big.NewInt(0),
+			DeriveShaImpl:            2,
+			Governance: &params.GovernanceConfig{
+				GoverningNode:  common.HexToAddress("0x9712f943b296758aaae79944ec975884188d3a96"),
+				GovernanceMode: "single",
+				Reward: &params.RewardConfig{
+					MintingAmount:          mintingAmount,
+					Ratio:                  "34/54/12",
+					UseGiniCoeff:           false,
+					DeferredTxFee:          true,
+					StakingUpdateInterval:  60,
+					ProposerUpdateInterval: 30,
+					MinimumStake:           big.NewInt(5000000),
+				},
+			},
+			Istanbul: &params.IstanbulConfig{
+				Epoch:          30,
+				ProposerPolicy: 2,
+				SubGroupSize:   1,
+			},
+			UnitPrice: 25000000000,
+		}
 	case "":
 		return nil, errors.New("NETWORK must be populated")
 	default:
