@@ -1388,8 +1388,19 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 	// rewardAddresses can contain ""(empty value) which means that role at the index is not set
 	// and reward will be given to reward base(= block proposer).
 	rewardAddresses := []string{rewardbase}
-	var kirAddress, kgfAddress string
+	var kgfAddress, kirAddress string
+
 	// TODO-Klaytn: Have to use stakingInfo.KGFAddr instead of stakingInfo.PoCAddr
+	if common.EmptyAddress(stakingInfo.PoCAddr) {
+		kgfAddress = rewardbase
+		rewardAddresses = append(rewardAddresses, "")
+	} else {
+		// If PoC(=KGF) address is empty, reward must be given to reward base(= block proposer). For more info, please check the below source code.
+		// https://github.com/klaytn/klaytn/blob/7584e71de602ce0367a4fb4e19643b49b076b93c/reward/reward_distributor.go#L116-L121
+		kgfAddress = stakingInfo.PoCAddr.String()
+		rewardAddresses = append(rewardAddresses, kgfAddress)
+	}
+
 	if common.EmptyAddress(stakingInfo.KIRAddr) {
 		kirAddress = rewardbase
 		rewardAddresses = append(rewardAddresses, "")
@@ -1398,15 +1409,6 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 		// https://github.com/klaytn/klaytn/blob/7584e71de602ce0367a4fb4e19643b49b076b93c/reward/reward_distributor.go#L123-L127
 		kirAddress = stakingInfo.KIRAddr.String()
 		rewardAddresses = append(rewardAddresses, kirAddress)
-	}
-	if common.EmptyAddress(stakingInfo.PoCAddr) {
-		kgfAddress = rewardbase
-		rewardAddresses = append(rewardAddresses, "")
-	} else {
-		// If PoC address is empty, reward must be given to reward base(= block proposer). For more info, please check the below source code.
-		// https://github.com/klaytn/klaytn/blob/7584e71de602ce0367a4fb4e19643b49b076b93c/reward/reward_distributor.go#L116-L121
-		kgfAddress = stakingInfo.PoCAddr.String()
-		rewardAddresses = append(rewardAddresses, kgfAddress)
 	}
 
 	// Set the reward assigned to each address in rewardMap.
