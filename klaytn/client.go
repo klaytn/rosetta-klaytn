@@ -1441,6 +1441,7 @@ func (kc *Client) blockMintingReward(
 	rewardAmountMap := map[string]*big.Int{}
 	rewardSum := big.NewInt(0)
 	for addr, ratio := range rewardRatioMap {
+		// reward * ratio / 100
 		rewardAmountMap[addr] = new(big.Int).Div(new(big.Int).Mul(mintingAmount, ratio), big.NewInt(100))
 		rewardSum = new(big.Int).Add(rewardSum, rewardAmountMap[addr])
 	}
