@@ -1421,7 +1421,7 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 	// kgfAddress or kirAddress can be same with rewardbase. So instead of set ratio, we should add its ratio to map.
 	rewardRatioMap[rewardbase] = rewardRatioMap[rewardbase].Add(rewardRatioMap[rewardbase], cnRatio)
 	rewardRatioMap[kgfAddress] = rewardRatioMap[kgfAddress].Add(rewardRatioMap[kgfAddress], kgfRatio)
-	rewardRatioMap[kirAddress] = rewardRatioMap[kgfAddress].Add(rewardRatioMap[kirAddress], kirRatio)
+	rewardRatioMap[kirAddress] = rewardRatioMap[kirAddress].Add(rewardRatioMap[kirAddress], kirRatio)
 
 	return rewardAddresses, rewardRatioMap, mintingAmount, nil
 }
