@@ -1020,6 +1020,12 @@ func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[
 	rewardSum := new(big.Int)
 	rewardOperations := []*RosettaTypes.Operation{}
 	for _, addr := range rewardAddresses {
+		if addr == "" {
+			// That means there are no address set for KGF or KIR roles.
+			// In that case, we do not create another rewardOperation because
+			// that reward is already given to reward base(= block proposer).
+			continue
+		}
 		// reward * ratio / 100
 		partialReward := new(big.Int).Div(new(big.Int).Mul(proposerEarnedAmount, rewardRatioMap[addr]), big.NewInt(100))
 		rewardSum = new(big.Int).Add(rewardSum, partialReward)
@@ -1032,11 +1038,17 @@ func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[
 	// additional rewards are paid to the KGF(known as PoC before) account.
 	remain := new(big.Int).Sub(proposerEarnedAmount, rewardSum)
 	if remain.Cmp(big.NewInt(0)) != 0 {
-		ogReward, ok := new(big.Int).SetString(rewardOperations[KGFRatioIndex].Amount.Value, 10)
+		ratioIndex := KGFRatioIndex
+		if rewardAddresses[KGFRatioIndex] == "" {
+			// There is no address set for KGF role.
+			// In that case, reward will be given to reward(= block proposer).
+			ratioIndex = CNRatioIndex
+		}
+		ogReward, ok := new(big.Int).SetString(rewardOperations[ratioIndex].Amount.Value, 10)
 		if !ok {
 			return nil, errors.New("could not add remain rewards to KGF address.")
 		}
-		rewardOperations[KGFRatioIndex].Amount.Value = new(big.Int).Add(ogReward, remain).String()
+		rewardOperations[ratioIndex].Amount.Value = new(big.Int).Add(ogReward, remain).String()
 	}
 
 	ops = append(ops, rewardOperations...)
@@ -1373,17 +1385,41 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 		return nil, nil, nil, err
 	}
 
+	// rewardAddresses can contain ""(empty value) which means that role at the index is not set
+	// and reward will be given to reward base(= block proposer).
+	rewardAddresses := []string{rewardbase}
+	var kirAddress, kgfAddress string
 	// TODO-Klaytn: Have to use stakingInfo.KGFAddr instead of stakingInfo.PoCAddr
-	kirAddress := stakingInfo.KIRAddr.String()
-	kgfAddress := stakingInfo.PoCAddr.String()
-
-	rewardAddresses := []string{rewardbase, kgfAddress, kirAddress}
+	if common.EmptyAddress(stakingInfo.KIRAddr) {
+		kirAddress = rewardbase
+		rewardAddresses = append(rewardAddresses, "")
+	} else {
+		// If KIR address is empty, reward must be given to reward base(= block proposer). For more info, please check the below source code.
+		// https://github.com/klaytn/klaytn/blob/7584e71de602ce0367a4fb4e19643b49b076b93c/reward/reward_distributor.go#L123-L127
+		kirAddress = stakingInfo.KIRAddr.String()
+		rewardAddresses = append(rewardAddresses, kirAddress)
+	}
+	if common.EmptyAddress(stakingInfo.PoCAddr) {
+		kgfAddress = rewardbase
+		rewardAddresses = append(rewardAddresses, "")
+	} else {
+		// If PoC address is empty, reward must be given to reward base(= block proposer). For more info, please check the below source code.
+		// https://github.com/klaytn/klaytn/blob/7584e71de602ce0367a4fb4e19643b49b076b93c/reward/reward_distributor.go#L116-L121
+		kgfAddress = stakingInfo.PoCAddr.String()
+		rewardAddresses = append(rewardAddresses, kgfAddress)
+	}
 
 	// Set the reward assigned to each address in rewardMap.
 	rewardRatioMap := map[string]*big.Int{}
-	rewardRatioMap[rewardbase] = cnRatio
-	rewardRatioMap[kgfAddress] = kgfRatio
-	rewardRatioMap[kirAddress] = kirRatio
+	// Initialize rewardMap
+	rewardRatioMap[rewardbase] = common.Big0
+	rewardRatioMap[kgfAddress] = common.Big0
+	rewardRatioMap[kirAddress] = common.Big0
+
+	// kgfAddress or kirAddress can be same with rewardbase. So instead of set ratio, we should add its ratio to map.
+	rewardRatioMap[rewardbase] = rewardRatioMap[rewardbase].Add(rewardRatioMap[rewardbase], cnRatio)
+	rewardRatioMap[kgfAddress] = rewardRatioMap[kgfAddress].Add(rewardRatioMap[kgfAddress], kgfRatio)
+	rewardRatioMap[kirAddress] = rewardRatioMap[kgfAddress].Add(rewardRatioMap[kirAddress], kirRatio)
 
 	return rewardAddresses, rewardRatioMap, mintingAmount, nil
 }
@@ -1405,7 +1441,6 @@ func (kc *Client) blockMintingReward(
 	rewardAmountMap := map[string]*big.Int{}
 	rewardSum := big.NewInt(0)
 	for addr, ratio := range rewardRatioMap {
-		// reward * ratio / 100
 		rewardAmountMap[addr] = new(big.Int).Div(new(big.Int).Mul(mintingAmount, ratio), big.NewInt(100))
 		rewardSum = new(big.Int).Add(rewardSum, rewardAmountMap[addr])
 	}
@@ -1414,7 +1449,14 @@ func (kc *Client) blockMintingReward(
 	// additional rewards are paid to the KGF(known as PoC before) account.
 	remain := new(big.Int).Sub(mintingAmount, rewardSum)
 	if remain.Cmp(big.NewInt(0)) != 0 {
-		rewardAmountMap[rewardAddresses[KGFRatioIndex]] = new(big.Int).Add(rewardAmountMap[rewardAddresses[KGFRatioIndex]], remain)
+		ratioIndex := KGFRatioIndex
+		if rewardAddresses[KGFRatioIndex] == "" {
+			// If there is no address set for KGF role, that reward
+			// will be given to reward base(= block proposer).
+			ratioIndex = CNRatioIndex
+		}
+
+		rewardAmountMap[rewardAddresses[ratioIndex]] = new(big.Int).Add(rewardAmountMap[rewardAddresses[ratioIndex]], remain)
 	}
 
 	return rewardAddresses, rewardAmountMap, rewardRatioMap, nil
@@ -1431,6 +1473,12 @@ func (kc *Client) blockRewardTransaction(
 
 	idx := int64(0)
 	for _, addr := range rewardAddresses {
+		if addr == "" {
+			// That means there are no address set for KGF or KIR roles.
+			// In that case, we do not create another rewardOperation because
+			// that reward is already given to reward base(= block proposer).
+			continue
+		}
 		miningRewardOp := &RosettaTypes.Operation{
 			OperationIdentifier: &RosettaTypes.OperationIdentifier{
 				Index: idx,
