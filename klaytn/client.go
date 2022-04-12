@@ -606,22 +606,24 @@ type rpcRawCall struct {
 
 // Call is an Klaytn debug trace.
 type Call struct {
-	Type         string         `json:"type"`
-	From         common.Address `json:"from"`
-	To           common.Address `json:"to"`
-	Value        *big.Int       `json:"value"`
-	GasUsed      *big.Int       `json:"gasUsed"`
+	Type         string          `json:"type"`
+	From         *common.Address `json:"from"`
+	To           *common.Address `json:"to"`
+	Value        *big.Int        `json:"value"`
+	GasUsed      *big.Int        `json:"gasUsed"`
+	Gas          *big.Int        `json:"gas"`
 	Revert       bool
 	ErrorMessage string  `json:"error"`
 	Calls        []*Call `json:"calls"`
 }
 
 type flatCall struct {
-	Type         string         `json:"type"`
-	From         common.Address `json:"from"`
-	To           common.Address `json:"to"`
-	Value        *big.Int       `json:"value"`
-	GasUsed      *big.Int       `json:"gasUsed"`
+	Type         string          `json:"type"`
+	From         *common.Address `json:"from"`
+	To           *common.Address `json:"to"`
+	Value        *big.Int        `json:"value"`
+	GasUsed      *big.Int        `json:"gasUsed"`
+	Gas          *big.Int        `json:"gas"`
 	Revert       bool
 	ErrorMessage string `json:"error"`
 }
@@ -633,6 +635,7 @@ func (t *Call) flatten() *flatCall {
 		To:           t.To,
 		Value:        t.Value,
 		GasUsed:      t.GasUsed,
+		Gas:          t.Gas,
 		Revert:       t.Revert,
 		ErrorMessage: t.ErrorMessage,
 	}
@@ -641,11 +644,12 @@ func (t *Call) flatten() *flatCall {
 // UnmarshalJSON is a custom unmarshaler for Call.
 func (t *Call) UnmarshalJSON(input []byte) error {
 	type CustomTrace struct {
-		Type         string         `json:"type"`
-		From         common.Address `json:"from"`
-		To           common.Address `json:"to"`
-		Value        *hexutil.Big   `json:"value"`
-		GasUsed      *hexutil.Big   `json:"gasUsed"`
+		Type         string          `json:"type"`
+		From         *common.Address `json:"from"`
+		To           *common.Address `json:"to"`
+		Value        *hexutil.Big    `json:"value"`
+		GasUsed      *hexutil.Big    `json:"gasUsed"`
+		Gas          *hexutil.Big    `json:"gas"`
 		Revert       bool
 		ErrorMessage string  `json:"error"`
 		Calls        []*Call `json:"calls"`
@@ -664,9 +668,14 @@ func (t *Call) UnmarshalJSON(input []byte) error {
 		t.Value = new(big.Int)
 	}
 	if dec.GasUsed != nil {
-		t.GasUsed = (*big.Int)(dec.Value)
+		t.GasUsed = (*big.Int)(dec.GasUsed)
 	} else {
 		t.GasUsed = new(big.Int)
+	}
+	if dec.Gas != nil {
+		t.Gas = (*big.Int)(dec.Gas)
+	} else {
+		t.Gas = new(big.Int)
 	}
 	if dec.ErrorMessage != "" {
 		// Any error surfaced by the decoder means that the transaction
@@ -721,6 +730,13 @@ func traceOps(calls []*flatCall, startIndex int) []*RosettaTypes.Operation { // 
 		var zeroValue bool
 		if trace.Value.Sign() == 0 {
 			zeroValue = true
+		}
+
+		// The `fastCallTracer` used by rosetta-klaytn returns "" in the `trace.Type`
+		// in the case of a transaction that is not executed through the EVM(TxTypeValueTransfer, TxTypeFeeDelegatedValueTransfer, ...).
+		// In this case, since there is no trace information to be added to the operation of the transaction, the logic below is added.
+		if trace.Type == "" {
+			continue
 		}
 
 		// Skip all 0 value CallType operations (TODO: make optional to include)
@@ -1016,7 +1032,14 @@ func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[
 
 	// Transaction fee reward is also allocated to CN, KGF, and KIR addresses according to the ratios.
 	idx := len(ops)
-	relatedOpId := []int64{0}
+
+	// If there are more than one operation that pays a fee (if the fee is partially paid),
+	// add all fee payment operations as related operation id.
+	relatedOpId := make([]int64, idx)
+	for i := 0; i < idx; i++ {
+		relatedOpId[i] = int64(i)
+	}
+
 	rewardSum := new(big.Int)
 	rewardOperations := []*RosettaTypes.Operation{}
 	for _, addr := range rewardAddresses {
