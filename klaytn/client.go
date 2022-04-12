@@ -1442,9 +1442,9 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 	rewardRatioMap[kirAddress] = common.Big0
 
 	// kgfAddress or kirAddress can be same with rewardbase. So instead of set ratio, we should add its ratio to map.
-	rewardRatioMap[rewardbase] = rewardRatioMap[rewardbase].Add(rewardRatioMap[rewardbase], cnRatio)
-	rewardRatioMap[kgfAddress] = rewardRatioMap[kgfAddress].Add(rewardRatioMap[kgfAddress], kgfRatio)
-	rewardRatioMap[kirAddress] = rewardRatioMap[kirAddress].Add(rewardRatioMap[kirAddress], kirRatio)
+	rewardRatioMap[rewardbase] = new(big.Int).Add(rewardRatioMap[rewardbase], cnRatio)
+	rewardRatioMap[kgfAddress] = new(big.Int).Add(rewardRatioMap[kgfAddress], kgfRatio)
+	rewardRatioMap[kirAddress] = new(big.Int).Add(rewardRatioMap[kirAddress], kirRatio)
 
 	return rewardAddresses, rewardRatioMap, mintingAmount, nil
 }
