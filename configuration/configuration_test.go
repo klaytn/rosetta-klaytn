@@ -67,7 +67,7 @@ func TestLoadConfiguration(t *testing.T) {
 				SkipAdmin:              false,
 			},
 		},
-		"all set (mainnet) + geth": {
+		"all set (mainnet) + ken": {
 			Mode:      string(Online),
 			Network:   Mainnet,
 			Port:      "1000",
