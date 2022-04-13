@@ -1,13 +1,12 @@
-[Eth]
+[Klaytn]
 SyncMode = "full"
 
 [Node]
 DataDir = "/data"
 NoUSB = true
 HTTPHost = "0.0.0.0"
-HTTPPort = 8545
+HTTPPort = 8551
 HTTPVirtualHosts = ["*"]
-GraphQLVirtualHosts = ["*"]
 HTTPModules = ["debug", "admin", "txpool", "klay", "governance"]
 IPCPath = ""
 
