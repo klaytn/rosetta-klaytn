@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/klaytn/klaytn"
 	"github.com/klaytn/klaytn/blockchain/types"
 	"github.com/klaytn/klaytn/blockchain/types/account"
@@ -1137,15 +1136,10 @@ func TestCall_InvalidMethod(t *testing.T) {
 }
 
 func testTraceConfig() (*cn.TraceConfig, error) {
-	loadedFile, err := ioutil.ReadFile("call_tracer.js")
-	if err != nil {
-		return nil, fmt.Errorf("%w: could not load tracer file", err)
-	}
-
-	loadedTracer := string(loadedFile)
+	fct := "fastCallTracer"
 	return &cn.TraceConfig{
 		Timeout: &tracerTimeout,
-		Tracer:  &loadedTracer,
+		Tracer:  &fct,
 	}, nil
 }
 
@@ -3543,6 +3537,194 @@ func TestGetMempool(t *testing.T) {
 	})
 
 	assert.True(t, reflect.DeepEqual(actualMempool, expectedMempool))
+
+	mockJSONRPC.AssertExpectations(t)
+}
+
+// Block with various Klaytn tx types.
+func TestBlock_335049(t *testing.T) {
+	mockJSONRPC := &mocks.JSONRPC{}
+
+	tc, err := testTraceConfig()
+	assert.NoError(t, err)
+	c := &Client{
+		c:              mockJSONRPC,
+		tc:             tc,
+		p:              params.BaobabChainConfig,
+		traceSemaphore: semaphore.NewWeighted(100),
+	}
+
+	ctx := context.Background()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"klay_getBlockByNumber",
+		"0x51cc9",
+		true,
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*json.RawMessage)
+
+			file, err := ioutil.ReadFile("testdata/block_335049.json")
+			assert.NoError(t, err)
+
+			*r = json.RawMessage(file)
+		},
+	).Once()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"debug_traceBlockByHash",
+		common.HexToHash("0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6"),
+		tc,
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*json.RawMessage)
+
+			file, err := ioutil.ReadFile(
+				"testdata/block_trace_0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6.json") // nolint
+			assert.NoError(t, err)
+			*r = json.RawMessage(file)
+		},
+	).Once()
+	mockJSONRPC.On(
+		"BatchCallContext",
+		ctx,
+		mock.Anything,
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).([]rpc.BatchElem)
+			assert.Len(t, r, 24)
+			for i, txHash := range []string{
+				"0xaf8df8a2aaa635a4267c586fe326cfb23690b79e36adb91c903aa7bb498a6e4a",
+				"0x12258648f1b94289b8980b5b97d3724977195e39930f482271aeaa7f025f85d8",
+				"0xad7a6040410e8538134b7a919c870ed5471a04837255dfae1eeda0039d713687",
+				"0xf185918830847ff3d56a3350c14a4606e52ff0103a337d2b0e23c1b0123d0be1",
+				"0x2af6753388d6911575aaa80f0be16fd29802cd1eea47af641155ccc04198a31f",
+				"0x5ef129c8134a398ff878df0715400a0a2c321e9597af427239ec934f3ca0886c",
+				"0x16c31596ab3103be3cc1e545328ced91be38463eeda0aabea540bbf101ec3e4b",
+				"0x8573bfc129a0c14b81bf66d1dd73a076e7aa50172dcd71d3422b91121d8e53cc",
+				"0xbd10270f40017f2afb0907f8dc2f5e240b145140b6e95a55a4e060be1bb9e81b",
+				"0x31264a1dc24f71cbebb8c88a0d6dea424aa814ad8db04c7d136e19c9cbb3936e",
+				"0x19f7cb9a074f40f078419fca329b6a519ee20051d1a9ed3a5f3f9d56a0cc6337",
+				"0xe7b5699339f863be3c4882844c0857b45f78fc38773c7aff9eab05ea35e02919",
+				"0xbd4911ce9ae31b904dc23a92fd0156232e25bbdb99cfe1878b06a25fe332f777",
+				"0x61ff801199df31080523c98da173c6a432b7c22215d79b0d0b7b23991a3bead6",
+				"0x4f69fdcbb557fd6492f6846cdb1fa149dc7cc0e960ac0e12552a8cc5a4ab6bcf",
+				"0x6cc534f4c1dbb85f77e446d1df5a32c850dc1420d0c2d13d54accc9fbb7fd89b",
+				"0xf84e743c09043075fceaf3a55999968f2628114fc613c255bcb21d8a9efeb8ed",
+				"0x79d45408665ef54d21e00e7b42a4a96b6393247af64852c47dab4e9b7c48852f",
+				"0x5baf44d00f01d36b861411ff6cfbbe74f62e90063ff03ca7c9b7a3ad1d57c090",
+				"0xe79833a79934d59a8b743edadd01f33fca1da7ad40ff7ba245f37146f3f4c53f",
+				"0x627534a39f380e03907d39cabb9ec13daf02759dcfa93f25f51e420bf471ceb1",
+				"0x2eb1be28e5a0479017f13e919d18ff14bfab81011588f166728d136f2c887d02",
+				"0xba382d839a64400658e684f8931914ac29f6a44dd2853107dc9bc9938c2785d1",
+				"0x2be0f8c1453b1cd6e780b41012433da2f54a49c33f0254e321d4dbbc008b284b",
+			} {
+				assert.Equal(
+					t,
+					txHash,
+					r[i].Args[0],
+				)
+
+				file, err := ioutil.ReadFile(
+					"testdata/tx_receipt_" + txHash + ".json",
+				) // nolint
+				assert.NoError(t, err)
+
+				receipt := new(types.Receipt)
+				assert.NoError(t, receipt.UnmarshalJSON(file))
+				*(r[i].Result.(**types.Receipt)) = receipt
+			}
+		},
+	).Once()
+
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"klay_getHeaderByNumber",
+		"0x51cc9",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*map[string]interface{})
+
+			file, err := ioutil.ReadFile("testdata/block_335049.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
+		},
+	)
+
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_itemsAt",
+		"0x51cc9",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*map[string]interface{})
+
+			file, err := ioutil.ReadFile("testdata/governance.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
+		},
+	).Once()
+
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_getStakingInfo",
+		"0x51cc9",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*reward.StakingInfo)
+
+			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
+		},
+	).Once()
+
+	correctRaw, err := ioutil.ReadFile("testdata/block_response_335049.json")
+	assert.NoError(t, err)
+	var correctResp *RosettaTypes.BlockResponse
+	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
+
+	resp, err := c.Block(
+		ctx,
+		&RosettaTypes.PartialBlockIdentifier{
+			Index: RosettaTypes.Int64(335049),
+		},
+	)
+	assert.NoError(t, err)
+
+	// Ensure types match
+	jsonResp, err := jsonifyBlock(resp)
+
+	assert.NoError(t, err)
+	assert.Equal(t, correctResp.Block, jsonResp)
 
 	mockJSONRPC.AssertExpectations(t)
 }

@@ -606,22 +606,24 @@ type rpcRawCall struct {
 
 // Call is an Klaytn debug trace.
 type Call struct {
-	Type         string         `json:"type"`
-	From         common.Address `json:"from"`
-	To           common.Address `json:"to"`
-	Value        *big.Int       `json:"value"`
-	GasUsed      *big.Int       `json:"gasUsed"`
+	Type         string          `json:"type"`
+	From         *common.Address `json:"from"`
+	To           *common.Address `json:"to"`
+	Value        *big.Int        `json:"value"`
+	GasUsed      *big.Int        `json:"gasUsed"`
+	Gas          *big.Int        `json:"gas"`
 	Revert       bool
 	ErrorMessage string  `json:"error"`
 	Calls        []*Call `json:"calls"`
 }
 
 type flatCall struct {
-	Type         string         `json:"type"`
-	From         common.Address `json:"from"`
-	To           common.Address `json:"to"`
-	Value        *big.Int       `json:"value"`
-	GasUsed      *big.Int       `json:"gasUsed"`
+	Type         string          `json:"type"`
+	From         *common.Address `json:"from"`
+	To           *common.Address `json:"to"`
+	Value        *big.Int        `json:"value"`
+	GasUsed      *big.Int        `json:"gasUsed"`
+	Gas          *big.Int        `json:"gas"`
 	Revert       bool
 	ErrorMessage string `json:"error"`
 }
@@ -633,6 +635,7 @@ func (t *Call) flatten() *flatCall {
 		To:           t.To,
 		Value:        t.Value,
 		GasUsed:      t.GasUsed,
+		Gas:          t.Gas,
 		Revert:       t.Revert,
 		ErrorMessage: t.ErrorMessage,
 	}
@@ -641,11 +644,12 @@ func (t *Call) flatten() *flatCall {
 // UnmarshalJSON is a custom unmarshaler for Call.
 func (t *Call) UnmarshalJSON(input []byte) error {
 	type CustomTrace struct {
-		Type         string         `json:"type"`
-		From         common.Address `json:"from"`
-		To           common.Address `json:"to"`
-		Value        *hexutil.Big   `json:"value"`
-		GasUsed      *hexutil.Big   `json:"gasUsed"`
+		Type         string          `json:"type"`
+		From         *common.Address `json:"from"`
+		To           *common.Address `json:"to"`
+		Value        *hexutil.Big    `json:"value"`
+		GasUsed      *hexutil.Big    `json:"gasUsed"`
+		Gas          *hexutil.Big    `json:"gas"`
 		Revert       bool
 		ErrorMessage string  `json:"error"`
 		Calls        []*Call `json:"calls"`
@@ -664,9 +668,14 @@ func (t *Call) UnmarshalJSON(input []byte) error {
 		t.Value = new(big.Int)
 	}
 	if dec.GasUsed != nil {
-		t.GasUsed = (*big.Int)(dec.Value)
+		t.GasUsed = (*big.Int)(dec.GasUsed)
 	} else {
 		t.GasUsed = new(big.Int)
+	}
+	if dec.Gas != nil {
+		t.Gas = (*big.Int)(dec.Gas)
+	} else {
+		t.Gas = new(big.Int)
 	}
 	if dec.ErrorMessage != "" {
 		// Any error surfaced by the decoder means that the transaction
@@ -702,7 +711,7 @@ func flattenTraces(data *Call, flattened []*flatCall) []*flatCall {
 
 // traceOps returns all *RosettaTypes.Operation for a given
 // array of flattened traces.
-func traceOps(calls []*flatCall, startIndex int) []*RosettaTypes.Operation { // nolint: gocognit
+func traceOps(tx *loadedTransaction, calls []*flatCall, startIndex int) []*RosettaTypes.Operation { // nolint: gocognit
 	var ops []*RosettaTypes.Operation
 	if len(calls) == 0 {
 		return ops
@@ -723,6 +732,40 @@ func traceOps(calls []*flatCall, startIndex int) []*RosettaTypes.Operation { // 
 			zeroValue = true
 		}
 
+		// The `fastCallTracer` used by rosetta-klaytn returns "" in the `trace.Type`
+		// in the case of a transaction that is not executed through the EVM(TxTypeValueTransfer, TxTypeFeeDelegatedValueTransfer, ...).
+		// In this case, since there is no trace information to be added to the operation of the transaction, the logic below is added.
+		if trace.Type == "" {
+			value := tx.Transaction.Value()
+			// Based on Klaytn v1.8.2, a transaction that simply transfers KLAY does not return a valid value when tracing.
+			// Therefore, the operations for tracking transferring KLAY should be created separately.
+			// `trace.Type == ""` means that we cannnot use trace information.
+			// TODO-Klaytn: If the Klaytn tracer returns the KLAY transfer transaction correctly, this logic should be deleted.
+			if value.Sign() != 0 {
+				// When sending a simple value, it is a CALL operation type.
+				opType := "CALL"
+
+				// Appends a from address operation.
+				idx := int64(len(ops) + startIndex)
+				from := tx.From.String()
+				fromOp := createValueTransferOperation(idx, opType, opStatus, from, value, true, nil, nil)
+				ops = append(ops, fromOp)
+
+				// Appends a to address operation.
+				fromOpIndex := idx
+				toIdx := fromOpIndex + 1
+				to := tx.Transaction.To().String()
+				relatedOps := []*RosettaTypes.OperationIdentifier{
+					{
+						Index: fromOpIndex,
+					},
+				}
+				toOp := createValueTransferOperation(toIdx, opType, opStatus, to, value, false, nil, relatedOps)
+				ops = append(ops, toOp)
+			}
+			continue
+		}
+
 		// Skip all 0 value CallType operations (TODO: make optional to include)
 		//
 		// We can't continue here because we may need to adjust our destroyed
@@ -737,21 +780,8 @@ func traceOps(calls []*flatCall, startIndex int) []*RosettaTypes.Operation { // 
 		to := MustChecksum(trace.To.String())
 
 		if shouldAdd {
-			fromOp := &RosettaTypes.Operation{
-				OperationIdentifier: &RosettaTypes.OperationIdentifier{
-					Index: int64(len(ops) + startIndex),
-				},
-				Type:   trace.Type,
-				Status: RosettaTypes.String(opStatus),
-				Account: &RosettaTypes.AccountIdentifier{
-					Address: from,
-				},
-				Amount: &RosettaTypes.Amount{
-					Value:    new(big.Int).Neg(trace.Value).String(),
-					Currency: Currency,
-				},
-				Metadata: metadata,
-			}
+			idx := int64(len(ops) + startIndex)
+			fromOp := createValueTransferOperation(idx, trace.Type, opStatus, from, trace.Value, true, metadata, nil)
 			if zeroValue {
 				fromOp.Amount = nil
 			} else {
@@ -793,26 +823,13 @@ func traceOps(calls []*flatCall, startIndex int) []*RosettaTypes.Operation { // 
 
 		if shouldAdd {
 			lastOpIndex := ops[len(ops)-1].OperationIdentifier.Index
-			toOp := &RosettaTypes.Operation{
-				OperationIdentifier: &RosettaTypes.OperationIdentifier{
-					Index: lastOpIndex + 1,
+			idx := lastOpIndex + 1
+			relatedOps := []*RosettaTypes.OperationIdentifier{
+				{
+					Index: lastOpIndex,
 				},
-				RelatedOperations: []*RosettaTypes.OperationIdentifier{
-					{
-						Index: lastOpIndex,
-					},
-				},
-				Type:   trace.Type,
-				Status: RosettaTypes.String(opStatus),
-				Account: &RosettaTypes.AccountIdentifier{
-					Address: to,
-				},
-				Amount: &RosettaTypes.Amount{
-					Value:    trace.Value.String(),
-					Currency: Currency,
-				},
-				Metadata: metadata,
 			}
+			toOp := createValueTransferOperation(idx, trace.Type, opStatus, to, trace.Value, false, metadata, relatedOps)
 			if zeroValue {
 				toOp.Amount = nil
 			} else {
@@ -854,6 +871,37 @@ func traceOps(calls []*flatCall, startIndex int) []*RosettaTypes.Operation { // 
 	}
 
 	return ops
+}
+
+func createValueTransferOperation(idx int64, traceType, opStatus, address string, amount *big.Int, isNegative bool, metadata map[string]interface{}, relatedOps []*RosettaTypes.OperationIdentifier) *RosettaTypes.Operation {
+	op := &RosettaTypes.Operation{
+		OperationIdentifier: &RosettaTypes.OperationIdentifier{
+			Index: idx,
+		},
+		Type:   traceType,
+		Status: RosettaTypes.String(opStatus),
+		Account: &RosettaTypes.AccountIdentifier{
+			Address: address,
+		},
+	}
+	if isNegative == true {
+		op.Amount = &RosettaTypes.Amount{
+			Value:    new(big.Int).Neg(amount).String(),
+			Currency: Currency,
+		}
+	} else {
+		op.Amount = &RosettaTypes.Amount{
+			Value:    amount.String(),
+			Currency: Currency,
+		}
+	}
+	if metadata != nil {
+		op.Metadata = metadata
+	}
+	if relatedOps != nil {
+		op.RelatedOperations = relatedOps
+	}
+	return op
 }
 
 type txExtraInfo struct {
@@ -1016,7 +1064,14 @@ func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[
 
 	// Transaction fee reward is also allocated to CN, KGF, and KIR addresses according to the ratios.
 	idx := len(ops)
-	relatedOpId := []int64{0}
+
+	// If there are more than one operation that pays a fee (if the fee is partially paid),
+	// add all fee payment operations as related operation id.
+	relatedOpId := make([]int64, idx)
+	for i := 0; i < idx; i++ {
+		relatedOpId[i] = int64(i)
+	}
+
 	rewardSum := new(big.Int)
 	rewardOperations := []*RosettaTypes.Operation{}
 	for _, addr := range rewardAddresses {
@@ -1288,7 +1343,7 @@ func (kc *Client) populateTransaction(
 	// Compute trace operations
 	traces := flattenTraces(tx.Trace, []*flatCall{})
 
-	traceOperations := traceOps(traces, len(ops))
+	traceOperations := traceOps(tx, traces, len(ops))
 	ops = append(ops, traceOperations...)
 
 	// Marshal receipt and trace data
@@ -1419,9 +1474,9 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 	rewardRatioMap[kirAddress] = common.Big0
 
 	// kgfAddress or kirAddress can be same with rewardbase. So instead of set ratio, we should add its ratio to map.
-	rewardRatioMap[rewardbase] = rewardRatioMap[rewardbase].Add(rewardRatioMap[rewardbase], cnRatio)
-	rewardRatioMap[kgfAddress] = rewardRatioMap[kgfAddress].Add(rewardRatioMap[kgfAddress], kgfRatio)
-	rewardRatioMap[kirAddress] = rewardRatioMap[kirAddress].Add(rewardRatioMap[kirAddress], kirRatio)
+	rewardRatioMap[rewardbase] = new(big.Int).Add(rewardRatioMap[rewardbase], cnRatio)
+	rewardRatioMap[kgfAddress] = new(big.Int).Add(rewardRatioMap[kgfAddress], kgfRatio)
+	rewardRatioMap[kirAddress] = new(big.Int).Add(rewardRatioMap[kirAddress], kirRatio)
 
 	return rewardAddresses, rewardRatioMap, mintingAmount, nil
 }

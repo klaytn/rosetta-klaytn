@@ -15,30 +15,20 @@
 package klaytn
 
 import (
-	"fmt"
 	"github.com/klaytn/klaytn/node/cn"
-	"io/ioutil"
 )
 
 // convert raw eth data from client to rosetta
-
-const (
-	tracerPath = "klaytn/call_tracer.js"
-)
 
 var (
 	tracerTimeout = "120s"
 )
 
 func loadTraceConfig() (*cn.TraceConfig, error) {
-	loadedFile, err := ioutil.ReadFile(tracerPath)
-	if err != nil {
-		return nil, fmt.Errorf("%w: could not load tracer file", err)
-	}
-
-	loadedTracer := string(loadedFile)
+	// Use fastCallTracer instead of call_tracer.js
+	fct := "fastCallTracer"
 	return &cn.TraceConfig{
 		Timeout: &tracerTimeout,
-		Tracer:  &loadedTracer,
+		Tracer:  &fct,
 	}, nil
 }
