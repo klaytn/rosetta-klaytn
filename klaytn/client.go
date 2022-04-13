@@ -1745,7 +1745,7 @@ func (kc *Client) Call(
 }
 
 // txPoolContentResponse represents the response for a call to
-// geth node on the "txpool_content" method.
+// Klaytn EN node on the "txpool_content" method.
 type txPoolContentResponse struct {
 	Pending txPool `json:"pending"`
 	Queued  txPool `json:"queued"`

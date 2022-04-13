@@ -87,7 +87,7 @@ func runRunCmd(cmd *cobra.Command, args []string) error {
 	if cfg.Mode == configuration.Online {
 		if !cfg.RemoteNode {
 			g.Go(func() error {
-				return klaytn.StartGeth(ctx, cfg.KlaytnNodeArguments, g)
+				return klaytn.StartKlaytnNode(ctx, cfg.KlaytnNodeArguments, g)
 			})
 		}
 
