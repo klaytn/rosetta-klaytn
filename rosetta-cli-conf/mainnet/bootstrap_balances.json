@@ -1,7 +1,7 @@
 [
  {
   "account_identifier": {
-   "address": "0x22835801c15abee19f408c78cad1da41cbb6f0da"
+   "address": "0x22835801C15aBEe19f408C78CAd1da41cbB6F0DA"
   },
   "currency": {
    "symbol": "ETH",
@@ -11,7 +11,7 @@
  },
  {
   "account_identifier": {
-   "address": "0x24f55a6f46f126aa7209c882c275fedb6c108164"
+   "address": "0x24f55A6F46f126AA7209C882c275FEdB6C108164"
   },
   "currency": {
    "symbol": "ETH",
@@ -21,7 +21,7 @@
  },
  {
   "account_identifier": {
-   "address": "0x79bf6868cb4f7d3dd43d915690f3556669afcf4e"
+   "address": "0x79Bf6868Cb4f7D3Dd43D915690F3556669afCF4E"
   },
   "currency": {
    "symbol": "ETH",
@@ -31,7 +31,7 @@
  },
  {
   "account_identifier": {
-   "address": "0xba411543b06dca2fcc3730b2b09f40c5bb5cddd5"
+   "address": "0xba411543B06DcA2fcc3730B2b09F40C5BB5cdDD5"
   },
   "currency": {
    "symbol": "ETH",
@@ -41,7 +41,7 @@
  },
  {
   "account_identifier": {
-   "address": "0x854ca8508c8be2bb1f3c244045786410cb7d5d0a"
+   "address": "0x854CA8508C8BE2bb1f3C244045786410Cb7D5D0a"
   },
   "currency": {
    "symbol": "ETH",
