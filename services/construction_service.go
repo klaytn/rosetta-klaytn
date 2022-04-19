@@ -52,18 +52,11 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	ctx context.Context,
 	request *types.ConstructionDeriveRequest,
 ) (*types.ConstructionDeriveResponse, *types.Error) {
+	// rosetta-klaytn does not support this `/construction/derive` endpoint
+	// because Klaytn supoprts a function to update Klaytn account's key.
+	// See https://docs.klaytn.com/klaytn/design/accounts#decoupling-key-pairs-from-addresses for a detailed concept of decoupling key pairs from addresses.
+	// Reference: https://community.rosetta-api.org/t/can-i-implement-derive-endpoint-api-in-this-case/727
 	return nil, ErrNotSupportedAPI
-	//pubkey, err := crypto.DecompressPubkey(request.PublicKey.Bytes)
-	//if err != nil {
-	//	return nil, wrapErr(ErrUnableToDecompressPubkey, err)
-	//}
-	//
-	//addr := crypto.PubkeyToAddress(*pubkey)
-	//return &types.ConstructionDeriveResponse{
-	//	AccountIdentifier: &types.AccountIdentifier{
-	//		Address: addr.Hex(),
-	//	},
-	//}, nil
 }
 
 // ConstructionPreprocess implements the /construction/preprocess
