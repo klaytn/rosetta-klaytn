@@ -31,16 +31,6 @@
  },
  {
   "account_identifier": {
-   "address": "0xba411543B06DcA2fcc3730B2b09F40C5BB5cdDD5"
-  },
-  "currency": {
-   "symbol": "KLAY",
-   "decimals": 18
-  },
-  "value": "2000000000000000000000000000"
- },
- {
-  "account_identifier": {
    "address": "0x854CA8508C8BE2bb1f3C244045786410Cb7D5D0a"
   },
   "currency": {
@@ -48,5 +38,15 @@
    "decimals": 18
   },
   "value": "1000000000000000000000"
+ },
+ {
+  "account_identifier": {
+   "address": "0xba411543B06DcA2fcc3730B2b09F40C5BB5cdDD5"
+  },
+  "currency": {
+   "symbol": "KLAY",
+   "decimals": 18
+  },
+  "value": "2000000000000000000000000000"
  }
 ]
