@@ -25,11 +25,22 @@ import (
 )
 
 type genesis struct {
-	Alloc map[string]genesisAllocation `json:"alloc"`
+	Alloc          map[string]genesisAllocation `json:"alloc"`
+	Config         map[string]interface{}       `json:"config"`
+	Timestamp      string                       `json:"timestamp"`
+	ExtraData      string                       `json:"extraData"`
+	GovernanceData string                       `json:"governanceData"`
+	BlockScore     string                       `json:"blockScore"`
+	Number         string                       `json:"number"`
+	GasUsed        string                       `json:"gasUsed"`
+	ParentHash     string                       `json:"parentHash"`
+	Nonce          string                       `json:"nonce"`
+	Coinbase       string                       `json:"coinbase"`
 }
 
 type genesisAllocation struct {
 	Balance string `json:"balance"`
+	Code    string `json:"code"`
 }
 
 // GenerateBootstrapFile creates the bootstrap balances file
