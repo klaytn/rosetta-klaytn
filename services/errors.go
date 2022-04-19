@@ -67,6 +67,13 @@ var (
 		Message: "unable to decompress public key",
 	}
 
+	// ErrNotSupportedAPI is returned when
+	// the API endpoint is not supported by rosetta-klaytn.
+	ErrNotSupportedAPI = &types.Error{
+		Code:    3, //nolint
+		Message: "not supported API",
+	}
+
 	// ErrUnclearIntent is returned when operations
 	// provided in /construction/preprocess or /construction/payloads
 	// are not valid.

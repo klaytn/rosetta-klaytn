@@ -19,7 +19,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/klaytn/klaytn/common"
-	"github.com/klaytn/klaytn/crypto"
 	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"math/big"
 	"strconv"
@@ -53,17 +52,11 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	ctx context.Context,
 	request *types.ConstructionDeriveRequest,
 ) (*types.ConstructionDeriveResponse, *types.Error) {
-	pubkey, err := crypto.DecompressPubkey(request.PublicKey.Bytes)
-	if err != nil {
-		return nil, wrapErr(ErrUnableToDecompressPubkey, err)
-	}
-
-	addr := crypto.PubkeyToAddress(*pubkey)
-	return &types.ConstructionDeriveResponse{
-		AccountIdentifier: &types.AccountIdentifier{
-			Address: addr.Hex(),
-		},
-	}, nil
+	// rosetta-klaytn does not support this `/construction/derive` endpoint
+	// because Klaytn supoprts a function to update Klaytn account's key.
+	// See https://docs.klaytn.com/klaytn/design/accounts#decoupling-key-pairs-from-addresses for a detailed concept of decoupling key pairs from addresses.
+	// Reference: https://community.rosetta-api.org/t/can-i-implement-derive-endpoint-api-in-this-case/727
+	return nil, ErrNotSupportedAPI
 }
 
 // ConstructionPreprocess implements the /construction/preprocess
@@ -301,7 +294,7 @@ func (s *ConstructionAPIService) ConstructionCombine(
 		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 	}
 
-	ethTransaction := klayTypes.NewTransaction(
+	klayTransaction := klayTypes.NewTransaction(
 		unsignedTx.Nonce,
 		common.HexToAddress(unsignedTx.To),
 		unsignedTx.Value,
@@ -311,7 +304,7 @@ func (s *ConstructionAPIService) ConstructionCombine(
 	)
 
 	signer := klayTypes.NewEIP155Signer(unsignedTx.ChainID)
-	signedTx, err := ethTransaction.WithSignature(signer, request.Signatures[0].Bytes)
+	signedTx, err := klayTransaction.WithSignature(signer, request.Signatures[0].Bytes)
 	if err != nil {
 		return nil, wrapErr(ErrSignatureInvalid, err)
 	}
@@ -371,9 +364,14 @@ func (s *ConstructionAPIService) ConstructionParse(
 		tx.GasLimit = t.Gas()
 		tx.ChainID = t.ChainId()
 
-		fromAddress, err := t.From()
+		var fromAddress common.Address
+		if t.IsEthereumTransaction() {
+			signer := klayTypes.LatestSignerForChainID(t.ChainId())
+			fromAddress, err = klayTypes.Sender(signer, t)
+		} else {
+			fromAddress, err = t.From()
+		}
 		if err != nil {
-			// TODO-Klaytn: Have to change this error to something else
 			return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 		}
 

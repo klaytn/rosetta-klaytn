@@ -16,6 +16,7 @@ package services
 
 import (
 	"context"
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"testing"
 
 	"github.com/klaytn/rosetta-klaytn/configuration"
@@ -68,7 +69,7 @@ func TestAccountBalance_Online(t *testing.T) {
 		Balances: []*types.Amount{
 			{
 				Value:    "25",
-				Currency: ethereum.Currency,
+				Currency: klaytn.Currency,
 			},
 		},
 	}

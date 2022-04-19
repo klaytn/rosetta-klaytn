@@ -61,6 +61,7 @@ func TestConstructionService(t *testing.T) {
 		Network: networkIdentifier,
 		Params:  params.BaobabChainConfig,
 	}
+	cfg.Params.ChainID = big.NewInt(3)
 
 	mockClient := &mocks.Client{}
 	servicer := NewConstructionAPIService(cfg, mockClient)
@@ -74,19 +75,14 @@ func TestConstructionService(t *testing.T) {
 		),
 		CurveType: types.Secp256k1,
 	}
-	deriveResponse, err := servicer.ConstructionDerive(ctx, &types.ConstructionDeriveRequest{
+	_, err := servicer.ConstructionDerive(ctx, &types.ConstructionDeriveRequest{
 		NetworkIdentifier: networkIdentifier,
 		PublicKey:         publicKey,
 	})
-	assert.Nil(t, err)
-	assert.Equal(t, &types.ConstructionDeriveResponse{
-		AccountIdentifier: &types.AccountIdentifier{
-			Address: "0xe3a5B4d7f79d64088C8d4ef153A7DDe2B2d47309",
-		},
-	}, deriveResponse)
+	assert.NotNil(t, err)
 
 	// Test Preprocess
-	intent := `[{"operation_identifier":{"index":0},"type":"CALL","account":{"address":"0xe3a5B4d7f79d64088C8d4ef153A7DDe2B2d47309"},"amount":{"value":"-42894881044106498","currency":{"symbol":"ETH","decimals":18}}},{"operation_identifier":{"index":1},"type":"CALL","account":{"address":"0x57B414a0332B5CaB885a451c2a28a07d1e9b8a8d"},"amount":{"value":"42894881044106498","currency":{"symbol":"ETH","decimals":18}}}]` // nolint
+	intent := `[{"operation_identifier":{"index":0},"type":"CALL","account":{"address":"0xe3a5B4d7f79d64088C8d4ef153A7DDe2B2d47309"},"amount":{"value":"-42894881044106498","currency":{"symbol":"KLAY","decimals":18}}},{"operation_identifier":{"index":1},"type":"CALL","account":{"address":"0x57B414a0332B5CaB885a451c2a28a07d1e9b8a8d"},"amount":{"value":"42894881044106498","currency":{"symbol":"KLAY","decimals":18}}}]` // nolint
 	var ops []*types.Operation
 	assert.NoError(t, json.Unmarshal([]byte(intent), &ops))
 	preprocessResponse, err := servicer.ConstructionPreprocess(
@@ -157,7 +153,7 @@ func TestConstructionService(t *testing.T) {
 	}, payloadsResponse)
 
 	// Test Parse Unsigned
-	parseOpsRaw := `[{"operation_identifier":{"index":0},"type":"CALL","account":{"address":"0xe3a5B4d7f79d64088C8d4ef153A7DDe2B2d47309"},"amount":{"value":"-42894881044106498","currency":{"symbol":"ETH","decimals":18}}},{"operation_identifier":{"index":1},"related_operations":[{"index":0}],"type":"CALL","account":{"address":"0x57B414a0332B5CaB885a451c2a28a07d1e9b8a8d"},"amount":{"value":"42894881044106498","currency":{"symbol":"ETH","decimals":18}}}]` // nolint
+	parseOpsRaw := `[{"operation_identifier":{"index":0},"type":"CALL","account":{"address":"0xe3a5B4d7f79d64088C8d4ef153A7DDe2B2d47309"},"amount":{"value":"-42894881044106498","currency":{"symbol":"KLAY","decimals":18}}},{"operation_identifier":{"index":1},"related_operations":[{"index":0}],"type":"CALL","account":{"address":"0x57B414a0332B5CaB885a451c2a28a07d1e9b8a8d"},"amount":{"value":"42894881044106498","currency":{"symbol":"KLAY","decimals":18}}}]` // nolint
 	var parseOps []*types.Operation
 	assert.NoError(t, json.Unmarshal([]byte(parseOpsRaw), &parseOps))
 	parseUnsignedResponse, err := servicer.ConstructionParse(ctx, &types.ConstructionParseRequest{
@@ -181,7 +177,8 @@ func TestConstructionService(t *testing.T) {
 	signaturesRaw := `[{"hex_bytes":"8c712c64bc65c4a88707fa93ecd090144dffb1bf133805a10a51d354c2f9f2b25a63cea6989f4c58372c41f31164036a6b25dce1d5c05e1d31c16c0590c176e801","signing_payload":{"address":"0xe3a5B4d7f79d64088C8d4ef153A7DDe2B2d47309","hex_bytes":"b682f3e39c512ff57471f482eab264551487320cbd3b34485f4779a89e5612d1","account_identifier":{"address":"0xe3a5B4d7f79d64088C8d4ef153A7DDe2B2d47309"},"signature_type":"ecdsa_recovery"},"public_key":{"hex_bytes":"03d3d3358e7f69cbe45bde38d7d6f24660c7eeeaee5c5590cfab985c8839b21fd5","curve_type":"secp256k1"},"signature_type":"ecdsa_recovery"}]` // nolint
 	var signatures []*types.Signature
 	assert.NoError(t, json.Unmarshal([]byte(signaturesRaw), &signatures))
-	signedRaw := `{"type":"0x0","nonce":"0x0","gasPrice":"0x3b9aca00","maxPriorityFeePerGas":null,"maxFeePerGas":null,"gas":"0x5208","value":"0x9864aac3510d02","input":"0x","v":"0x2a","r":"0x8c712c64bc65c4a88707fa93ecd090144dffb1bf133805a10a51d354c2f9f2b2","s":"0x5a63cea6989f4c58372c41f31164036a6b25dce1d5c05e1d31c16c0590c176e8","to":"0x57b414a0332b5cab885a451c2a28a07d1e9b8a8d","hash":"0x424969b1a98757bcd748c60bad2a7de9745cfb26bfefb4550e780a098feada42"}` // nolint
+	// TODO-Klaytn: The type, maxFeePerGas and maxPriorityFeePerGas are removed in the signedRaw variable. If Klaytn added type, maxFeePerGas and maxPriorityFeePerGas to types.Transaction struct, we need to add those fields to the signedRaw also.
+	signedRaw := `{"nonce":"0x0","gasPrice":"0x3b9aca00","gas":"0x5208","to":"0x57b414a0332b5cab885a451c2a28a07d1e9b8a8d","value":"0x9864aac3510d02","input":"0x","signatures":[{"V":"0x2a","R":"0x8c712c64bc65c4a88707fa93ecd090144dffb1bf133805a10a51d354c2f9f2b2","S":"0x5a63cea6989f4c58372c41f31164036a6b25dce1d5c05e1d31c16c0590c176e8"}],"hash":"0x424969b1a98757bcd748c60bad2a7de9745cfb26bfefb4550e780a098feada42"}` // nolint
 	combineResponse, err := servicer.ConstructionCombine(ctx, &types.ConstructionCombineRequest{
 		NetworkIdentifier:   networkIdentifier,
 		UnsignedTransaction: unsignedRaw,
