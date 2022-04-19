@@ -42,8 +42,8 @@ build-release:
 #	curl https://raw.githubusercontent.com/ethereum/go-ethereum/master/eth/tracers/js/internal/tracers/call_tracer_js.js -o ethereum/call_tracer.js
 
 update-bootstrap-balances:
-	go run main.go utils:generate-bootstrap ethereum/genesis_files/mainnet.json rosetta-cli-conf/mainnet/bootstrap_balances.json;
-	go run main.go utils:generate-bootstrap ethereum/genesis_files/baobab.json rosetta-cli-conf/testnet/bootstrap_balances.json;
+	go run main.go utils:generate-bootstrap klaytn/genesis_files/mainnet.json rosetta-cli-conf/mainnet/bootstrap_balances.json;
+	go run main.go utils:generate-bootstrap klaytn/genesis_files/baobab.json rosetta-cli-conf/testnet/bootstrap_balances.json;
 
 run-mainnet-online:
 	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/ethereum-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-ethereum:latest

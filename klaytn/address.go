@@ -19,7 +19,7 @@ import (
 	"log"
 )
 
-// ChecksumAddress ensures an Ethereum hex address
+// ChecksumAddress ensures an Klaytn hex address
 // is in Checksum Format. If the address cannot be converted,
 // it returns !ok.
 func ChecksumAddress(address string) (string, bool) {

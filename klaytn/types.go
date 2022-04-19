@@ -80,11 +80,11 @@ const (
 	DestructOpType = "DESTRUCT"
 
 	// SuccessStatus is the status of any
-	// Ethereum operation considered successful.
+	// Klaytn operation considered successful.
 	SuccessStatus = "SUCCESS"
 
 	// FailureStatus is the status of any
-	// Ethereum operation considered unsuccessful.
+	// Klaytn operation considered unsuccessful.
 	FailureStatus = "FAILURE"
 
 	// HistoricalBalanceSupported is whether
@@ -128,7 +128,7 @@ var (
 	}
 
 	// Currency is the *types.Currency for all
-	// Ethereum networks.
+	// Klaytn networks.
 	Currency = &types.Currency{
 		Symbol:   Symbol,
 		Decimals: Decimals,
