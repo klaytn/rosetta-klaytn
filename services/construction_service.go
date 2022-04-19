@@ -19,7 +19,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/klaytn/klaytn/common"
-	"github.com/klaytn/klaytn/crypto"
 	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"math/big"
 	"strconv"
@@ -53,17 +52,18 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	ctx context.Context,
 	request *types.ConstructionDeriveRequest,
 ) (*types.ConstructionDeriveResponse, *types.Error) {
-	pubkey, err := crypto.DecompressPubkey(request.PublicKey.Bytes)
-	if err != nil {
-		return nil, wrapErr(ErrUnableToDecompressPubkey, err)
-	}
-
-	addr := crypto.PubkeyToAddress(*pubkey)
-	return &types.ConstructionDeriveResponse{
-		AccountIdentifier: &types.AccountIdentifier{
-			Address: addr.Hex(),
-		},
-	}, nil
+	return nil, ErrNotSupportedAPI
+	//pubkey, err := crypto.DecompressPubkey(request.PublicKey.Bytes)
+	//if err != nil {
+	//	return nil, wrapErr(ErrUnableToDecompressPubkey, err)
+	//}
+	//
+	//addr := crypto.PubkeyToAddress(*pubkey)
+	//return &types.ConstructionDeriveResponse{
+	//	AccountIdentifier: &types.AccountIdentifier{
+	//		Address: addr.Hex(),
+	//	},
+	//}, nil
 }
 
 // ConstructionPreprocess implements the /construction/preprocess
