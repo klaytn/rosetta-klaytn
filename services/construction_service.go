@@ -301,7 +301,7 @@ func (s *ConstructionAPIService) ConstructionCombine(
 		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 	}
 
-	ethTransaction := klayTypes.NewTransaction(
+	klayTransaction := klayTypes.NewTransaction(
 		unsignedTx.Nonce,
 		common.HexToAddress(unsignedTx.To),
 		unsignedTx.Value,
@@ -311,7 +311,7 @@ func (s *ConstructionAPIService) ConstructionCombine(
 	)
 
 	signer := klayTypes.NewEIP155Signer(unsignedTx.ChainID)
-	signedTx, err := ethTransaction.WithSignature(signer, request.Signatures[0].Bytes)
+	signedTx, err := klayTransaction.WithSignature(signer, request.Signatures[0].Bytes)
 	if err != nil {
 		return nil, wrapErr(ErrSignatureInvalid, err)
 	}
@@ -371,9 +371,14 @@ func (s *ConstructionAPIService) ConstructionParse(
 		tx.GasLimit = t.Gas()
 		tx.ChainID = t.ChainId()
 
-		fromAddress, err := t.From()
+		var fromAddress common.Address
+		if t.IsEthereumTransaction() {
+			signer := klayTypes.LatestSignerForChainID(t.ChainId())
+			fromAddress, err = klayTypes.Sender(signer, t)
+		} else {
+			fromAddress, err = t.From()
+		}
 		if err != nil {
-			// TODO-Klaytn: Have to change this error to something else
 			return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 		}
 
