@@ -27,11 +27,13 @@ import (
 )
 
 var (
-	middlewareVersion     = "0.0.4"
+	// rosetta-klaytn version
+	middlewareVersion = "0.0.1"
+
 	defaultNetworkOptions = &types.NetworkOptionsResponse{
 		Version: &types.Version{
 			RosettaVersion:    types.RosettaAPIVersion,
-			NodeVersion:       "1.9.24",
+			NodeVersion:       "1.8.2",
 			MiddlewareVersion: &middlewareVersion,
 		},
 		Allow: &types.Allow{
