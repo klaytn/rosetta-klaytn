@@ -219,7 +219,7 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 	}
 
-	// Required Fields for constructing a real Ethereum transaction
+	// Required Fields for constructing a real Klaytn transaction
 	toOp, amount := matches[1].First()
 	toAdd := toOp.Account.Address
 	nonce := metadata.Nonce
@@ -228,7 +228,7 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 	transferGasLimit := uint64(klaytn.TransferGasLimit)
 	transferData := []byte{}
 
-	// Additional Fields for constructing custom Ethereum tx struct
+	// Additional Fields for constructing custom Klaytn tx struct
 	fromOp, _ := matches[0].First()
 	fromAdd := fromOp.Account.Address
 

@@ -36,7 +36,7 @@ var (
 )
 
 // Execute handles all invocations of the
-// rosetta-ethereum cmd.
+// rosetta-klaytn cmd.
 func Execute() error {
 	return rootCmd.Execute()
 }
