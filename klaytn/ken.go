@@ -53,7 +53,7 @@ func logPipe(pipe io.ReadCloser, identifier string) error {
 func StartKlaytnNode(ctx context.Context, arguments string, g *errgroup.Group) error {
 	parsedArgs := strings.Split(arguments, " ")
 	cmd := exec.Command(
-		"/app/klaytn",
+		"/app/ken",
 		parsedArgs...,
 	) // #nosec G204
 

@@ -5,7 +5,7 @@
 
 ADDLICENSE_INSTALL=go install github.com/google/addlicense@latest
 ADDLICENSE_CMD=addlicense
-ADDLICENCE_SCRIPT=${ADDLICENSE_CMD} -c "Coinbase, Inc." -l "apache" -v
+ADDLICENCE_SCRIPT=${ADDLICENSE_CMD} -c "Klaytn Authors" -l "apache" -v -ignore **/*.xml -ignore **/*.sh -ignore **/*.yml
 SPELLCHECK_CMD=go run github.com/client9/misspell/cmd/misspell
 GOLINES_INSTALL=go install github.com/segmentio/golines@latest
 GOLINES_CMD=golines
@@ -35,33 +35,30 @@ build-local:
 
 build-release:
 	# make sure to always set version with vX.X.X
-	docker build -t rosetta-ethereum:$(version) .;
-	docker save rosetta-ethereum:$(version) | gzip > rosetta-ethereum-$(version).tar.gz;
-
-#update-tracer:
-#	curl https://raw.githubusercontent.com/ethereum/go-ethereum/master/eth/tracers/js/internal/tracers/call_tracer_js.js -o ethereum/call_tracer.js
+	docker build -t rosetta-klaytn:$(version) .;
+	docker save rosetta-klaytn:$(version) | gzip > rosetta-klaytn-$(version).tar.gz;
 
 update-bootstrap-balances:
 	go run main.go utils:generate-bootstrap klaytn/genesis_files/mainnet.json rosetta-cli-conf/mainnet/bootstrap_balances.json;
 	go run main.go utils:generate-bootstrap klaytn/genesis_files/testnet.json rosetta-cli-conf/testnet/bootstrap_balances.json;
 
 run-mainnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/ethereum-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-ethereum:latest
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/klaytn-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 
 run-mainnet-offline:
-	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-ethereum:latest
+	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
 
 run-testnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/ethereum-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-ethereum:latest
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/klaytn-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 
 run-testnet-offline:
-	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-ethereum:latest
+	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
 
 run-mainnet-remote:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-ethereum:latest
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 
 run-testnet-remote:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-ethereum:latest
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 
 check-comments:
 	${GOLINT_INSTALL}
