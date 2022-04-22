@@ -1,6 +1,6 @@
 transfer(10){
   transfer{
-    transfer.network = {"network":"Baobab", "blockchain":"Klaytn"};
+    transfer.network = {"network":"Testnet", "blockchain":"Klaytn"};
     currency = {"symbol":"KLAY", "decimals":18};
     sender = find_balance({
       "minimum_balance":{

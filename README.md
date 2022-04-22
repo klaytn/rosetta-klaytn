@@ -79,10 +79,10 @@ at port `8080`.
 
 #### Configuration Environment Variables
 * `MODE` (required) - Determines if Rosetta can make outbound connections. Options: `ONLINE` or `OFFLINE`.
-* `NETWORK` (required) - Klaytn network to launch and/or communicate with. Options: `MAINNET` or `BAOBAB`.
+* `NETWORK` (required) - Klaytn network to launch and/or communicate with. Options: `MAINNET` or `TESTNET`.
 * `PORT`(required) - Which port to use for Rosetta.
-* `KLAYTN_NODE` (optional) - Point to a remote `klaytn` node instead of initializing one
-* `SKIP_ADMIN` (optional, default: `FALSE`) - Instruct Rosetta to not use the `geth` `admin` RPC calls. This is typically disabled by hosted blockchain node services.
+* `KEN` (optional) - Point to a remote `klaytn` EN node instead of initializing one
+* `SKIP_ADMIN` (optional, default: `FALSE`) - Instruct Rosetta to not use the `ken` `admin` RPC calls. This is typically disabled by hosted blockchain node services.
 
 #### Mainnet:Online
 ```text
@@ -92,9 +92,9 @@ _If you cloned the repository, you can run `make run-mainnet-online`._
 
 #### Mainnet:Online (Remote)
 ```text
-docker run -d --rm --ulimit "nofile=100000:100000" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -e "GETH=<NODE URL>" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+docker run -d --rm --ulimit "nofile=100000:100000" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -e "KEN=<NODE URL>" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 ```
-_If you cloned the repository, you can run `make run-mainnet-remote geth=<NODE URL>`._
+_If you cloned the repository, you can run `make run-mainnet-remote ken=<NODE URL>`._
 
 #### Mainnet:Offline
 ```text
@@ -110,15 +110,20 @@ _If you cloned the repository, you can run `make run-testnet-online`._
 
 #### Testnet:Online (Remote)
 ```text
-docker run -d --rm --ulimit "nofile=100000:100000" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -e "GETH=<NODE URL>" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+docker run -d --rm --ulimit "nofile=100000:100000" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -e "KEN=<NODE URL>" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 ```
-_If you cloned the repository, you can run `make run-testnet-remote geth=<NODE URL>`._
+_If you cloned the repository, you can run `make run-testnet-remote ken=<NODE URL>`._
 
 #### Testnet:Offline
 ```text
 docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
 ```
 _If you cloned the repository, you can run `make run-testnet-offline`._
+
+If you are using MacOS M1, you might need to add `--platform linux/amd64` flag like below when you run docker container.
+```shell
+docker run --platform linux/amd64 -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
+```
 
 ## Testing with rosetta-cli
 To validate `rosetta-klaytn`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)

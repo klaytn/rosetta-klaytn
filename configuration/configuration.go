@@ -43,8 +43,8 @@ const (
 	// Mainnet is the Klaytn Mainnet.
 	Mainnet string = "MAINNET"
 
-	// Baobab is the Klaytn Baobab testnet.
-	Baobab string = "BAOBAB"
+	// Testnet is the Klaytn Baobab testnet.
+	Testnet string = "TESTNET"
 
 	// Local is a local private network for testing purpose.
 	Local string = "LOCAL"
@@ -66,15 +66,15 @@ const (
 	// implementation.
 	PortEnv = "PORT"
 
-	// KlaytnNodeEnv is an optional environment variable
+	// KENEnv is an optional environment variable
 	// used to connect rosetta-klaytn to an already
 	// running klaytn client node.
-	KlaytnNodeEnv = "KLAYTN_NODE"
+	KENEnv = "KEN"
 
-	// DefaultKlaytnNodeURL is the default URL for
-	// a running geth node. This is used
-	// when KlaytnNodeEnv is not populated.
-	DefaultKlaytnNodeURL = "http://localhost:8551"
+	// DefaultKENURL is the default URL for
+	// a running ken node. This is used
+	// when KENEnv is not populated.
+	DefaultKENURL = "http://localhost:8551"
 
 	// SkipAdminEnv is an optional environment variable
 	// to skip `admin` calls which are typically not supported
@@ -127,14 +127,14 @@ func LoadConfiguration() (*Configuration, error) {
 		config.GenesisBlockIdentifier = klaytn.MainnetGenesisBlockIdentifier
 		config.Params = params.CypressChainConfig
 		config.KlaytnNodeArguments = klaytn.MainnetKlaytnNodeArguments
-	case Baobab:
+	case Testnet:
 		config.Network = &types.NetworkIdentifier{
 			Blockchain: klaytn.Blockchain,
-			Network:    klaytn.BaobabNetwork,
+			Network:    klaytn.TestnetNetwork,
 		}
-		config.GenesisBlockIdentifier = klaytn.BaobabGenesisBlockIdentifier
+		config.GenesisBlockIdentifier = klaytn.TestnetGenesisBlockIdentifier
 		config.Params = params.BaobabChainConfig
-		config.KlaytnNodeArguments = klaytn.BaobabKlaytnNodeArguments
+		config.KlaytnNodeArguments = klaytn.TestnetKlaytnNodeArguments
 	case Local:
 		config.Network = &types.NetworkIdentifier{
 			Blockchain: klaytn.Blockchain,
@@ -177,8 +177,8 @@ func LoadConfiguration() (*Configuration, error) {
 		return nil, fmt.Errorf("%s is not a valid network", networkValue)
 	}
 
-	config.KlaytnNodeURL = DefaultKlaytnNodeURL
-	envKlaytnNodeURL := os.Getenv(KlaytnNodeEnv)
+	config.KlaytnNodeURL = DefaultKENURL
+	envKlaytnNodeURL := os.Getenv(KENEnv)
 	if len(envKlaytnNodeURL) > 0 {
 		config.RemoteNode = true
 		config.KlaytnNodeURL = envKlaytnNodeURL

@@ -30,7 +30,7 @@ func TestLoadConfiguration(t *testing.T) {
 		Mode      string
 		Network   string
 		Port      string
-		Geth      string
+		Ken       string
 		SkipAdmin string
 
 		cfg *Configuration
@@ -62,7 +62,7 @@ func TestLoadConfiguration(t *testing.T) {
 				Params:                 params.CypressChainConfig,
 				GenesisBlockIdentifier: klaytn.MainnetGenesisBlockIdentifier,
 				Port:                   1000,
-				KlaytnNodeURL:          DefaultKlaytnNodeURL,
+				KlaytnNodeURL:          DefaultKENURL,
 				KlaytnNodeArguments:    klaytn.MainnetKlaytnNodeArguments,
 				SkipAdmin:              false,
 			},
@@ -71,7 +71,7 @@ func TestLoadConfiguration(t *testing.T) {
 			Mode:      string(Online),
 			Network:   Mainnet,
 			Port:      "1000",
-			Geth:      "http://blah",
+			Ken:       "http://blah",
 			SkipAdmin: "TRUE",
 			cfg: &Configuration{
 				Mode: Online,
@@ -88,26 +88,26 @@ func TestLoadConfiguration(t *testing.T) {
 				SkipAdmin:              true,
 			},
 		},
-		"all set (baobab)": {
+		"all set (testnet)": {
 			Mode:    string(Online),
-			Network: Baobab,
+			Network: Testnet,
 			Port:    "1000",
 			cfg: &Configuration{
 				Mode: Online,
 				Network: &types.NetworkIdentifier{
-					Network:    klaytn.BaobabNetwork,
+					Network:    klaytn.TestnetNetwork,
 					Blockchain: klaytn.Blockchain,
 				},
 				Params:                 params.BaobabChainConfig,
-				GenesisBlockIdentifier: klaytn.BaobabGenesisBlockIdentifier,
+				GenesisBlockIdentifier: klaytn.TestnetGenesisBlockIdentifier,
 				Port:                   1000,
-				KlaytnNodeURL:          DefaultKlaytnNodeURL,
-				KlaytnNodeArguments:    klaytn.BaobabKlaytnNodeArguments,
+				KlaytnNodeURL:          DefaultKENURL,
+				KlaytnNodeArguments:    klaytn.TestnetKlaytnNodeArguments,
 			},
 		},
 		"invalid mode": {
 			Mode:    "bad mode",
-			Network: Baobab,
+			Network: Testnet,
 			Port:    "1000",
 			err:     errors.New("bad mode is not a valid mode"),
 		},
@@ -119,7 +119,7 @@ func TestLoadConfiguration(t *testing.T) {
 		},
 		"invalid port": {
 			Mode:    string(Offline),
-			Network: Baobab,
+			Network: Testnet,
 			Port:    "bad port",
 			err:     errors.New("unable to parse port bad port"),
 		},
@@ -130,7 +130,7 @@ func TestLoadConfiguration(t *testing.T) {
 			os.Setenv(ModeEnv, test.Mode)
 			os.Setenv(NetworkEnv, test.Network)
 			os.Setenv(PortEnv, test.Port)
-			os.Setenv(KlaytnNodeEnv, test.Geth)
+			os.Setenv(KENEnv, test.Ken)
 			os.Setenv(SkipAdminEnv, test.SkipAdmin)
 
 			cfg, err := LoadConfiguration()

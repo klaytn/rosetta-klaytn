@@ -34,9 +34,9 @@ const (
 	// in MainnetNetworkIdentifier (which is Cypress).
 	MainnetNetwork string = "Mainnet"
 
-	// BaobabNetwork is the value of the network
-	// in BaobabNetworkIdentifier.
-	BaobabNetwork string = "Baobab"
+	// TestnetNetwork is the value of the network
+	// in TestnetNetworkIdentifier.
+	TestnetNetwork string = "Testnet"
 
 	// Symbol is the symbol value
 	// used in Currency.
@@ -110,8 +110,8 @@ var (
 	// MainnetKlaytnNodeArguments are the arguments to start a Mainnet(Cypress) Klaytn node instance.
 	MainnetKlaytnNodeArguments = fmt.Sprintf("%s --cypress", KlaytnNodeArguments)
 
-	// BaobabKlaytnNodeArguments are the arguments to start a Baobab Klaytn node instance.
-	BaobabKlaytnNodeArguments = fmt.Sprintf("%s --baobab", KlaytnNodeArguments)
+	// TestnetKlaytnNodeArguments are the arguments to start a Testnet(Baobab) Klaytn node instance.
+	TestnetKlaytnNodeArguments = fmt.Sprintf("%s --baobab", KlaytnNodeArguments)
 
 	// MainnetGenesisBlockIdentifier is the *types.BlockIdentifier
 	// of the cypress genesis block.
@@ -120,9 +120,9 @@ var (
 		Index: GenesisBlockIndex,
 	}
 
-	// BaobabGenesisBlockIdentifier is the *types.BlockIdentifier
-	// of the Baobab genesis block.
-	BaobabGenesisBlockIdentifier = &types.BlockIdentifier{
+	// TestnetGenesisBlockIdentifier is the *types.BlockIdentifier
+	// of the Testnet(Baobab) genesis block.
+	TestnetGenesisBlockIdentifier = &types.BlockIdentifier{
 		Hash:  params.BaobabGenesisHash.Hex(),
 		Index: GenesisBlockIndex,
 	}
