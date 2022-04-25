@@ -536,6 +536,81 @@ func TestBalance(t *testing.T) {
 	mockJSONRPC.AssertExpectations(t)
 }
 
+func TestBalanceWithNotFoundAccount(t *testing.T) {
+	mockJSONRPC := &mocks.JSONRPC{}
+
+	c := &Client{
+		c:              mockJSONRPC,
+		traceSemaphore: semaphore.NewWeighted(100),
+	}
+
+	addressToQuery := "0xe63960c1c07a3041195ea1bd505f971b9f01e4e2"
+	ctx := context.Background()
+
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"klay_getBlockByNumber",
+		"latest",
+		false,
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*types.Header)
+
+			file, err := ioutil.ReadFile("testdata/basic_header.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
+		},
+	).Once()
+
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"klay_getAccount",
+		addressToQuery,
+		"latest",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			acct := args.Get(1).(*account.AccountSerializer)
+			*acct = account.AccountSerializer{}
+		},
+	).Once()
+
+	resp, err := c.Balance(
+		ctx,
+		&RosettaTypes.AccountIdentifier{
+			Address: addressToQuery,
+		},
+		nil,
+	)
+	assert.Equal(t, &RosettaTypes.AccountBalanceResponse{
+		BlockIdentifier: &RosettaTypes.BlockIdentifier{
+			Hash:  "0x9a65e7f5b277136a4600097687abbbd76ca07662aa297be5279605aa20b73a6a",
+			Index: 86613352,
+		},
+		Balances: []*RosettaTypes.Amount{
+			{
+				Value:    "0",
+				Currency: Currency,
+			},
+		},
+		Metadata: map[string]interface{}{
+			"nonce": int64(0),
+		},
+	}, resp)
+	assert.NoError(t, err)
+
+	mockJSONRPC.AssertExpectations(t)
+}
+
 func TestBalance_Historical_Hash(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
 

@@ -1624,9 +1624,13 @@ func (kc *Client) Balance(
 	if err := kc.c.CallContext(ctx, &accountInfo, "klay_getAccount", accountIdf.Address, blockQuery); err != nil {
 		return nil, err
 	}
-
-	balance := accountInfo.GetAccount().GetBalance().String()
-	nonce := accountInfo.GetAccount().GetNonce()
+	// To return default account information
+	balance := "0"
+	nonce := uint64(0)
+	if accountInfo.GetAccount() != nil {
+		balance = accountInfo.GetAccount().GetBalance().String()
+		nonce = accountInfo.GetAccount().GetNonce()
+	}
 
 	var blockInfo types.Header
 	if err := kc.c.CallContext(ctx, &blockInfo, blockQueryMethod, blockQuery, false); err != nil {
