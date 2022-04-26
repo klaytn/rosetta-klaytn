@@ -30,12 +30,25 @@ test:
 build:
 	docker build -t rosetta-klaytn:latest https://github.com/klaytn/rosetta-klaytn.git
 
+build-m1:
+	docker build --platform linux/amd64 -t rosetta-klaytn:latest https://github.com/klaytn/rosetta-klaytn.git
+
 build-local:
 	docker build -t rosetta-klaytn:latest .
 
+build-local-m1:
+	docker build --platform linux/amd64 -t rosetta-klaytn:latest .
+
+# make build-release -e "version=vx.x.x"
 build-release:
 	# make sure to always set version with vX.X.X
 	docker build -t rosetta-klaytn:$(version) .;
+	docker save rosetta-klaytn:$(version) | gzip > rosetta-klaytn-$(version).tar.gz;
+
+# make build-release-m1 -e "version=vx.x.x"
+build-release-m1:
+	# make sure to always set version with vX.X.X
+	docker build --platform linux/amd64 -t rosetta-klaytn:$(version) .;
 	docker save rosetta-klaytn:$(version) | gzip > rosetta-klaytn-$(version).tar.gz;
 
 update-bootstrap-balances:
@@ -45,20 +58,39 @@ update-bootstrap-balances:
 run-mainnet-online:
 	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/klaytn-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 
+run-mainnet-online-m1:
+	docker run --platform linux/amd64 -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/klaytn-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+
 run-mainnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
+
+run-mainnet-offline-m1:
+	docker run --platform linux/amd64 -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
 
 run-testnet-online:
 	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/klaytn-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 
+run-testnet-online-m1:
+	docker run --platform linux/amd64 -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/klaytn-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+
 run-testnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
+
+run-testnet-offline-m1:
+	docker run --platform linux/amd64 -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
 
 run-mainnet-remote:
 	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 
+# make run-mainnet-remote-m1 -e "ken=http://x.x.x.x:8551"
+run-mainnet-remote-m1:
+	docker run --platform linux/amd64 -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+
 run-testnet-remote:
 	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+
+run-testnet-remote-m1:
+	docker run --platform linux/amd64 -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 
 check-comments:
 	${GOLINT_INSTALL}
@@ -90,6 +122,9 @@ check-format:
 
 salus:
 	docker run --rm -t -v ${PWD}:/home/repo coinbase/salus
+
+salus-m1:
+	docker run --platform linux/amd64 --rm -t -v ${PWD}:/home/repo coinbase/salus
 
 spellcheck:
 	${SPELLCHECK_CMD} -error .
