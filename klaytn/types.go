@@ -17,6 +17,7 @@ package klaytn
 import (
 	"context"
 	"fmt"
+
 	"github.com/klaytn/klaytn/networks/rpc"
 	"github.com/klaytn/klaytn/params"
 
@@ -107,7 +108,8 @@ const (
 )
 
 var (
-	// MainnetKlaytnNodeArguments are the arguments to start a Mainnet(Cypress) Klaytn node instance.
+	// MainnetKlaytnNodeArguments are the arguments to start a Mainnet(Cypress) Klaytn node
+	// instance.
 	MainnetKlaytnNodeArguments = fmt.Sprintf("%s --cypress", KlaytnNodeArguments)
 
 	// TestnetKlaytnNodeArguments are the arguments to start a Testnet(Baobab) Klaytn node instance.

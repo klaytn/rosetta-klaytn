@@ -18,10 +18,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/klaytn/klaytn/common"
-	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"math/big"
 	"strconv"
+
+	"github.com/klaytn/klaytn/common"
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 
 	klayTypes "github.com/klaytn/klaytn/blockchain/types"
 	"github.com/klaytn/rosetta-klaytn/configuration"
@@ -56,7 +57,8 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	// because Klaytn supoprts a function to update Klaytn account's key.
 	// See https://docs.klaytn.com/klaytn/design/accounts#decoupling-key-pairs-from-addresses
 	// for a detailed concept of decoupling key pairs from addresses.
-	// Reference: https://community.rosetta-api.org/t/can-i-implement-derive-endpoint-api-in-this-case/727
+	// Reference:
+	// https://community.rosetta-api.org/t/can-i-implement-derive-endpoint-api-in-this-case/727
 	return nil, ErrNotSupportedAPI
 }
 

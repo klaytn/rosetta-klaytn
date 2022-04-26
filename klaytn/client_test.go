@@ -18,6 +18,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"math/big"
+	"reflect"
+	"sort"
+	"strings"
+	"testing"
+
 	"github.com/klaytn/klaytn"
 	"github.com/klaytn/klaytn/blockchain/types"
 	"github.com/klaytn/klaytn/blockchain/types/account"
@@ -27,12 +34,6 @@ import (
 	"github.com/klaytn/klaytn/node/cn"
 	"github.com/klaytn/klaytn/params"
 	"github.com/klaytn/klaytn/reward"
-	"io/ioutil"
-	"math/big"
-	"reflect"
-	"sort"
-	"strings"
-	"testing"
 
 	mocks "github.com/klaytn/rosetta-klaytn/mocks/klaytn"
 
@@ -501,7 +502,9 @@ func TestBalance(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*account.AccountSerializer)
 
-			file, err := ioutil.ReadFile("testdata/account_balance_0xe63960c1c07a3041195ea1bd505f971b9f01e4e2.json")
+			file, err := ioutil.ReadFile(
+				"testdata/account_balance_0xe63960c1c07a3041195ea1bd505f971b9f01e4e2.json",
+			)
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -656,7 +659,9 @@ func TestBalance_Historical_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*account.AccountSerializer)
 
-			file, err := ioutil.ReadFile("testdata/account_balance_0xe63960c1c07a3041195ea1bd505f971b9f01e4e2.json")
+			file, err := ioutil.ReadFile(
+				"testdata/account_balance_0xe63960c1c07a3041195ea1bd505f971b9f01e4e2.json",
+			)
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -742,7 +747,9 @@ func TestBalance_Historical_Index(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*account.AccountSerializer)
 
-			file, err := ioutil.ReadFile("testdata/account_balance_0xe63960c1c07a3041195ea1bd505f971b9f01e4e2.json")
+			file, err := ioutil.ReadFile(
+				"testdata/account_balance_0xe63960c1c07a3041195ea1bd505f971b9f01e4e2.json",
+			)
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -958,7 +965,9 @@ func TestCall_GetTransactionReceipt(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/call_0x3ee9ad0bd4e344e5492fdb5e3446534d6a3f815278979fe7c75449cc2ab6eee8.json")
+			file, err := ioutil.ReadFile(
+				"testdata/call_0x3ee9ad0bd4e344e5492fdb5e3446534d6a3f815278979fe7c75449cc2ab6eee8.json",
+			)
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, &r)
@@ -1128,7 +1137,9 @@ func TestCall_EstimateGas(t *testing.T) {
 			r := args.Get(1).(*string)
 
 			var expected map[string]interface{}
-			file, err := ioutil.ReadFile("testdata/estimate_gas_0xaD6D458402F60fD3Bd25163575031ACDce07538D.json")
+			file, err := ioutil.ReadFile(
+				"testdata/estimate_gas_0xaD6D458402F60fD3Bd25163575031ACDce07538D.json",
+			)
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, &expected)
@@ -1138,7 +1149,9 @@ func TestCall_EstimateGas(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/estimate_gas_0xaD6D458402F60fD3Bd25163575031ACDce07538D.json")
+	correctRaw, err := ioutil.ReadFile(
+		"testdata/estimate_gas_0xaD6D458402F60fD3Bd25163575031ACDce07538D.json",
+	)
 	assert.NoError(t, err)
 	var correct map[string]interface{}
 	assert.NoError(t, json.Unmarshal(correctRaw, &correct))
@@ -1741,7 +1754,9 @@ func TestTransaction_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_0x03cb20a342485a5bed95291b8e03fab32f5309ca69d342ef8884213b90bd454f.json") // nolint:lll
+			file, err := ioutil.ReadFile(
+				"testdata/block_0x03cb20a342485a5bed95291b8e03fab32f5309ca69d342ef8884213b90bd454f.json",
+			) // nolint:lll
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2520,10 +2535,18 @@ func TestBlock_363753(t *testing.T) {
 	}
 
 	totalReward := new(big.Int).Add(blockReward, txsFee)
-	expectedCnReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(34)), big.NewInt(100))
-	expectedKgfReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(54)), big.NewInt(100))
-	expectedKirReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(12)), big.NewInt(100))
-	rewardSum := new(big.Int).Add(new(big.Int).Add(expectedCnReward, expectedKgfReward), expectedKirReward)
+	expectedCnReward := new(
+		big.Int,
+	).Div(new(big.Int).Mul(totalReward, big.NewInt(34)), big.NewInt(100))
+	expectedKgfReward := new(
+		big.Int,
+	).Div(new(big.Int).Mul(totalReward, big.NewInt(54)), big.NewInt(100))
+	expectedKirReward := new(
+		big.Int,
+	).Div(new(big.Int).Mul(totalReward, big.NewInt(12)), big.NewInt(100))
+	rewardSum := new(
+		big.Int,
+	).Add(new(big.Int).Add(expectedCnReward, expectedKgfReward), expectedKirReward)
 	remainReward := new(big.Int).Sub(totalReward, rewardSum)
 	expectedKgfReward = new(big.Int).Add(expectedKgfReward, remainReward)
 
@@ -2946,10 +2969,18 @@ func TestBlock_363366(t *testing.T) {
 	}
 
 	totalReward := new(big.Int).Add(blockReward, txsFee)
-	expectedCnReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(34)), big.NewInt(100))
-	expectedKgfReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(54)), big.NewInt(100))
-	expectedKirReward := new(big.Int).Div(new(big.Int).Mul(totalReward, big.NewInt(12)), big.NewInt(100))
-	rewardSum := new(big.Int).Add(new(big.Int).Add(expectedCnReward, expectedKgfReward), expectedKirReward)
+	expectedCnReward := new(
+		big.Int,
+	).Div(new(big.Int).Mul(totalReward, big.NewInt(34)), big.NewInt(100))
+	expectedKgfReward := new(
+		big.Int,
+	).Div(new(big.Int).Mul(totalReward, big.NewInt(54)), big.NewInt(100))
+	expectedKirReward := new(
+		big.Int,
+	).Div(new(big.Int).Mul(totalReward, big.NewInt(12)), big.NewInt(100))
+	rewardSum := new(
+		big.Int,
+	).Add(new(big.Int).Add(expectedCnReward, expectedKgfReward), expectedKirReward)
 	remainReward := new(big.Int).Sub(totalReward, rewardSum)
 	expectedKgfReward = new(big.Int).Add(expectedKgfReward, remainReward)
 
@@ -3211,7 +3242,8 @@ func TestBlock_13998626(t *testing.T) {
 			r := args.Get(1).(*json.RawMessage)
 
 			file, err := ioutil.ReadFile(
-				"testdata/block_trace_0x25e04d924eda304af2ea0a2ff830547eb8f952ccc7a1a5d24430aab95a86daca.json") // nolint
+				"testdata/block_trace_0x25e04d924eda304af2ea0a2ff830547eb8f952ccc7a1a5d24430aab95a86daca.json",
+			) // nolint
 			assert.NoError(t, err)
 			*r = json.RawMessage(file)
 		},
@@ -3547,7 +3579,8 @@ func TestBlock_335049(t *testing.T) {
 			r := args.Get(1).(*json.RawMessage)
 
 			file, err := ioutil.ReadFile(
-				"testdata/block_trace_0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6.json") // nolint
+				"testdata/block_trace_0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6.json",
+			) // nolint
 			assert.NoError(t, err)
 			*r = json.RawMessage(file)
 		},

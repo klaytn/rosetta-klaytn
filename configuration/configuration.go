@@ -17,12 +17,13 @@ package configuration
 import (
 	"errors"
 	"fmt"
-	"github.com/klaytn/klaytn/common"
-	"github.com/klaytn/klaytn/params"
-	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"math/big"
 	"os"
 	"strconv"
+
+	"github.com/klaytn/klaytn/common"
+	"github.com/klaytn/klaytn/params"
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 
 	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 )

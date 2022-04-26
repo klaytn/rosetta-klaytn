@@ -19,6 +19,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"math/big"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/klaytn/klaytn"
 	"github.com/klaytn/klaytn/blockchain/types"
 	"github.com/klaytn/klaytn/blockchain/types/account"
@@ -29,12 +36,6 @@ import (
 	"github.com/klaytn/klaytn/params"
 	"github.com/klaytn/klaytn/reward"
 	"github.com/klaytn/klaytn/rlp"
-	"log"
-	"math/big"
-	"net/http"
-	"strconv"
-	"strings"
-	"time"
 
 	"github.com/klaytn/klaytn/common/hexutil"
 	RosettaTypes "github.com/klaytn/rosetta-sdk-go-klaytn/types"
@@ -56,7 +57,8 @@ const (
 )
 
 // Client allows for querying a set of specific Ethereum endpoints in an
-// idempotent manner. Client relies on the klay_*, debug_*, admin_*, governance_*, and txpool_* methods.
+// idempotent manner. Client relies on the klay_*, debug_*, admin_*, governance_*, and txpool_*
+// methods.
 //
 // Client borrows HEAVILY from https://github.com/klaytn/klaytn/blob/dev/client/klay_client.go
 type Client struct {
@@ -287,7 +289,8 @@ func (kc *Client) Transaction(
 		return nil, fmt.Errorf("%w: cannot get reward ratio %v", err, header)
 	}
 	// Since populateTransaction calculates the transaction fee,
-	// the addresses receiving the fee and the fee distribution ratios must be passed together as parameters.
+	// the addresses receiving the fee and the fee distribution ratios must be passed together as
+	// parameters.
 	tx, err := kc.populateTransaction(loadedTx, rewardAddrs, ratioMap)
 	if err != nil {
 		return nil, fmt.Errorf("%w: cannot parse %s", err, loadedTx.Transaction.Hash().Hex())
@@ -703,7 +706,11 @@ func flattenTraces(data *Call, flattened []*flatCall) []*flatCall {
 
 // traceOps returns all *RosettaTypes.Operation for a given
 // array of flattened traces.
-func traceOps(tx *loadedTransaction, calls []*flatCall, startIndex int) []*RosettaTypes.Operation { // nolint: gocognit
+func traceOps(
+	tx *loadedTransaction,
+	calls []*flatCall,
+	startIndex int,
+) []*RosettaTypes.Operation { // nolint: gocognit
 	var ops []*RosettaTypes.Operation
 	if len(calls) == 0 {
 		return ops
@@ -730,10 +737,12 @@ func traceOps(tx *loadedTransaction, calls []*flatCall, startIndex int) []*Roset
 		// to the operation of the transaction, the logic below is added.
 		if trace.Type == "" {
 			value := tx.Transaction.Value()
-			// Based on Klaytn v1.8.2, a transaction that simply transfers KLAY does not return a valid value when tracing.
-			// Therefore, the operations for tracking transferring KLAY should be created separately.
+			// Based on Klaytn v1.8.2, a transaction that simply transfers KLAY does not return a
+			// valid value when tracing. Therefore, the operations for tracking transferring KLAY
+			// should be created separately.
 			// `trace.Type == ""` means that we cannot use trace information.
-			// TODO-Klaytn: If the Klaytn tracer returns the KLAY transfer transaction correctly, this logic should be deleted.
+			// TODO-Klaytn: If the Klaytn tracer returns the KLAY transfer transaction correctly,
+			// this logic should be deleted.
 			if value.Sign() != 0 {
 				// When sending a simple value, it is a CALL operation type.
 				opType := "CALL"
@@ -741,7 +750,16 @@ func traceOps(tx *loadedTransaction, calls []*flatCall, startIndex int) []*Roset
 				// Appends a from address operation.
 				idx := int64(len(ops) + startIndex)
 				from := tx.From.String()
-				fromOp := createValueTransferOperation(idx, opType, opStatus, from, value, true, nil, nil)
+				fromOp := createValueTransferOperation(
+					idx,
+					opType,
+					opStatus,
+					from,
+					value,
+					true,
+					nil,
+					nil,
+				)
 				ops = append(ops, fromOp)
 
 				// Appends a to address operation.
@@ -753,7 +771,16 @@ func traceOps(tx *loadedTransaction, calls []*flatCall, startIndex int) []*Roset
 						Index: fromOpIndex,
 					},
 				}
-				toOp := createValueTransferOperation(toIdx, opType, opStatus, to, value, false, nil, relatedOps)
+				toOp := createValueTransferOperation(
+					toIdx,
+					opType,
+					opStatus,
+					to,
+					value,
+					false,
+					nil,
+					relatedOps,
+				)
 				ops = append(ops, toOp)
 			}
 			continue
@@ -774,7 +801,16 @@ func traceOps(tx *loadedTransaction, calls []*flatCall, startIndex int) []*Roset
 
 		if shouldAdd {
 			idx := int64(len(ops) + startIndex)
-			fromOp := createValueTransferOperation(idx, trace.Type, opStatus, from, trace.Value, true, metadata, nil)
+			fromOp := createValueTransferOperation(
+				idx,
+				trace.Type,
+				opStatus,
+				from,
+				trace.Value,
+				true,
+				metadata,
+				nil,
+			)
 			if zeroValue {
 				fromOp.Amount = nil
 			} else {
@@ -822,7 +858,16 @@ func traceOps(tx *loadedTransaction, calls []*flatCall, startIndex int) []*Roset
 					Index: lastOpIndex,
 				},
 			}
-			toOp := createValueTransferOperation(idx, trace.Type, opStatus, to, trace.Value, false, metadata, relatedOps)
+			toOp := createValueTransferOperation(
+				idx,
+				trace.Type,
+				opStatus,
+				to,
+				trace.Value,
+				false,
+				metadata,
+				relatedOps,
+			)
 			if zeroValue {
 				toOp.Amount = nil
 			} else {
@@ -866,7 +911,14 @@ func traceOps(tx *loadedTransaction, calls []*flatCall, startIndex int) []*Roset
 	return ops
 }
 
-func createValueTransferOperation(idx int64, traceType, opStatus, address string, amount *big.Int, isNegative bool, metadata map[string]interface{}, relatedOps []*RosettaTypes.OperationIdentifier) *RosettaTypes.Operation { // nolint
+func createValueTransferOperation(
+	idx int64,
+	traceType, opStatus, address string,
+	amount *big.Int,
+	isNegative bool,
+	metadata map[string]interface{},
+	relatedOps []*RosettaTypes.OperationIdentifier,
+) *RosettaTypes.Operation { // nolint
 	op := &RosettaTypes.Operation{
 		OperationIdentifier: &RosettaTypes.OperationIdentifier{
 			Index: idx,
@@ -956,7 +1008,12 @@ func createSuccessFeeOperation(idx int64, account string, amount *big.Int) *Rose
 	}
 }
 
-func createSuccessFeeOperationWithRelatedOperations(idx int64, relatedOperationsIdx []int64, account string, amount *big.Int) *RosettaTypes.Operation { // nolint
+func createSuccessFeeOperationWithRelatedOperations(
+	idx int64,
+	relatedOperationsIdx []int64,
+	account string,
+	amount *big.Int,
+) *RosettaTypes.Operation { // nolint
 	op := RosettaTypes.Operation{
 		OperationIdentifier: &RosettaTypes.OperationIdentifier{
 			Index: idx,
@@ -980,9 +1037,14 @@ func createSuccessFeeOperationWithRelatedOperations(idx int64, relatedOperations
 }
 
 // feeOps returns the transaction's fee operations.
-// In the case of Klaytn, depending on the transaction type, the address where the fee is paid may be different.
-// In addition, transaction fees must be allocated to CN, KIR, and KGF addresses according to a fixed rate.
-func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[string]*big.Int) ([]*RosettaTypes.Operation, error) { // nolint
+// In the case of Klaytn, depending on the transaction type, the address where the fee is paid may
+// be different. In addition, transaction fees must be allocated to CN, KIR, and KGF addresses
+// according to a fixed rate.
+func feeOps(
+	tx *loadedTransaction,
+	rewardAddresses []string,
+	rewardRatioMap map[string]*big.Int,
+) ([]*RosettaTypes.Operation, error) { // nolint
 	var proposerEarnedAmount *big.Int
 	if tx.FeeBurned == nil {
 		proposerEarnedAmount = tx.FeeAmount
@@ -1012,23 +1074,47 @@ func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[
 			feePayerRatio := big.NewInt(int64(ratio))
 
 			// fee * ratio / 100
-			senderAmount := new(big.Int).Div(new(big.Int).Mul(proposerEarnedAmount, senderRatio), big.NewInt(100))     // nolint
-			feePayerAmount := new(big.Int).Div(new(big.Int).Mul(proposerEarnedAmount, feePayerRatio), big.NewInt(100)) // nolint
+			senderAmount := new(
+				big.Int,
+			).Div(new(big.Int).Mul(proposerEarnedAmount, senderRatio), big.NewInt(100))
+			// nolint
+			feePayerAmount := new(
+				big.Int,
+			).Div(new(big.Int).Mul(proposerEarnedAmount, feePayerRatio), big.NewInt(100))
+			// nolint
 
 			// Set sender tx fee payment and fee payer tx fee payment.
 			opsForFDR := []*RosettaTypes.Operation{
 				createSuccessFeeOperation(0, tx.From.String(), new(big.Int).Neg(senderAmount)),
-				createSuccessFeeOperation(1, feePayerAddress.String(), new(big.Int).Neg(feePayerAmount)),
+				createSuccessFeeOperation(
+					1,
+					feePayerAddress.String(),
+					new(big.Int).Neg(feePayerAmount),
+				),
 			}
 			ops = append(ops, opsForFDR...)
 
 			// If tx.FeeBurned is not nil, append the burnt operations.
 			if tx.FeeBurned != nil {
-				senderBurnAmount := new(big.Int).Div(new(big.Int).Mul(tx.FeeBurned, senderRatio), big.NewInt(100))     // nolint
-				feePayerBurnAmount := new(big.Int).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100)) // nolint
+				senderBurnAmount := new(
+					big.Int,
+				).Div(new(big.Int).Mul(tx.FeeBurned, senderRatio), big.NewInt(100))
+				// nolint
+				feePayerBurnAmount := new(
+					big.Int,
+				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100))
+				// nolint
 				burntOps := []*RosettaTypes.Operation{
-					createSuccessFeeOperation(2, tx.From.String(), new(big.Int).Neg(senderBurnAmount)),           // nolint:gomnd
-					createSuccessFeeOperation(3, feePayerAddress.String(), new(big.Int).Neg(feePayerBurnAmount)), // nolint:gomnd
+					createSuccessFeeOperation(
+						2,
+						tx.From.String(),
+						new(big.Int).Neg(senderBurnAmount),
+					), // nolint:gomnd
+					createSuccessFeeOperation(
+						3,
+						feePayerAddress.String(),
+						new(big.Int).Neg(feePayerBurnAmount),
+					), // nolint:gomnd
 				}
 				ops = append(ops, burntOps...)
 			}
@@ -1055,7 +1141,8 @@ func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[
 		}
 	}
 
-	// Transaction fee reward is also allocated to CN, KGF, and KIR addresses according to the ratios.
+	// Transaction fee reward is also allocated to CN, KGF, and KIR addresses according to the
+	// ratios.
 	idx := len(ops)
 
 	// If there are more than one operation that pays a fee (if the fee is partially paid),
@@ -1075,9 +1162,17 @@ func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[
 			continue
 		}
 		// reward * ratio / 100
-		partialReward := new(big.Int).Div(new(big.Int).Mul(proposerEarnedAmount, rewardRatioMap[addr]), big.NewInt(100)) // nolint
+		partialReward := new(
+			big.Int,
+		).Div(new(big.Int).Mul(proposerEarnedAmount, rewardRatioMap[addr]), big.NewInt(100))
+		// nolint
 		rewardSum = new(big.Int).Add(rewardSum, partialReward)
-		op := createSuccessFeeOperationWithRelatedOperations(int64(idx), relatedOpID, addr, partialReward)
+		op := createSuccessFeeOperationWithRelatedOperations(
+			int64(idx),
+			relatedOpID,
+			addr,
+			partialReward,
+		)
 		rewardOperations = append(rewardOperations, op)
 		idx++
 	}
@@ -1092,7 +1187,10 @@ func feeOps(tx *loadedTransaction, rewardAddresses []string, rewardRatioMap map[
 			// In that case, reward will be given to reward(= block proposer).
 			ratioIndex = cnRatioIndex
 		}
-		ogReward, ok := new(big.Int).SetString(rewardOperations[ratioIndex].Amount.Value, 10) // nolint:gomnd
+		ogReward, ok := new(
+			big.Int,
+		).SetString(rewardOperations[ratioIndex].Amount.Value, 10)
+		// nolint:gomnd
 		if !ok {
 			return nil, errors.New("could not add remain rewards to KGF address")
 		}
@@ -1353,7 +1451,8 @@ func (kc *Client) populateTransaction(
 
 	// If the contractAddress of receiptMap is an empty address,
 	// it is replaced with nil and returned.
-	if ca, ok := receiptMap["contractAddress"].(string); ok && common.EmptyAddress(common.HexToAddress(ca)) {
+	if ca, ok := receiptMap["contractAddress"].(string); ok &&
+		common.EmptyAddress(common.HexToAddress(ca)) {
 		receiptMap["contractAddress"] = nil
 	}
 
@@ -1378,10 +1477,15 @@ func (kc *Client) populateTransaction(
 	return populatedTransaction, nil
 }
 
-// getRewardAndRatioInfo returns the block minting reward and reward ratio of the given block height.
+// getRewardAndRatioInfo returns the block minting reward and reward ratio of the given block
+// height.
 // In order to obtain the minting amount per block, reward ratio, kir and kgf addresses,
 // getRewardAndRatioInfo uses the governance API.
-func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewardbase string) ([]string, map[string]*big.Int, *big.Int, error) { // nolint
+func (kc *Client) getRewardAndRatioInfo(
+	ctx context.Context,
+	block string,
+	rewardbase string,
+) ([]string, map[string]*big.Int, *big.Int, error) { // nolint
 	govItems := make(map[string]interface{})
 	// Call `governance_itemsAt` to get reward ratio.
 	err := kc.c.CallContext(ctx, &govItems, "governance_itemsAt", block)
@@ -1405,15 +1509,24 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 
 	cnRatio, ok := new(big.Int).SetString(ratios[cnRatioIndex], 10) // nolint:gomnd
 	if !ok {
-		return nil, nil, nil, fmt.Errorf("could not convert CN reward ratio string to int type from %s", ratios[0])
+		return nil, nil, nil, fmt.Errorf(
+			"could not convert CN reward ratio string to int type from %s",
+			ratios[0],
+		)
 	}
 	kgfRatio, ok := new(big.Int).SetString(ratios[kgfRatioIndex], 10) // nolint:gomnd
 	if !ok {
-		return nil, nil, nil, fmt.Errorf("could not convert KGF reward ratio string to int type from %s", ratios[1])
+		return nil, nil, nil, fmt.Errorf(
+			"could not convert KGF reward ratio string to int type from %s",
+			ratios[1],
+		)
 	}
 	kirRatio, ok := new(big.Int).SetString(ratios[kirRatioIndex], 10) // nolint:gomnd
 	if !ok {
-		return nil, nil, nil, fmt.Errorf("could not convert KIR reward ratio string to int type from %s", ratios[2])
+		return nil, nil, nil, fmt.Errorf(
+			"could not convert KIR reward ratio string to int type from %s",
+			ratios[2],
+		)
 	}
 
 	// In `governance_itemsAt`, there is a field `reward.mintingamount`
@@ -1471,7 +1584,8 @@ func (kc *Client) getRewardAndRatioInfo(ctx context.Context, block string, rewar
 	rewardRatioMap[kgfAddress] = common.Big0
 	rewardRatioMap[kirAddress] = common.Big0
 
-	// kgfAddress or kirAddress can be same with rewardbase. So instead of set ratio, we should add its ratio to map.
+	// kgfAddress or kirAddress can be same with rewardbase. So instead of set ratio, we should add
+	// its ratio to map.
 	rewardRatioMap[rewardbase] = new(big.Int).Add(rewardRatioMap[rewardbase], cnRatio)
 	rewardRatioMap[kgfAddress] = new(big.Int).Add(rewardRatioMap[kgfAddress], kgfRatio)
 	rewardRatioMap[kirAddress] = new(big.Int).Add(rewardRatioMap[kirAddress], kirRatio)
@@ -1487,7 +1601,11 @@ func (kc *Client) blockMintingReward(
 	ctx := context.Background()
 
 	var err error
-	rewardAddresses, rewardRatioMap, mintingAmount, err := kc.getRewardAndRatioInfo(ctx, toBlockNumArg(currentBlock.Number()), currentBlock.Rewardbase().String()) // nolint:lll
+	rewardAddresses, rewardRatioMap, mintingAmount, err := kc.getRewardAndRatioInfo(
+		ctx,
+		toBlockNumArg(currentBlock.Number()),
+		currentBlock.Rewardbase().String(),
+	) // nolint:lll
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to get reward ratio info: %s", err.Error())
 	}
@@ -1497,7 +1615,10 @@ func (kc *Client) blockMintingReward(
 	rewardSum := big.NewInt(0)
 	for addr, ratio := range rewardRatioMap {
 		// reward * ratio / 100
-		rewardAmountMap[addr] = new(big.Int).Div(new(big.Int).Mul(mintingAmount, ratio), big.NewInt(100)) // nolint:gomnd
+		rewardAmountMap[addr] = new(
+			big.Int,
+		).Div(new(big.Int).Mul(mintingAmount, ratio), big.NewInt(100))
+		// nolint:gomnd
 		rewardSum = new(big.Int).Add(rewardSum, rewardAmountMap[addr])
 	}
 
@@ -1512,7 +1633,9 @@ func (kc *Client) blockMintingReward(
 			ratioIndex = cnRatioIndex
 		}
 
-		rewardAmountMap[rewardAddresses[ratioIndex]] = new(big.Int).Add(rewardAmountMap[rewardAddresses[ratioIndex]], remain)
+		rewardAmountMap[rewardAddresses[ratioIndex]] = new(
+			big.Int,
+		).Add(rewardAmountMap[rewardAddresses[ratioIndex]], remain)
 	}
 
 	return rewardAddresses, rewardAmountMap, rewardRatioMap, nil
@@ -1600,7 +1723,8 @@ func (kc *Client) syncProgress(ctx context.Context) (*klaytn.SyncProgress, error
 // at a *RosettaTypes.PartialBlockIdentifier.
 //
 // Currently, Klaytn does not support graphQL, so it uses multiple RPC calls.
-// Since Balance RPC Call supports block information as a parameter, there is no need to use graphQL.
+// Since Balance RPC Call supports block information as a parameter, there is no need to use
+// graphQL.
 func (kc *Client) Balance(
 	ctx context.Context,
 	accountIdf *RosettaTypes.AccountIdentifier,

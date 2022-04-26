@@ -17,11 +17,12 @@ package services
 import (
 	"context"
 	"encoding/json"
-	"github.com/klaytn/klaytn/common"
 	"math/big"
 
-	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
+	"github.com/klaytn/klaytn/common"
+
 	"github.com/klaytn/klaytn/common/hexutil"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 
 	klayTypes "github.com/klaytn/klaytn/blockchain/types"
 )

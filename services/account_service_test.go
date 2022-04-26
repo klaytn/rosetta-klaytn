@@ -16,8 +16,9 @@ package services
 
 import (
 	"context"
-	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"testing"
+
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 
 	"github.com/klaytn/rosetta-klaytn/configuration"
 	mocks "github.com/klaytn/rosetta-klaytn/mocks/services"

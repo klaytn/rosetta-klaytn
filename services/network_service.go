@@ -16,11 +16,12 @@ package services
 
 import (
 	"context"
+
 	"github.com/klaytn/rosetta-klaytn/klaytn"
 
+	"github.com/klaytn/rosetta-klaytn/configuration"
 	"github.com/klaytn/rosetta-sdk-go-klaytn/asserter"
 	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
-	"github.com/klaytn/rosetta-klaytn/configuration"
 )
 
 // NetworkAPIService implements the server.NetworkAPIServicer interface.

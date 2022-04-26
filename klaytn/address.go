@@ -15,8 +15,9 @@
 package klaytn
 
 import (
-	"github.com/klaytn/klaytn/common"
 	"log"
+
+	"github.com/klaytn/klaytn/common"
 )
 
 // ChecksumAddress ensures an Klaytn hex address
