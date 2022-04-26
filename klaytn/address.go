@@ -23,7 +23,7 @@ import (
 // is in Checksum Format. If the address cannot be converted,
 // it returns !ok.
 func ChecksumAddress(address string) (string, bool) {
-	if isHexAddress := common.IsHexAddress(address); isHexAddress == false {
+	if isHexAddress := common.IsHexAddress(address); !isHexAddress {
 		return "", false
 	}
 

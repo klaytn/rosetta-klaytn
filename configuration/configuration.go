@@ -144,13 +144,13 @@ func LoadConfiguration() (*Configuration, error) {
 			Index: klaytn.GenesisBlockIndex,
 			Hash:  "0xb9d1d87259d7c7badd0a4ce2268a2fce81c7fe944905ac04dd2e7872a20b2087",
 		}
-		mintingAmount, _ := new(big.Int).SetString("9600000000000000000", 10)
+		mintingAmount, _ := new(big.Int).SetString("9600000000000000000", 10) // nolint
 		config.Params = &params.ChainConfig{
-			ChainID:                  big.NewInt(int64(940625)),
+			ChainID:                  big.NewInt(int64(940625)), // nolint
 			IstanbulCompatibleBlock:  big.NewInt(0),
 			LondonCompatibleBlock:    big.NewInt(0),
 			EthTxTypeCompatibleBlock: big.NewInt(0),
-			DeriveShaImpl:            2,
+			DeriveShaImpl:            2, // nolint:gomnd
 			Governance: &params.GovernanceConfig{
 				GoverningNode:  common.HexToAddress("0x9712f943b296758aaae79944ec975884188d3a96"),
 				GovernanceMode: "single",
@@ -159,17 +159,17 @@ func LoadConfiguration() (*Configuration, error) {
 					Ratio:                  "34/54/12",
 					UseGiniCoeff:           false,
 					DeferredTxFee:          true,
-					StakingUpdateInterval:  60,
-					ProposerUpdateInterval: 30,
-					MinimumStake:           big.NewInt(5000000),
+					StakingUpdateInterval:  60,                  // nolint:gomnd
+					ProposerUpdateInterval: 30,                  // nolint:gomnd
+					MinimumStake:           big.NewInt(5000000), // nolint:gomnd
 				},
 			},
 			Istanbul: &params.IstanbulConfig{
-				Epoch:          30,
-				ProposerPolicy: 2,
+				Epoch:          30, // nolint:gomnd
+				ProposerPolicy: 2,  // nolint:gomnd
 				SubGroupSize:   1,
 			},
-			UnitPrice: 25000000000,
+			UnitPrice: 25000000000, // nolint:gomnd
 		}
 	case "":
 		return nil, errors.New("NETWORK must be populated")
