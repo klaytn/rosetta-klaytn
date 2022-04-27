@@ -48,7 +48,7 @@ jobs:
           go-version: '>=1.18.0'
       - name: check spell
         run: |
-          make spell-check
+          make spellcheck
   check-test:
     runs-on: ubuntu-latest
     steps:
