@@ -12,7 +12,7 @@ require (
 	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
-	github.com/klaytn/klaytn v1.8.2
+	github.com/klaytn/klaytn v1.8.3
 	github.com/klaytn/rosetta-sdk-go-klaytn v0.7.9
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
