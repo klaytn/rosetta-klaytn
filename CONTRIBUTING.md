@@ -1,53 +1,86 @@
-# Contributing to rosetta-klaytn
+# Contributing Guidelines
 
-## Code of Conduct
+Thank you for your interest in contributing to rosetta-klaytn. As an open source project, rosetta-klaytn is always open to the developer community and we welcome your contribution. Please read the guideline below and follow it in all interactions with the project.
 
-All interactions with this project follow our [Code of Conduct][code-of-conduct].
-By participating, you are expected to honor this code. Violators can be banned
-from further participation in this project, or potentially all Coinbase projects.
+## How to Contribute
 
-[code-of-conduct]: https://github.com/coinbase/code-of-conduct
+1. Read this [contributing document](./CONTRIBUTING.md).
+2. Sign [Contributor Licensing Agreement (CLA)](#contributor-license-agreement-cla).
+3. Submit an issue with proper [labeling](#usage-of-labels).
+4. Please wait until the label changes to `contribution welcome` - otherwise, it is not ready to be worked on.
+5. After the label changed to `contribution welcome`, you can start working on the implementation. To avoid any duplicate efforts, it is recommended to update the issue so that other developers see someone working on the issue.
+6. Before making a PR, please make sure you fully tested the code. It is highly recommended to provide the test code as well. After submitting the PR, wait for code review and approval. The reviewer may ask you for additional commits or changes.
+7. Once the change has been approved, the PR is merged by the project moderator.
+8. After merging the PR, we close the pull request. You can then delete the now obsolete branch.
 
-## Bug Reports
+## Types of Contribution
+There are various ways to contribute and participate. Please read the guidelines below regarding the process of each type of contribution.
 
-* Ensure your issue [has not already been reported][1]. It may already be fixed!
-* Include the steps you carried out to produce the problem.
-* Include the behavior you observed along with the behavior you expected, and
-  why you expected it.
-* Include any relevant stack traces or debugging output.
+-   [Issues and Bugs](#issues-and-bugs)
+-   [Feature Requests](#feature-requests)
+-   [Code Contribution](#code-contribution)
 
-## Feature Requests
+### Issues and Bugs
 
-We welcome feedback with or without pull requests. If you have an idea for how
-to improve the project, great! All we ask is that you take the time to write a
-clear and concise explanation of what need you are trying to solve. If you have
-thoughts on _how_ it can be solved, include those too!
+If you find a bug or other issues in rosetta-klaytn, please [submit an issue](https://github.com/klaytn/rosetta-klaytn/issues). Before submitting an issue, please invest some extra time to figure out that:
 
-The best way to see a feature added, however, is to submit a pull request.
+- The issue is not a duplicate issue.
+- The issue has not been fixed in the latest release of rosetta-klaytn.
+  Please do not use the issue tracker for personal support requests. Use developer@klaytn.com for the personal support requests.
 
-## Pull Requests
+When you report a bug, please make sure that your report has the following information.
+- Steps to reproduce the issue.
+- A clear and complete description of the issue.
+- Code and/or screen captures are highly recommended.
 
-* Before creating your pull request, it's usually worth asking if the code
-  you're planning on writing will actually be considered for merging. You can
-  do this by [opening an issue][1] and asking. It may also help give the
-  maintainers context for when the time comes to review your code.
+After confirming your report meets the above criteria, [submit the issue](https://github.com/klaytn/rosetta-klaytn/issues). Please use [labels](#usage-of-labels) to categorize your issue.
 
-* Ensure your [commit messages are well-written][2]. This can double as your
-  pull request message, so it pays to take the time to write a clear message.
+### Feature Requests
 
-* Add tests for your feature. You should be able to look at other tests for
-  examples. If you're unsure, don't hesitate to [open an issue][1] and ask!
+You can also use the [issue tracker](https://github.com/klaytn/rosetta-klaytn/issues) to request a new feature or enhancement. Note that any code contribution without an issue link will not be accepted. Please submit an issue explaining your proposal first so that Klaytn community can fully understand and discuss the idea. Please use [labels](#usage-of-labels) for your feature request as well.
 
-* Submit your pull request!
+#### Usage of Labels
 
-## Support Requests
+You can use the following labels:
 
-For security reasons, any communication referencing support tickets for Coinbase
-products will be ignored. The request will have its content redacted and will
-be locked to prevent further discussion.
+Labels for initial issue categories:
 
-All support requests must be made via [our support team][3].
+- issue/bug: Issues with the code-level bugs.
+- issue/documentation: Issues with the documentation.
+- issue/enhancement: Issues for enhancement requests.
 
-[1]: https://github.com/klaytn/rosetta-klaytn/issues
-[2]: https://chris.beams.io/posts/git-commit/#seven-rules
-[3]: https://support.coinbase.com/customer/en/portal/articles/2288496-how-can-i-contact-coinbase-support-
+Status of open issues (will be tagged by the project moderators):
+
+- (no label): The default status.
+- open/need more information : The issue's creator needs to provide additional information to review.
+- open/reviewing: The issue is under review.
+- open/re-label needed: The label needs to be changed to confirmed as being a `bug` or future `enhancement`.
+- open/approved: The issue is confirmed as being a `bug` to be fixed or `enhancement` to be developed.
+- open/contribution welcome: The fix or enhancement is approved and you are invited to contribute to it.
+
+Status of closed issues:
+
+- closed/fixed: A fix for the issue was provided.
+- closed/duplicate: The issue is also reported in a different issue and is being managed there.
+- closed/invalid: The issue cannot be reproduced.
+- closed/reject: The issue is rejected after review.
+
+### Code Contribution
+
+Please follow the coding style and quality requirements to satisfy the product standards. You must follow the coding style as best as you can when submitting code. Take note of naming conventions, separation of concerns, and formatting rules.
+
+The go implementation of rosetta-klaytn uses [golangci-lint](https://github.com/golangci/golangci-lint) and [gofmt](https://pkg.go.dev/cmd/gofmt) to format the source code.
+Before you submit a pull request, please run `make lint` and `make format` to correct any errors.
+Otherwise, the test on CircleCI will fail, and this prevents merging.
+Also, if adding a new file, please run `make add-license` to add the license statement to the file.
+
+For the guideline of official Go language, please refer to the following websites:
+
+- https://golang.org/doc/effective_go.html#commentary
+- https://blog.golang.org/godoc-documenting-go-code
+
+## Contributor License Agreement (CLA)
+
+Keep in mind when you submit your pull request, you'll need to sign the CLA via [CLA-Assistant](https://cla-assistant.io/klaytn/rosetta-klaytn) for legal purposes. You will have to sign the CLA just one time, either as an individual or corporation.
+
+You will be prompted to sign the agreement by CLA Assistant (bot) when you open a Pull Request for the first time.

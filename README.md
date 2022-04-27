@@ -7,13 +7,8 @@
    Rosetta Klaytn
 </h3>
 
-<p align="center"><b>
-ROSETTA-KLAYTN IS CONSIDERED <a href="https://en.wikipedia.org/wiki/Software_release_life_cycle#Alpha">ALPHA SOFTWARE</a>.
-USE AT YOUR OWN RISK! COINBASE ASSUMES NO RESPONSIBILITY OR LIABILITY IF THERE IS A BUG IN THIS IMPLEMENTATION.
-</b></p>
-
 ## Overview
-`rosetta-klaytn` provides a reference implementation of the Rosetta API for Klaytn in Golang, based off the [rosetta-ethereum](https://github.com/coinbase/rosetta-ethereum) reference implementation provided by Coinbase. If you haven't heard of the Rosetta API, you can find more information [here](https://rosetta-api.org).
+`rosetta-klaytn` provides an implementation of the Rosetta API for Klaytn in Golang, based off the [rosetta-ethereum](https://github.com/coinbase/rosetta-ethereum) reference implementation provided by Coinbase. If you haven't heard of the Rosetta API, you can find more information [here](https://rosetta-api.org).
 The project started with a fork of [23561f903bc93d4fa97bebc1fbbe4c7e5b374e5e commit](https://github.com/coinbase/rosetta-ethereum/commit/23561f903bc93d4fa97bebc1fbbe4c7e5b374e5e), a commit on February 25, 2022.
 
 ## Features
