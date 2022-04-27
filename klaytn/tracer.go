@@ -24,11 +24,11 @@ var (
 	tracerTimeout = "120s"
 )
 
-func loadTraceConfig() (*cn.TraceConfig, error) {
+func loadTraceConfig() *cn.TraceConfig {
 	// Use fastCallTracer instead of call_tracer.js
 	fct := "fastCallTracer"
 	return &cn.TraceConfig{
 		Timeout: &tracerTimeout,
 		Tracer:  &fct,
-	}, nil
+	}
 }

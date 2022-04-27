@@ -16,8 +16,9 @@ package services
 
 import (
 	"context"
-	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
+
 	"github.com/klaytn/rosetta-klaytn/configuration"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 )
 
 // BlockAPIService implements the server.BlockAPIServicer interface.

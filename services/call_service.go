@@ -17,10 +17,11 @@ package services
 import (
 	"context"
 	"errors"
+
 	"github.com/klaytn/rosetta-klaytn/klaytn"
 
-	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/klaytn/rosetta-klaytn/configuration"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 )
 
 // CallAPIService implements the server.CallAPIServicer interface.

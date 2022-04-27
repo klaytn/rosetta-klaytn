@@ -16,10 +16,11 @@ package configuration
 
 import (
 	"errors"
-	"github.com/klaytn/klaytn/params"
-	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"os"
 	"testing"
+
+	"github.com/klaytn/klaytn/params"
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 
 	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/stretchr/testify/assert"

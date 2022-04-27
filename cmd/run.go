@@ -18,10 +18,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/klaytn/rosetta-klaytn/klaytn"
 
 	"github.com/klaytn/rosetta-klaytn/configuration"
 	"github.com/klaytn/rosetta-klaytn/services"

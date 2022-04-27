@@ -68,7 +68,7 @@ func GenerateBootstrapFile(genesisFile string, outputFile string) error {
 	balances := []*modules.BootstrapBalance{}
 	for _, k := range keys {
 		v := formattedAllocations[k]
-		bal, ok := new(big.Int).SetString(v[2:], 16)
+		bal, ok := new(big.Int).SetString(v[2:], 16) // nolint:gomnd
 		if !ok {
 			return fmt.Errorf("cannot parse %s for integer", v)
 		}

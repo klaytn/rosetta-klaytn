@@ -59,7 +59,7 @@ Running the following commands will create a Docker image called `rosetta-klaytn
 #### From GitHub
 To download the pre-built Docker image from the latest release, run:
 ```text
-curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-klaytn/master/install.sh | sh -s
+curl -sSfL https://raw.githubusercontent.com/klaytn/rosetta-klaytn/master/install.sh | sh -s
 ```
 
 _Do not try to install rosetta-klaytn using GitHub Packages!_
@@ -126,11 +126,11 @@ docker run --platform linux/amd64 -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET"
 ```
 
 ## Testing with rosetta-cli
-To validate `rosetta-klaytn`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
+To validate `rosetta-klaytn`, [install `rosetta-cli`](https://github.com/klaytn/rosetta-cli#install)
 and run one of the following commands:
-* `rosetta-cli check:data --configuration-file rosetta-cli-conf/testnet/config.json` - This command validates that the Data API implementation is correct using the klaytn `testnet` node. It also ensures that the implementation does not miss any balance-changing operations.
+* `rosetta-cli check:data --configuration-file rosetta-cli-conf/testnet/config.json` - This command validates that the Data API implementation is correct using the Klaytn `testnet` node. It also ensures that the implementation does not miss any balance-changing operations.
 * `rosetta-cli check:construction --configuration-file rosetta-cli-conf/testnet/config.json` - This command validates the Construction API implementation. It also verifies transaction construction, signing, and submissions to the `testnet` network.
-* `rosetta-cli check:data --configuration-file rosetta-cli-conf/mainnet/config.json` - This command validates that the Data API implementation is correct using the klaytn `mainnet` node. It also ensures that the implementation does not miss any balance-changing operations.
+* `rosetta-cli check:data --configuration-file rosetta-cli-conf/mainnet/config.json` - This command validates that the Data API implementation is correct using the Klaytn `mainnet` node. It also ensures that the implementation does not miss any balance-changing operations.
 
 ## Issues
 Interested in helping fix issues in this repository? You can find to-dos in the [Issues](https://github.com/klaytn/rosetta-klaytn/issues) section. Be sure to reach out on our [community](https://community.rosetta-api.org) before you tackle anything on this list.

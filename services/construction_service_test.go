@@ -18,11 +18,12 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"math/big"
+	"testing"
+
 	"github.com/klaytn/klaytn/common"
 	"github.com/klaytn/klaytn/params"
 	"github.com/klaytn/rosetta-klaytn/klaytn"
-	"math/big"
-	"testing"
 
 	"github.com/klaytn/rosetta-klaytn/configuration"
 	mocks "github.com/klaytn/rosetta-klaytn/mocks/services"
@@ -177,7 +178,10 @@ func TestConstructionService(t *testing.T) {
 	signaturesRaw := `[{"hex_bytes":"8c712c64bc65c4a88707fa93ecd090144dffb1bf133805a10a51d354c2f9f2b25a63cea6989f4c58372c41f31164036a6b25dce1d5c05e1d31c16c0590c176e801","signing_payload":{"address":"0xe3a5B4d7f79d64088C8d4ef153A7DDe2B2d47309","hex_bytes":"b682f3e39c512ff57471f482eab264551487320cbd3b34485f4779a89e5612d1","account_identifier":{"address":"0xe3a5B4d7f79d64088C8d4ef153A7DDe2B2d47309"},"signature_type":"ecdsa_recovery"},"public_key":{"hex_bytes":"03d3d3358e7f69cbe45bde38d7d6f24660c7eeeaee5c5590cfab985c8839b21fd5","curve_type":"secp256k1"},"signature_type":"ecdsa_recovery"}]` // nolint
 	var signatures []*types.Signature
 	assert.NoError(t, json.Unmarshal([]byte(signaturesRaw), &signatures))
-	// TODO-Klaytn: The type, maxFeePerGas and maxPriorityFeePerGas are removed in the signedRaw variable. If Klaytn added type, maxFeePerGas and maxPriorityFeePerGas to types.Transaction struct, we need to add those fields to the signedRaw also.
+	// TODO-Klaytn: The type, maxFeePerGas and maxPriorityFeePerGas are removed in the signedRaw
+	// variable.
+	// If Klaytn added type, maxFeePerGas and maxPriorityFeePerGas to types.Transaction struct,
+	// we need to add those fields to the signedRaw also.
 	signedRaw := `{"nonce":"0x0","gasPrice":"0x3b9aca00","gas":"0x5208","to":"0x57b414a0332b5cab885a451c2a28a07d1e9b8a8d","value":"0x9864aac3510d02","input":"0x","signatures":[{"V":"0x2a","R":"0x8c712c64bc65c4a88707fa93ecd090144dffb1bf133805a10a51d354c2f9f2b2","S":"0x5a63cea6989f4c58372c41f31164036a6b25dce1d5c05e1d31c16c0590c176e8"}],"hash":"0x424969b1a98757bcd748c60bad2a7de9745cfb26bfefb4550e780a098feada42"}` // nolint
 	combineResponse, err := servicer.ConstructionCombine(ctx, &types.ConstructionCombineRequest{
 		NetworkIdentifier:   networkIdentifier,
