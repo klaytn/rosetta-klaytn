@@ -1,0 +1,29 @@
+name: rosetta-klaytn DEV workflow
+on:
+  pull_request:
+    branches:
+      - dev
+    types: [opened, synchronize]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.18.0'
+      - name: check lint
+        run: |
+          make lint
+      - name: check format
+        run: |
+          make check-format
+      - name: check license
+        run: |
+          make check-license
+      - name: check spell
+        run: |
+          make spell-check
+      - name: build test
+        run: |
+          make test
