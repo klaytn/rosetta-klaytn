@@ -5,7 +5,7 @@ on:
       - dev
     types: [opened, synchronize]
 jobs:
-  test:
+  check-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -13,17 +13,46 @@ jobs:
         with:
           go-version: '>=1.18.0'
       - name: check lint
-        run: |
-          make lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.29
+  check-format: 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.18.0'
       - name: check format
         run: |
           make check-format
+  check-license: 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.18.0'
       - name: check license
         run: |
           make check-license
+  check-spell: 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.18.0'
       - name: check spell
         run: |
           make spell-check
+  check-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.18.0'
       - name: build test
         run: |
           make test
