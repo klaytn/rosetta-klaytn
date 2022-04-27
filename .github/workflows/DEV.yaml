@@ -57,7 +57,7 @@ jobs:
           go-version: '>=1.18.0'
       - name: check license
         run: |
-          make check-license
+          make check-license -k
   check-spell: 
     runs-on: ubuntu-latest
     steps:
@@ -70,7 +70,7 @@ jobs:
           go mod download github.com/client9/misspell
       - name: check spell
         run: |
-          make spellcheck -k
+          make spellcheck
   check-test:
     runs-on: ubuntu-latest
     steps:
