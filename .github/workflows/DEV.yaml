@@ -59,7 +59,7 @@ jobs:
           go-version: '>=1.18.0'
       - name: add license
         run: |
-          make add-license -k
+          make add-license
   check-license: 
     runs-on: ubuntu-latest
     steps:
@@ -69,7 +69,7 @@ jobs:
           go-version: '>=1.18.0'
       - name: check license
         run: |
-          make check-license -k
+          make check-license
   check-spell: 
     runs-on: ubuntu-latest
     steps:
