@@ -3,9 +3,10 @@
 	spellcheck salus build-local format check-format update-tracer test coverage coverage-local \
 	update-bootstrap-balances mocks
 
+ADDLICENSE_IGNORE=-ignore "**/*.xml" -ignore "**/*.sh" -ignore "**/*.yml" -ignore "**/*.yaml"
 ADDLICENSE_INSTALL=go install github.com/google/addlicense@latest
 ADDLICENSE_CMD=addlicense
-ADDLICENCE_SCRIPT=${ADDLICENSE_CMD} -c "Klaytn Authors" -l "apache" -v -ignore **/*.xml -ignore **/*.sh -ignore **/*.yml
+ADDLICENCE_SCRIPT=${ADDLICENSE_CMD} -c "Klaytn Authors" -l "apache" -v ${ADDLICENSE_IGNORE}
 SPELLCHECK_CMD=go run github.com/client9/misspell/cmd/misspell
 GOLINES_INSTALL=go install github.com/segmentio/golines@latest
 GOLINES_CMD=golines
