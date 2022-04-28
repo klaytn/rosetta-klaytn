@@ -50,16 +50,6 @@ jobs:
       - name: check format
         run: |
           make check-format
-  add-license: 
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with:
-          go-version: '>=1.18.0'
-      - name: add license
-        run: |
-          make add-license
   check-license: 
     runs-on: ubuntu-latest
     steps:
