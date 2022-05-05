@@ -4,7 +4,7 @@
     "network": "Testnet"
   },
   "online_url": "http://localhost:9090",
-  "data_directory": "cli-data-baobab",
+  "data_directory": "cli-data-testnet",
   "http_timeout": 15,
   "max_retries": 15,
   "max_online_connections": 120,
