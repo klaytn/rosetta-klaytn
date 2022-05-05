@@ -19,14 +19,15 @@ import (
 	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
+	"math/big"
+	"strconv"
+	"strings"
+
 	"github.com/klaytn/klaytn/blockchain/types/accountkey"
 	"github.com/klaytn/klaytn/common"
 	"github.com/klaytn/klaytn/common/hexutil"
 	"github.com/klaytn/klaytn/crypto"
 	"github.com/klaytn/rosetta-klaytn/klaytn"
-	"math/big"
-	"strconv"
-	"strings"
 
 	klayTypes "github.com/klaytn/klaytn/blockchain/types"
 	"github.com/klaytn/rosetta-klaytn/configuration"
@@ -152,7 +153,14 @@ func (s *ConstructionAPIService) ConstructionDerive(
 
 // validatePubKeyForKeyTypes validates public key byte array received by user as a parameter
 // depends on key type of the Klaytn account.
-func validatePubKeyForKeyTypes(addr string, keyMap map[string]interface{}, keyType float64, derived bool, pubKey []byte, acct map[string]interface{}) *types.Error {
+func validatePubKeyForKeyTypes(
+	addr string,
+	keyMap map[string]interface{},
+	keyType float64,
+	derived bool,
+	pubKey []byte,
+	acct map[string]interface{},
+) *types.Error {
 	var ok bool
 	// AccountKeyLegacy				0x01
 	// AccountKeyPublic				0x02
@@ -160,7 +168,8 @@ func validatePubKeyForKeyTypes(addr string, keyMap map[string]interface{}, keyTy
 	// AccountKeyWeightedMultiSig	0x04
 	// AccountKeyRoleBased			0x05
 	switch keyType {
-	case float64(1): // AccountKeyLegacy: compare the address with a derived address
+	case float64(accountkey.AccountKeyTypeLegacy):
+		// AccountKeyLegacy: compare the address with a derived address
 		if !derived {
 			derivedAddr, err := derivedAddress(pubKey)
 			if err != nil {
@@ -170,7 +179,8 @@ func validatePubKeyForKeyTypes(addr string, keyMap map[string]interface{}, keyTy
 				return wrapErrWithMetadata(ErrDerivedAddrNotMatched, acct, nil)
 			}
 		}
-	case float64(2): // AccountKeyPublic: compare public key
+	case float64(accountkey.AccountKeyTypePublic):
+		// AccountKeyPublic: compare public key
 		isSame, err := comparePublicKey(keyMap, pubKey)
 		if err != nil {
 			return wrapErrWithMetadata(err, acct, nil)
@@ -178,9 +188,11 @@ func validatePubKeyForKeyTypes(addr string, keyMap map[string]interface{}, keyTy
 		if !isSame {
 			return wrapErrWithMetadata(ErrDiffPubKey, acct, nil)
 		}
-	case float64(3): // AccountKeyFail: return an error
+	case float64(accountkey.AccountKeyTypeFail):
+		// AccountKeyFail: return an error
 		return wrapErrWithMetadata(ErrAccountKeyFail, acct, nil)
-	case float64(4): // AccountKeyWeightedMultiSig: check whether include the public key or not.
+	case float64(accountkey.AccountKeyTypeWeightedMultiSig):
+		// AccountKeyWeightedMultiSig: check whether include the public key or not.
 		isInclude, err := checkIncludePublicKey(keyMap, pubKey)
 		if err != nil {
 			return wrapErrWithMetadata(err, acct, nil)
@@ -188,7 +200,8 @@ func validatePubKeyForKeyTypes(addr string, keyMap map[string]interface{}, keyTy
 		if !isInclude {
 			return wrapErrWithMetadata(ErrMultiSigNotIncludePubKey, acct, nil)
 		}
-	case float64(5): // AccountKeyRoleBased: check whether RoleTransactionKey includes the public key or not.
+	case float64(accountkey.AccountKeyTypeRoleBased):
+		// AccountKeyRoleBased: check whether RoleTransactionKey includes the public key or not.
 		var roleKeyArr []interface{}
 		if roleKeyArr, ok = keyMap["key"].([]interface{}); !ok {
 			return wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
@@ -232,7 +245,7 @@ func comparePublicKey(keyObj map[string]interface{}, pubKey []byte) (bool, *type
 	var x, y string
 	// When pubKey is compressed public key format that starts with 0x02 or 0x03,
 	// get ecdsa public key from byte array like below.
-	if len(pubKey) == 33 {
+	if len(pubKey) == 33 { // nolint: gomnd
 		ecdsaPub, err := crypto.DecompressPubkey(pubKey)
 		if err != nil {
 			return false, wrapErr(ErrUnableToDecompressPubkey, err)
@@ -263,7 +276,6 @@ func comparePublicKey(keyObj map[string]interface{}, pubKey []byte) (bool, *type
 	// Format with leading zeros
 	xString = "0x" + fmt.Sprintf("%064s", strings.Replace(xString, "0x", "", 1))
 	yString = "0x" + fmt.Sprintf("%064s", strings.Replace(yString, "0x", "", 1))
-	//pubToCompare := "0x" + xString + yString
 	if x != xString || y != yString {
 		return false, nil
 	}
@@ -275,7 +287,7 @@ func derivedAddress(publicKey []byte) (string, error) {
 	var pubkey *ecdsa.PublicKey
 	var err error
 	// Compressed public key byte array
-	if len(publicKey) == 33 {
+	if len(publicKey) == 33 { // nolint: gomnd
 		pubkey, err = crypto.DecompressPubkey(publicKey)
 		if err != nil {
 			return "", err

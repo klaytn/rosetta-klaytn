@@ -300,7 +300,7 @@ func TestDeriveAccountKeyLegacy(t *testing.T) {
 	publicKey := &types.PublicKey{
 		Bytes: forceHexDecode(
 			t,
-			"cc6ae711f6d972f3f434e573ee91a3a10586b60766ba88de1bd6ecc1be02630b2caa95f1c64dc15b83e793b3c5e3499dd8c0f7871fb39e5e8d91f3ff9201416f",
+			"cc6ae711f6d972f3f434e573ee91a3a10586b60766ba88de1bd6ecc1be02630b2caa95f1c64dc15b83e793b3c5e3499dd8c0f7871fb39e5e8d91f3ff9201416f", // nolint: lll
 		),
 		CurveType: types.Secp256k1,
 	}
@@ -335,7 +335,7 @@ func TestDeriveAccountKeyLegacy(t *testing.T) {
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
 			t,
-			"74b3c5c50573363f53e94111cb5d19e0a48dcb914d380ac524d962f29f1757cae72fbaecad93cf58b202dfb012b7b43370ba0799c0f268675f08af5f9e475924",
+			"74b3c5c50573363f53e94111cb5d19e0a48dcb914d380ac524d962f29f1757cae72fbaecad93cf58b202dfb012b7b43370ba0799c0f268675f08af5f9e475924", // nolint: lll
 		),
 		CurveType: types.Secp256k1,
 	}
@@ -371,6 +371,7 @@ func TestDeriveAccountKeyLegacy(t *testing.T) {
 	).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// c4f781ee514a65c46df4fd24521daa369a8a73bd964c7e4f295cc7dec185328fec9e1830876540caa670dfb084b5ee28f944dfda6a7d1ad00eae24483edc3592
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -408,6 +409,7 @@ func TestDeriveAccountKeyLegacy(t *testing.T) {
 	).Return(expectedResult, nil).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// f72d9099365d8f9f97d1528a91357b56ae6aad332dc11d034fbfb43b33de254b233e55b1966cea1e53a7fe61e58b6dc22c24cb292ed5d63ab794490507d7d3b6
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -448,6 +450,7 @@ func TestDeriveAccountKeyLegacy(t *testing.T) {
 	).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// c4f781ee514a65c46df4fd24521daa369a8a73bd964c7e4f295cc7dec185328fec9e1830876540caa670dfb084b5ee28f944dfda6a7d1ad00eae24483edc3592
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -485,6 +488,7 @@ func TestDeriveAccountKeyLegacy(t *testing.T) {
 	).Return(expectedResult, nil).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// f72d9099365d8f9f97d1528a91357b56ae6aad332dc11d034fbfb43b33de254b233e55b1966cea1e53a7fe61e58b6dc22c24cb292ed5d63ab794490507d7d3b6
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -525,6 +529,7 @@ func TestDeriveAccountKeyLegacy(t *testing.T) {
 	).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// 609c0c18480450dc6dd87a067d6906af26ed99b9a529b4b6a28c49e43d4ecb473ba6f96d33675d086ad732a7322963a1efb6dc32602043e076f2cf9531de7928
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -566,6 +571,7 @@ func TestDeriveAccountKeyLegacy(t *testing.T) {
 	).Return(expectedResult, nil).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// f72d9099365d8f9f97d1528a91357b56ae6aad332dc11d034fbfb43b33de254b233e55b1966cea1e53a7fe61e58b6dc22c24cb292ed5d63ab794490507d7d3b6
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -582,6 +588,7 @@ func TestDeriveAccountKeyLegacy(t *testing.T) {
 		},
 	})
 	assert.NotNil(t, err)
+	assert.Nil(t, accountIdf)
 	assert.NotNil(t, err.Details)
 	assert.NotNil(t, err.Details["metadata"])
 	assert.Equal(t, expectedResult, err.Details["metadata"])
@@ -630,7 +637,7 @@ func TestDeriveAccountKeyPublic(t *testing.T) {
 	publicKey := &types.PublicKey{
 		Bytes: forceHexDecode(
 			t,
-			"69d939901cd4c7f863a68925221244632f07d574335bdc6b5aacd4812ffb38d9ee5c2aca8480083fe028e54491f809d5ddeb6d6a0684f227664ede5884bdae59",
+			"69d939901cd4c7f863a68925221244632f07d574335bdc6b5aacd4812ffb38d9ee5c2aca8480083fe028e54491f809d5ddeb6d6a0684f227664ede5884bdae59", // nolint: lll
 		),
 		CurveType: types.Secp256k1,
 	}
@@ -669,6 +676,7 @@ func TestDeriveAccountKeyPublic(t *testing.T) {
 	).Return(expectedResult, nil).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// 8b37e07e722d2294e2531410fd617d8ca25dc8f2e44f804796d89dde9a21d1d3c837d6b30cc755ab64f16c810c2d87463dc23561a3c4f2ffd534dab7701d5166
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -714,7 +722,7 @@ func TestDeriveAccountKeyPublic(t *testing.T) {
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
 			t,
-			"02337135c0bc83b94907cea0ebbbe5b1c2ee570071dd45d5bc7448b4dc7202b6a78d9efe5a976a70a26773971b642f3ed4f493be0e0c1c27bbc33b319c84b951",
+			"02337135c0bc83b94907cea0ebbbe5b1c2ee570071dd45d5bc7448b4dc7202b6a78d9efe5a976a70a26773971b642f3ed4f493be0e0c1c27bbc33b319c84b951", // nolint: lll
 		),
 		CurveType: types.Secp256k1,
 	}
@@ -754,6 +762,7 @@ func TestDeriveAccountKeyPublic(t *testing.T) {
 	).Return(expectedResult, nil).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// 225145a6b2bd744b940521c61c607413046bf69846170c771bff9dc43d243aa20963dc5404ed670076757b7857207acf6b3c35e458800e36d775a090262c81d8
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -770,6 +779,7 @@ func TestDeriveAccountKeyPublic(t *testing.T) {
 		},
 	})
 	assert.NotNil(t, err)
+	assert.Nil(t, accountIdf)
 	assert.NotNil(t, err.Details)
 	assert.NotNil(t, err.Details["metadata"])
 	assert.Equal(t, expectedResult, err.Details["metadata"])
@@ -816,7 +826,7 @@ func TestDeriveAccountKeyFail(t *testing.T) {
 	publicKey := &types.PublicKey{
 		Bytes: forceHexDecode(
 			t,
-			"3cbe27632c7c23b04e0dc58532f272a37104f2c2c3ade7fe2c4facdb78f8a6b6e17dcd3b280091433946b5c9da356ac001c74f1551afe475a292ab81246cb40d",
+			"3cbe27632c7c23b04e0dc58532f272a37104f2c2c3ade7fe2c4facdb78f8a6b6e17dcd3b280091433946b5c9da356ac001c74f1551afe475a292ab81246cb40d", // nolint: lll
 		),
 		CurveType: types.Secp256k1,
 	}
@@ -949,7 +959,7 @@ func TestDeriveAccountKeyWeightedMultiSig(t *testing.T) {
 	publicKey := &types.PublicKey{
 		Bytes: forceHexDecode(
 			t,
-			"f86eddd4bd5fc8739524eaa197bf5d8ad6236665f522ef296527ff5b1f280a737cfba9e3e77e8a99352bb5a92e6f9c4c04c2decc9ec04914ae8605d798770c46",
+			"f86eddd4bd5fc8739524eaa197bf5d8ad6236665f522ef296527ff5b1f280a737cfba9e3e77e8a99352bb5a92e6f9c4c04c2decc9ec04914ae8605d798770c46", // nolint: lll
 		),
 		CurveType: types.Secp256k1,
 	}
@@ -1003,6 +1013,7 @@ func TestDeriveAccountKeyWeightedMultiSig(t *testing.T) {
 	).Return(expectedResult, nil).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// 3d66a515e7a30c835f0b16065d2e16db833a78b436a14f20b2e834c3a78c52444823ca3b62b42a00bd3c50f97099a9d9cfc128231aba613539105a6d16673392
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -1062,6 +1073,7 @@ func TestDeriveAccountKeyWeightedMultiSig(t *testing.T) {
 	).Return(expectedResult, nil).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// b8951daf5458517314f6f03c9cf43093f1fcc221b258fbb07fa0a20d9768c38978877fe435035f9cf02a583ccdec2c1510b55ab094eb410ed281692e64add8fa
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -1078,6 +1090,7 @@ func TestDeriveAccountKeyWeightedMultiSig(t *testing.T) {
 		},
 	})
 	assert.NotNil(t, err)
+	assert.Nil(t, accountIdf)
 	assert.NotNil(t, err.Details)
 	assert.NotNil(t, err.Details["metadata"])
 	assert.Equal(t, expectedResult, err.Details["metadata"])
@@ -1181,7 +1194,7 @@ func TestDeriveAccountKeyRoleBased(t *testing.T) {
 	publicKey := &types.PublicKey{
 		Bytes: forceHexDecode(
 			t,
-			"d80f4e6ec2239d4fd460cdf09f124fdf538edec72cc4887acdad88f4df970d124547c81e0fdf045c985367d8f308ebf7dd6311c14016899ad1941d7128959530",
+			"d80f4e6ec2239d4fd460cdf09f124fdf538edec72cc4887acdad88f4df970d124547c81e0fdf045c985367d8f308ebf7dd6311c14016899ad1941d7128959530", // nolint: lll
 		),
 		CurveType: types.Secp256k1,
 	}
@@ -1208,6 +1221,7 @@ func TestDeriveAccountKeyRoleBased(t *testing.T) {
 	).Return(expectedResult, nil).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// d80f4e6ec2239d4fd460cdf09f124fdf538edec72cc4887acdad88f4df970d124547c81e0fdf045c985367d8f308ebf7dd6311c14016899ad1941d7128959530
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -1240,6 +1254,7 @@ func TestDeriveAccountKeyRoleBased(t *testing.T) {
 	).Return(expectedResult, nil).Once()
 
 	// Umcompressed format is below
+	// nolint: lll
 	// 2d5390f276b73a544c94c12fab061e3326a3a254fd5b8dae90de7e20e26d8fcf15299b85973d4913aead02f13c4aca4948fbe132d251df40fd1bb273e525dd7c
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -1256,6 +1271,7 @@ func TestDeriveAccountKeyRoleBased(t *testing.T) {
 		},
 	})
 	assert.NotNil(t, err)
+	assert.Nil(t, accountIdf)
 	assert.NotNil(t, err.Details)
 	assert.NotNil(t, err.Details["metadata"])
 	assert.Equal(t, expectedResult, err.Details["metadata"])
@@ -1321,7 +1337,7 @@ func TestDeriveAccountKeyRoleBased(t *testing.T) {
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
 			t,
-			"e059a26740ef7bb1ccaf3e6772003ef46b5c15cecd52f5c3ab0af89a2f5156dc02a0d0e12a94345307cd1572625ce626388aaa0292233aac9e8aa87e1fd61120",
+			"e059a26740ef7bb1ccaf3e6772003ef46b5c15cecd52f5c3ab0af89a2f5156dc02a0d0e12a94345307cd1572625ce626388aaa0292233aac9e8aa87e1fd61120", // nolint: lll
 		),
 		CurveType: types.Secp256k1,
 	}
@@ -1400,6 +1416,7 @@ func TestDeriveAccountKeyRoleBased(t *testing.T) {
 	).Return(expectedResult, nil).Once()
 
 	// Uncompressed format is below
+	// nolint: lll
 	// 7a4036db14032238697c8ceb3f1727fdf1204cf3906914bb97ae5f8535463ea7c27ef21ac1230ec3cd9c0fb8f39b56c31ee0abd854e8f9492eb004774968f241
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(
@@ -1481,6 +1498,7 @@ func TestDeriveAccountKeyRoleBased(t *testing.T) {
 	).Return(expectedResult, nil).Once()
 
 	// Uncompressed format is below
+	// nolint: lll
 	// 7a4036db14032238697c8ceb3f1727fdf1204cf3906914bb97ae5f8535463ea7c27ef21ac1230ec3cd9c0fb8f39b56c31ee0abd854e8f9492eb004774968f241
 	publicKey = &types.PublicKey{
 		Bytes: forceHexDecode(

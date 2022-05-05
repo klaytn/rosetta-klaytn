@@ -706,11 +706,12 @@ func flattenTraces(data *Call, flattened []*flatCall) []*flatCall {
 
 // traceOps returns all *RosettaTypes.Operation for a given
 // array of flattened traces.
+// nolint: gocognit
 func traceOps(
 	tx *loadedTransaction,
 	calls []*flatCall,
 	startIndex int,
-) []*RosettaTypes.Operation { // nolint: gocognit
+) []*RosettaTypes.Operation {
 	var ops []*RosettaTypes.Operation
 	if len(calls) == 0 {
 		return ops
@@ -1076,12 +1077,10 @@ func feeOps(
 			// fee * ratio / 100
 			senderAmount := new(
 				big.Int,
-			).Div(new(big.Int).Mul(proposerEarnedAmount, senderRatio), big.NewInt(100))
-			// nolint
+			).Div(new(big.Int).Mul(proposerEarnedAmount, senderRatio), big.NewInt(100)) // nolint
 			feePayerAmount := new(
 				big.Int,
-			).Div(new(big.Int).Mul(proposerEarnedAmount, feePayerRatio), big.NewInt(100))
-			// nolint
+			).Div(new(big.Int).Mul(proposerEarnedAmount, feePayerRatio), big.NewInt(100)) // nolint
 
 			// Set sender tx fee payment and fee payer tx fee payment.
 			opsForFDR := []*RosettaTypes.Operation{
@@ -1098,23 +1097,21 @@ func feeOps(
 			if tx.FeeBurned != nil {
 				senderBurnAmount := new(
 					big.Int,
-				).Div(new(big.Int).Mul(tx.FeeBurned, senderRatio), big.NewInt(100))
-				// nolint
+				).Div(new(big.Int).Mul(tx.FeeBurned, senderRatio), big.NewInt(100)) // nolint: gomnd
 				feePayerBurnAmount := new(
 					big.Int,
-				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100))
-				// nolint
+				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100)) // nolint: gomnd
 				burntOps := []*RosettaTypes.Operation{
 					createSuccessFeeOperation(
-						2,
+						2, // nolint: gomnd
 						tx.From.String(),
 						new(big.Int).Neg(senderBurnAmount),
-					), // nolint:gomnd
+					),
 					createSuccessFeeOperation(
-						3,
+						3, // nolint: gomnd
 						feePayerAddress.String(),
 						new(big.Int).Neg(feePayerBurnAmount),
-					), // nolint:gomnd
+					),
 				}
 				ops = append(ops, burntOps...)
 			}
@@ -1164,8 +1161,7 @@ func feeOps(
 		// reward * ratio / 100
 		partialReward := new(
 			big.Int,
-		).Div(new(big.Int).Mul(proposerEarnedAmount, rewardRatioMap[addr]), big.NewInt(100))
-		// nolint
+		).Div(new(big.Int).Mul(proposerEarnedAmount, rewardRatioMap[addr]), big.NewInt(100)) // nolint: gomnd
 		rewardSum = new(big.Int).Add(rewardSum, partialReward)
 		op := createSuccessFeeOperationWithRelatedOperations(
 			int64(idx),
@@ -1189,8 +1185,7 @@ func feeOps(
 		}
 		ogReward, ok := new(
 			big.Int,
-		).SetString(rewardOperations[ratioIndex].Amount.Value, 10)
-		// nolint:gomnd
+		).SetString(rewardOperations[ratioIndex].Amount.Value, 10) // nolint:gomnd
 		if !ok {
 			return nil, errors.New("could not add remain rewards to KGF address")
 		}
@@ -1617,8 +1612,7 @@ func (kc *Client) blockMintingReward(
 		// reward * ratio / 100
 		rewardAmountMap[addr] = new(
 			big.Int,
-		).Div(new(big.Int).Mul(mintingAmount, ratio), big.NewInt(100))
-		// nolint:gomnd
+		).Div(new(big.Int).Mul(mintingAmount, ratio), big.NewInt(100)) // nolint:gomnd
 		rewardSum = new(big.Int).Add(rewardSum, rewardAmountMap[addr])
 	}
 
