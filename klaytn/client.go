@@ -798,7 +798,12 @@ func traceOps(
 
 		// Checksum addresses
 		from := MustChecksum(trace.From.String())
-		to := MustChecksum(trace.To.String())
+		var to string
+		if trace.To != nil {
+			to = MustChecksum(trace.To.String())
+		} else {
+			to = "0x"
+		}
 
 		if shouldAdd {
 			idx := int64(len(ops) + startIndex)
@@ -841,7 +846,7 @@ func traceOps(
 		// Skip empty to addresses (this may not
 		// actually occur but leaving it as a
 		// sanity check)
-		if len(trace.To.String()) == 0 {
+		if (trace.To != nil) && len(trace.To.String()) == 0 {
 			continue
 		}
 
