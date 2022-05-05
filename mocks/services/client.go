@@ -89,6 +89,29 @@ func (_m *Client) Call(ctx context.Context, request *types.CallRequest) (*types.
 	return r0, r1
 }
 
+// GetAccount provides a mock function with given fields: ctx, address, block
+func (_m *Client) GetAccount(ctx context.Context, address string, block string) (map[string]interface{}, error) {
+	ret := _m.Called(ctx, address, block)
+
+	var r0 map[string]interface{}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) map[string]interface{}); ok {
+		r0 = rf(ctx, address, block)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(map[string]interface{})
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, address, block)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetMempool provides a mock function with given fields: ctx
 func (_m *Client) GetMempool(ctx context.Context) (*types.MempoolResponse, error) {
 	ret := _m.Called(ctx)

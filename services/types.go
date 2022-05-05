@@ -67,6 +67,12 @@ type Client interface {
 		ctx context.Context,
 		request *types.CallRequest,
 	) (*types.CallResponse, error)
+
+	GetAccount(
+		ctx context.Context,
+		address string,
+		block string,
+	) (map[string]interface{}, error)
 }
 
 type options struct {

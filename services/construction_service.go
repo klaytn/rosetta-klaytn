@@ -16,12 +16,17 @@ package services
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
 	"math/big"
 	"strconv"
+	"strings"
 
+	"github.com/klaytn/klaytn/blockchain/types/accountkey"
 	"github.com/klaytn/klaytn/common"
+	"github.com/klaytn/klaytn/common/hexutil"
+	"github.com/klaytn/klaytn/crypto"
 	"github.com/klaytn/rosetta-klaytn/klaytn"
 
 	klayTypes "github.com/klaytn/klaytn/blockchain/types"
@@ -53,13 +58,250 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	ctx context.Context,
 	request *types.ConstructionDeriveRequest,
 ) (*types.ConstructionDeriveResponse, *types.Error) {
-	// rosetta-klaytn does not support this `/construction/derive` endpoint
-	// because Klaytn supoprts a function to update Klaytn account's key.
-	// See https://docs.klaytn.com/klaytn/design/accounts#decoupling-key-pairs-from-addresses
-	// for a detailed concept of decoupling key pairs from addresses.
-	// Reference:
-	// https://community.rosetta-api.org/t/can-i-implement-derive-endpoint-api-in-this-case/727
-	return nil, ErrNotSupportedAPI
+	var addr string
+	var tErr error
+	var ok bool
+	derived := false
+	// User can send an address string in metadata.
+	// If user do not send address via metadata, then derive an address from the public key.
+	// If an address is existed in metadata, then get account info from Klaytn
+	// to compare the public key parameter and the public key in the Klaytn account.
+	if request.Metadata == nil {
+		addr, tErr = derivedAddress(request.PublicKey.Bytes)
+		if tErr != nil {
+			return nil, wrapErr(ErrDeriveAddress, tErr)
+		}
+		derived = true
+	} else {
+		addr, ok = request.Metadata["address"].(string)
+		if !ok {
+			return nil, ErrExtractAddress
+		}
+	}
+
+	// Get a Klaytn account to get account key.
+	acct, err := s.client.GetAccount(ctx, addr, "latest")
+	if err != nil {
+		return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, err)
+	}
+	if acct == nil {
+		// "acct == nil" means that Klaytn does not have any state with that account.
+		// So we need to proceed derive process with default account that has AccountKeyLegacy.
+		acct = map[string]interface{}{
+			"accType": float64(1),
+			"account": map[string]interface{}{
+				"balance":       "0x0",
+				"humanReadable": false,
+				"key":           map[string]interface{}{"keyType": float64(1), "key": map[string]interface{}{}},
+				"nonce":         float64(0),
+			},
+		}
+	}
+
+	// The Klaytn account returned from client format is below.
+	// {
+	// 	 accType: 1,
+	// 	 account: {
+	// 		 balance: 49853...,
+	// 		 humanReadable: false,
+	// 		 key: {
+	// 			 keyType: 2,
+	// 			 key: { x: "0x23003...",  y: "0x18a7f..." },
+	// 		 },
+	// 		 nonce: 11
+	// 	 }
+	// }
+	var accType float64
+	if accType, ok = acct["accType"].(float64); !ok {
+		return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
+	}
+	// If account is not Legacy Account or External Owned Account type,
+	// then throw an error.
+	// See https://docs.klaytn.com/klaytn/design/accounts#klaytn-account-types
+	if accType > float64(1) {
+		return nil, wrapErrWithMetadata(ErrAccountType, acct, nil)
+	}
+
+	var accountMap map[string]interface{}
+	if accountMap, ok = acct["account"].(map[string]interface{}); !ok {
+		return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
+	}
+	var keyMap map[string]interface{}
+	if keyMap, ok = accountMap["key"].(map[string]interface{}); !ok {
+		return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
+	}
+	var keyType float64
+	if keyType, ok = keyMap["keyType"].(float64); !ok {
+		return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
+	}
+
+	// Make an account identifier with the account returned by client in Metadata field.
+	identifier := types.AccountIdentifier{
+		Address:  addr,
+		Metadata: acct,
+	}
+
+	typedError := validatePubKeyForKeyTypes(addr, keyMap, keyType, derived, request.PublicKey.Bytes, acct)
+	if typedError != nil {
+		return nil, typedError
+	}
+
+	return &types.ConstructionDeriveResponse{
+		AccountIdentifier: &identifier,
+	}, nil
+}
+
+// validatePubKeyForKeyTypes validates public key byte array received by user as a parameter
+// depends on key type of the Klaytn account.
+func validatePubKeyForKeyTypes(
+	addr string,
+	keyMap map[string]interface{},
+	keyType float64,
+	derived bool,
+	pubKey []byte,
+	acct map[string]interface{},
+) *types.Error {
+	var ok bool
+	// AccountKeyLegacy				0x01
+	// AccountKeyPublic				0x02
+	// AccountKeyFail				0x03
+	// AccountKeyWeightedMultiSig	0x04
+	// AccountKeyRoleBased			0x05
+	switch keyType {
+	case float64(accountkey.AccountKeyTypeLegacy):
+		// AccountKeyLegacy: compare the address with a derived address
+		if !derived {
+			derivedAddr, err := derivedAddress(pubKey)
+			if err != nil {
+				return wrapErrWithMetadata(ErrDeriveAddress, acct, err)
+			}
+			if derivedAddr != addr {
+				return wrapErrWithMetadata(ErrDerivedAddrNotMatched, acct, nil)
+			}
+		}
+	case float64(accountkey.AccountKeyTypePublic):
+		// AccountKeyPublic: compare public key
+		isSame, err := comparePublicKey(keyMap, pubKey)
+		if err != nil {
+			return wrapErrWithMetadata(err, acct, nil)
+		}
+		if !isSame {
+			return wrapErrWithMetadata(ErrDiffPubKey, acct, nil)
+		}
+	case float64(accountkey.AccountKeyTypeFail):
+		// AccountKeyFail: return an error
+		return wrapErrWithMetadata(ErrAccountKeyFail, acct, nil)
+	case float64(accountkey.AccountKeyTypeWeightedMultiSig):
+		// AccountKeyWeightedMultiSig: check whether include the public key or not.
+		isInclude, err := checkIncludePublicKey(keyMap, pubKey)
+		if err != nil {
+			return wrapErrWithMetadata(err, acct, nil)
+		}
+		if !isInclude {
+			return wrapErrWithMetadata(ErrMultiSigNotIncludePubKey, acct, nil)
+		}
+	case float64(accountkey.AccountKeyTypeRoleBased):
+		// AccountKeyRoleBased: check whether RoleTransactionKey includes the public key or not.
+		var roleKeyArr []interface{}
+		if roleKeyArr, ok = keyMap["key"].([]interface{}); !ok {
+			return wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
+		}
+		roleTransactionKeyMap := roleKeyArr[0].(map[string]interface{})
+
+		var roleTransactionKeyType float64
+		if roleTransactionKeyType, ok = roleTransactionKeyMap["keyType"].(float64); !ok {
+			return wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
+		}
+		err := validatePubKeyForKeyTypes(addr, roleTransactionKeyMap, roleTransactionKeyType, derived, pubKey, acct)
+		if err != nil {
+			return wrapErrWithMetadata(err, acct, nil)
+		}
+	}
+	return nil
+}
+
+// checkIncludePublicKey checks whether key object includes specific public key(byte array input)
+func checkIncludePublicKey(keyObj map[string]interface{}, pubKey []byte) (bool, *types.Error) {
+	var keyMap map[string]interface{}
+	var ok bool
+	if keyMap, ok = keyObj["key"].(map[string]interface{}); !ok {
+		return false, ErrGetAccountAPI
+	}
+	var keyArr []interface{}
+	if keyArr, ok = keyMap["keys"].([]interface{}); !ok {
+		return false, ErrGetAccountAPI
+	}
+	for _, k := range keyArr {
+		isSame, err := comparePublicKey(k.(map[string]interface{}), pubKey)
+		if isSame || err != nil {
+			return isSame, err
+		}
+	}
+	return false, nil
+}
+
+// comparePublicKey compares xy point in the key object and public key byte array
+func comparePublicKey(keyObj map[string]interface{}, pubKey []byte) (bool, *types.Error) {
+	var x, y string
+	// When pubKey is compressed public key format that starts with 0x02 or 0x03,
+	// get ecdsa public key from byte array like below.
+	if len(pubKey) == 33 { // nolint: gomnd
+		ecdsaPub, err := crypto.DecompressPubkey(pubKey)
+		if err != nil {
+			return false, wrapErr(ErrUnableToDecompressPubkey, err)
+		}
+		publicKey := accountkey.NewAccountKeyPublicWithValue(ecdsaPub)
+		x = (*hexutil.Big)(publicKey.X).String()
+		y = (*hexutil.Big)(publicKey.Y).String()
+	} else {
+		// When pubKey is uncompressed public key format,
+		// get ecdsa public key from byte array like below.
+		x = hexutil.Encode(pubKey[:32])
+		y = hexutil.Encode(pubKey[32:])
+	}
+
+	// Get ecdsa public key from xy point.
+	var xyPoint map[string]interface{}
+	var ok bool
+	if xyPoint, ok = keyObj["key"].(map[string]interface{}); !ok {
+		return false, ErrGetAccountAPI
+	}
+	var xString, yString string
+	if xString, ok = xyPoint["x"].(string); !ok {
+		return false, ErrGetAccountAPI
+	}
+	if yString, ok = xyPoint["y"].(string); !ok {
+		return false, ErrGetAccountAPI
+	}
+	// Format with leading zeros
+	xString = "0x" + fmt.Sprintf("%064s", strings.Replace(xString, "0x", "", 1))
+	yString = "0x" + fmt.Sprintf("%064s", strings.Replace(yString, "0x", "", 1))
+	if x != xString || y != yString {
+		return false, nil
+	}
+	return true, nil
+}
+
+// derivedAddress returns derived address string
+func derivedAddress(publicKey []byte) (string, error) {
+	var pubkey *ecdsa.PublicKey
+	var err error
+	// Compressed public key byte array
+	if len(publicKey) == 33 { // nolint: gomnd
+		pubkey, err = crypto.DecompressPubkey(publicKey)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		pubkey = &ecdsa.PublicKey{
+			X:     new(big.Int).SetBytes(publicKey[:32]),
+			Y:     new(big.Int).SetBytes(publicKey[32:]),
+			Curve: crypto.S256(),
+		}
+	}
+
+	addr := crypto.PubkeyToAddress(*pubkey)
+	return addr.Hex(), nil
 }
 
 // ConstructionPreprocess implements the /construction/preprocess
