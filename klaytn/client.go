@@ -1870,6 +1870,15 @@ func (kc *Client) Call(
 	return nil, fmt.Errorf("%w: %s", ErrCallMethodInvalid, request.Method)
 }
 
+// GetAccount calls `klay_getAccount` API and returns an account.
+func (kc *Client) GetAccount(ctx context.Context, address, blockQuery string) (map[string]interface{}, error) {
+	var acct map[string]interface{}
+	if err := kc.c.CallContext(ctx, &acct, "klay_getAccount", address, blockQuery); err != nil {
+		return nil, err
+	}
+	return acct, nil
+}
+
 // txPoolContentResponse represents the response for a call to
 // Klaytn EN node on the "txpool_content" method.
 type txPoolContentResponse struct {

@@ -67,13 +67,6 @@ var (
 		Message: "unable to decompress public key",
 	}
 
-	// ErrNotSupportedAPI is returned when
-	// the API endpoint is not supported by rosetta-klaytn.
-	ErrNotSupportedAPI = &types.Error{
-		Code:    3, //nolint
-		Message: "not supported API",
-	}
-
 	// ErrUnclearIntent is returned when operations
 	// provided in /construction/preprocess or /construction/payloads
 	// are not valid.
@@ -147,6 +140,84 @@ var (
 		Code:    14, //nolint
 		Message: "invalid input",
 	}
+
+	// ErrNotSupportedAPI is returned when
+	// the API endpoint is not supported by rosetta-klaytn.
+	ErrNotSupportedAPI = &types.Error{
+		Code:    15, //nolint
+		Message: "not supported API",
+	}
+
+	// ErrGetAccountAPI is returned when
+	// the rosetta-klaytn cannot get an account
+	// via klay_getAccount API.
+	ErrGetAccountAPI = &types.Error{
+		Code:    16, //nolint
+		Message: "Unable to get an account info",
+	}
+
+	// ErrAccountType is returned when
+	// the account type is neither LegacyAccount nor EOA.
+	ErrAccountType = &types.Error{
+		Code:    17, //nolint
+		Message: "not supported account type",
+	}
+
+	// ErrDeriveAddress is returned if an error is returned during
+	// deriving an address from the public key.
+	ErrDeriveAddress = &types.Error{
+		Code:    18, //nolint
+		Message: "cannot derive an address from the public key",
+	}
+
+	// ErrDerivedAddrNotMatched is returned if the account associated
+	// with the address sent by the user in the metadata field
+	// has AccountKeyLegacy as accountKey,
+	// and the address derived from the public key
+	// does not match the one sent by the user in the metadata field.
+	ErrDerivedAddrNotMatched = &types.Error{
+		Code:    19, //nolint
+		Message: "derived an address from the public key is not matched with the address in the metadata",
+	}
+
+	// ErrXYPoint is returned when failed to extract x and y point.
+	ErrXYPoint = &types.Error{
+		Code:    20, //nolint
+		Message: "Unable to get x, y point from public key",
+	}
+
+	// ErrDiffPubKey is returned when public key parameter is different
+	// with a public key in Klaytn account.
+	ErrDiffPubKey = &types.Error{
+		Code:    21, //nolint
+		Message: "pubilc key is not matched",
+	}
+
+	// ErrExtractAddress is returned when fail to get an address from metadata.
+	ErrExtractAddress = &types.Error{
+		Code:    22, //nolint
+		Message: "address string could not be extracted from the metadata",
+	}
+
+	// ErrAccountKeyFail is returned when an account key of the Klaytn account is AccountKeyFail.
+	ErrAccountKeyFail = &types.Error{
+		Code:    23, //nolint
+		Message: "Klaytn account with AccountKeyFail cannot be used",
+	}
+
+	// ErrMultiSigNotIncludePubKey is returned when the AccountKeyWeightedMultiSig does not include
+	// the public key that user pass as a parameter.
+	ErrMultiSigNotIncludePubKey = &types.Error{
+		Code:    24, //nolint
+		Message: "AccountKeyWeightedMultiSig does not include public key passed as a parameter",
+	}
+
+	// ErrRoleBasedNotIncludePubKey is returned when the AccountKeyRoleBased does not include
+	// the public key that user pass as a parameter in the RoleTransactionKey.
+	ErrRoleBasedNotIncludePubKey = &types.Error{
+		Code:    25, //nolint
+		Message: "AccountKeyRoleBased does not include public key passed as a parameter in the RoleTransactionKey",
+	}
 )
 
 // wrapErr adds details to the types.Error provided. We use a function
@@ -162,6 +233,24 @@ func wrapErr(rErr *types.Error, err error) *types.Error {
 		newErr.Details = map[string]interface{}{
 			"context": err.Error(),
 		}
+	}
+
+	return newErr
+}
+
+// wrapErrWithMetadata adds metatdata to the types.Error provided. We use a function
+// to do this so that we don't accidentially overrwrite the standard
+// errors.
+func wrapErrWithMetadata(rErr *types.Error, metadata map[string]interface{}, err error) *types.Error {
+	newErr := &types.Error{
+		Code:      rErr.Code,
+		Message:   rErr.Message,
+		Retriable: rErr.Retriable,
+		Details:   map[string]interface{}{"metadata": metadata},
+	}
+
+	if err != nil {
+		newErr.Details["context"] = err.Error()
 	}
 
 	return newErr
