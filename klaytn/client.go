@@ -1434,9 +1434,6 @@ func (kc *Client) populateTransaction(
 	// Compute trace operations
 	traces := flattenTraces(tx.Trace, []*flatCall{})
 
-	if tx.Transaction.Hash().String() == "0xfd529346ad72d1553dc78d4fc52326d21977e78253d432e6b294ddc65c00d463" {
-		fmt.Println("DEBUG HERE")
-	}
 	traceOperations := traceOps(tx, traces, len(ops))
 	ops = append(ops, traceOperations...)
 
