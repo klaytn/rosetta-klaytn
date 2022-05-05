@@ -5,8 +5,8 @@
     <parameters value="run" />
     <envs>
       <env name="MODE" value="ONLINE" />
-      <env name="NETWORK" value="CYPRESS" />
-      <env name="PORT" value="9090" />
+      <env name="NETWORK" value="MAINNET" />
+      <env name="PORT" value="8080" />
       <env name="KEN" value="http://localhost:8551" />
     </envs>
     <kind value="PACKAGE" />
