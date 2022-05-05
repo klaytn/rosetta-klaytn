@@ -6,7 +6,7 @@
     <envs>
       <env name="MODE" value="ONLINE" />
       <env name="NETWORK" value="LOCAL" />
-      <env name="PORT" value="9090" />
+      <env name="PORT" value="10100" />
       <env name="KEN" value="http://localhost:8551" />
     </envs>
     <kind value="PACKAGE" />

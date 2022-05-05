@@ -3,55 +3,47 @@
     "blockchain": "Klaytn",
     "network": "Testnet"
   },
-  "online_url": "http://localhost:8080",
-  "data_directory": "cli-data",
-  "http_timeout": 300,
+  "online_url": "http://localhost:9090",
+  "data_directory": "cli-data-testnet",
+  "http_timeout": 15,
   "max_retries": 15,
-  "max_online_connections": 500,
-  "max_sync_concurrency": 64,
-  "tip_delay": 120,
+  "max_online_connections": 120,
+  "max_sync_concurrency": 32,
+  "tip_delay": 300,
+  "max_reorg_depth": 100,
+  "log_configuration": false,
   "compression_disabled":true,
-  "memory_limit_disabled":true,
+  "memory_limit_disabled":false,
+  "error_stack_trace_disabled": false,
+  "coin_supported": false,
   "construction": {
+    "offline_url": "http://localhost:9090",
     "stale_depth": 3,
     "broadcast_limit": 5,
     "constructor_dsl_file": "klaytn.ros",
-    "prefunded_accounts": [
-      {
-        "privkey": "",
-        "account_identifier": {
-          "address": ""
-        },
-        "curve_type": "secp256k1",
-        "currency": {
-          "symbol": "KLAY",
-          "decimals": 18
-        }
-      },
-      {
-        "privkey": "",
-        "account_identifier": {
-          "address": ""
-        },
-        "curve_type": "secp256k1",
-        "currency": {
-          "symbol": "KLAY",
-          "decimals": 18
-        }
-      }
-    ],
     "end_conditions": {
       "transfer": 10
     }
   },
   "data": {
-    "initial_balance_fetch_disabled":true,
-    "active_reconciliation_concurrency": 32,
-    "bootstrap_balances": "bootstrap_balances.json",
+    "active_reconciliation_concurrency": 16,
+    "inactive_reconciliation_concurrency": 32,
+    "inactive_reconciliation_frequency": 250,
     "log_blocks": true,
     "log_transactions": true,
+    "log_balance_changes": true,
     "log_reconciliations": true,
-    "start_index": 1,
+    "ignore_reconciliation_error": false,
+    "reconciliation_disabled": false,
+    "reconciliation_drain_disabled": false,
+    "inactive_discrepancy_search_disabled": false,
+    "balance_tracking_disabled": false,
+    "coin_tracking_disabled": false,
+    "status_port": 9091,
+    "results_output_file": "",
+    "pruning_disabled": false,
+    "initial_balance_fetch_disabled": false,
+    "bootstrap_balances": "bootstrap_balances.json",
     "end_conditions": {
       "reconciliation_coverage": {
         "coverage": 0.95
