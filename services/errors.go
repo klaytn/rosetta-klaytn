@@ -177,7 +177,7 @@ var (
 	// does not match the one sent by the user in the metadata field.
 	ErrDerivedAddrNotMatched = &types.Error{
 		Code:    19, //nolint
-		Message: "derived an address from the public key is not matched with the address in the metadata",
+		Message: "derived address from the public key does not match with the address in the metadata",
 	}
 
 	// ErrXYPoint is returned when failed to extract x and y point.
@@ -190,7 +190,7 @@ var (
 	// with a public key in Klaytn account.
 	ErrDiffPubKey = &types.Error{
 		Code:    21, //nolint
-		Message: "pubilc key is not matched",
+		Message: "pubilc key does not match",
 	}
 
 	// ErrExtractAddress is returned when fail to get an address from metadata.
