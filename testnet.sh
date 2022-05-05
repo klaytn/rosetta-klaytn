@@ -4,6 +4,12 @@
 export MODE=ONLINE
 export NETWORK=TESTNET
 export PORT=9090
-export KEN="<Replace this with Acrhive Node URL>"
 
-go run main.go run >> ros-mainnet.log
+if [ ! -z "$1" ]
+  then
+    export KEN=$1
+  else
+    export KEN="<Replace this with Archive Node URL>"
+fi
+
+go run main.go run >> ros-testnet.log
