@@ -335,10 +335,12 @@ github.com/klauspost/compress v1.13.6 h1:P76CopJELS0TiO2mebmnzgWaajssP/EszplttgQ
 github.com/klauspost/compress v1.13.6/go.mod h1:/3/Vjq9QcHkK5uEr5lBEmyoZ1iFhe47etQ6QUkpK6sk=
 github.com/klauspost/cpuid v1.2.1/go.mod h1:Pj4uuM528wm8OyEC2QMXAi2YiTZ96dNQPGgoMS4s3ek=
 github.com/klauspost/reedsolomon v1.9.2/go.mod h1:CwCi+NUr9pqSVktrkN+Ondf06rkhYZ/pcNv7fu+8Un4=
-github.com/klaytn/klaytn v1.8.2 h1:EpFfJNowt19908Q8ezi1VGyeJPMkRu8BUaHP7kTxXdc=
 github.com/klaytn/klaytn v1.8.2/go.mod h1:kWR7qLJseUlhTS7DBGlzul7+6/qF19N1MOTGYnrXL54=
+github.com/klaytn/klaytn v1.8.3 h1:IPcp2GfpsqGv3TqyWskZp0sBAIhv2qljFNNijIlekwg=
+github.com/klaytn/klaytn v1.8.3/go.mod h1:bbf8dqgZn/cLZ+ns+N416knDMKVpyWuUfuOXACpCVH0=
 github.com/klaytn/rosetta-sdk-go-klaytn v0.7.9 h1:/5hqdtTzt9G+Kew+pSVVksv/PRLWRgg3fMQm/csqkZY=
 github.com/klaytn/rosetta-sdk-go-klaytn v0.7.9/go.mod h1:OUfgbp1qlrnnGdJ/8PGeu+b3ayd3jiHyxvs2F8oQbXM=
+github.com/klaytn/xgo v0.0.0-20220420020737-0d7e3e080122/go.mod h1:1p9sFrvjHQrEknvDHha17xKMZMOqE73LNEGiBt3/3o0=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/konsorten/go-windows-terminal-sequences v1.0.3/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFBFZlji/RkVcI2GknAs/DXo4wKdlNEc=
