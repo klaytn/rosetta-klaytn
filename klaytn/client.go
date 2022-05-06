@@ -1086,14 +1086,14 @@ func feeOps(
 			refundFee := new(big.Int).Sub(userInputFee, proposerEarnedAmount)
 
 			// fee * ratio / 100
-			feePayerOGFee := new(big.Int).Div(new(big.Int).Mul(userInputFee, new(big.Int).SetUint64(uint64(ratio))), common.Big100)
-			senderOGFee := new(big.Int).Sub(userInputFee, feePayerOGFee)
+			feePayerFeeWithGas := new(big.Int).Div(new(big.Int).Mul(userInputFee, new(big.Int).SetUint64(uint64(ratio))), common.Big100)
+			senderFeeWithGas := new(big.Int).Sub(userInputFee, feePayerFeeWithGas)
 
 			feePayerRefund := new(big.Int).Div(new(big.Int).Mul(refundFee, new(big.Int).SetUint64(uint64(ratio))), common.Big100)
 			senderRefund := new(big.Int).Sub(refundFee, feePayerRefund)
 
-			feePayerAmount := new(big.Int).Sub(feePayerOGFee, feePayerRefund)
-			senderAmount := new(big.Int).Sub(senderOGFee, senderRefund)
+			feePayerAmount := new(big.Int).Sub(feePayerFeeWithGas, feePayerRefund)
+			senderAmount := new(big.Int).Sub(senderFeeWithGas, senderRefund)
 
 			// Set sender tx fee payment and fee payer tx fee payment.
 			opsForFDR := []*RosettaTypes.Operation{
@@ -1110,7 +1110,7 @@ func feeOps(
 			if tx.FeeBurned != nil {
 				feePayerBurnAmount := new(
 					big.Int,
-				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100))  // nolint: gomnd
+				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100)) // nolint: gomnd
 				senderBurnAmount := new(big.Int).Sub(tx.FeeBurned, feePayerBurnAmount) // nolint: gomnd
 				burntOps := []*RosettaTypes.Operation{
 					createSuccessFeeOperation(
