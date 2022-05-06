@@ -58,6 +58,12 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	ctx context.Context,
 	request *types.ConstructionDeriveRequest,
 ) (*types.ConstructionDeriveResponse, *types.Error) {
+	// We cannot serve /construction/derive
+	// because we need to get account info from Klaytn Node.
+	if s.config.Mode != configuration.Online {
+		return nil, ErrUnavailableOffline
+	}
+
 	var addr string
 	var tErr error
 	var ok bool
