@@ -1076,16 +1076,24 @@ func feeOps(
 			if !ok {
 				return nil, fmt.Errorf("could not extract fee ratio from %v", tx.Transaction)
 			}
-			senderRatio := big.NewInt(int64(100 - ratio)) // nolint:gomnd
 			feePayerRatio := big.NewInt(int64(ratio))
 
+			// TODO-Klaytn: Have to consider gas burning when calculate fee operations.
+			// For same fee logic with Klaytn,
+			// use original gas fee which is calculated with user input in the gas first
+			// and then subtract refund gas which is (gas - gasUsed).
+			userInputFee := new(big.Int).Mul(new(big.Int).SetUint64(tx.Transaction.Gas()), tx.Transaction.GasPrice())
+			refundFee := new(big.Int).Sub(userInputFee, proposerEarnedAmount)
+
 			// fee * ratio / 100
-			senderAmount := new(
-				big.Int,
-			).Div(new(big.Int).Mul(proposerEarnedAmount, senderRatio), big.NewInt(100)) // nolint
-			feePayerAmount := new(
-				big.Int,
-			).Div(new(big.Int).Mul(proposerEarnedAmount, feePayerRatio), big.NewInt(100)) // nolint
+			feePayerOGFee := new(big.Int).Div(new(big.Int).Mul(userInputFee, new(big.Int).SetUint64(uint64(ratio))), common.Big100)
+			senderOGFee := new(big.Int).Sub(userInputFee, feePayerOGFee)
+
+			feePayerRefund := new(big.Int).Div(new(big.Int).Mul(refundFee, new(big.Int).SetUint64(uint64(ratio))), common.Big100)
+			senderRefund := new(big.Int).Sub(refundFee, feePayerRefund)
+
+			feePayerAmount := new(big.Int).Sub(feePayerOGFee, feePayerRefund)
+			senderAmount := new(big.Int).Sub(senderOGFee, senderRefund)
 
 			// Set sender tx fee payment and fee payer tx fee payment.
 			opsForFDR := []*RosettaTypes.Operation{
@@ -1100,12 +1108,10 @@ func feeOps(
 
 			// If tx.FeeBurned is not nil, append the burnt operations.
 			if tx.FeeBurned != nil {
-				senderBurnAmount := new(
-					big.Int,
-				).Div(new(big.Int).Mul(tx.FeeBurned, senderRatio), big.NewInt(100)) // nolint: gomnd
 				feePayerBurnAmount := new(
 					big.Int,
-				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100)) // nolint: gomnd
+				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100))  // nolint: gomnd
+				senderBurnAmount := new(big.Int).Sub(tx.FeeBurned, feePayerBurnAmount) // nolint: gomnd
 				burntOps := []*RosettaTypes.Operation{
 					createSuccessFeeOperation(
 						2, // nolint: gomnd
