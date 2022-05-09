@@ -1086,7 +1086,7 @@ func feeOps(
 			refundFee := new(big.Int).Sub(userInputFee, proposerEarnedAmount)
 
 			// fee * ratio / 100
-			feePayerFeeWithGas := new(big.Int).Div(new(big.Int).Mul(userInputFee, new(big.Int).SetUint64(uint64(ratio))), common.Big100)
+			feePayerFeeWithGas := new(big.Int).Div(new(big.Int).Mul(userInputFee, new(big.Int).SetUint64(uint64(ratio))), common.Big100) // nolint: lll
 			senderFeeWithGas := new(big.Int).Sub(userInputFee, feePayerFeeWithGas)
 
 			feePayerRefund := new(big.Int).Div(new(big.Int).Mul(refundFee, new(big.Int).SetUint64(uint64(ratio))), common.Big100)
