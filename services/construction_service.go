@@ -58,103 +58,114 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	ctx context.Context,
 	request *types.ConstructionDeriveRequest,
 ) (*types.ConstructionDeriveResponse, *types.Error) {
-	// We cannot serve /construction/derive
-	// because we need to get account info from Klaytn Node.
-	if s.config.Mode != configuration.Online {
-		return nil, ErrUnavailableOffline
-	}
-
-	var addr string
-	var tErr error
-	var ok bool
-	derived := false
-	// User can send an address string in metadata.
-	// If user do not send address via metadata, then derive an address from the public key.
-	// If an address is existed in metadata, then get account info from Klaytn
-	// to compare the public key parameter and the public key in the Klaytn account.
-	if request.Metadata == nil {
-		addr, tErr = derivedAddress(request.PublicKey.Bytes)
-		if tErr != nil {
-			return nil, wrapErr(ErrDeriveAddress, tErr)
-		}
-		derived = true
-	} else {
-		addr, ok = request.Metadata["address"].(string)
-		if !ok {
-			return nil, ErrExtractAddress
-		}
-	}
-
-	// Get a Klaytn account to get account key.
-	acct, err := s.client.GetAccount(ctx, addr, "latest")
+	pubkey, err := crypto.DecompressPubkey(request.PublicKey.Bytes)
 	if err != nil {
-		return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, err)
-	}
-	if acct == nil {
-		// "acct == nil" means that Klaytn does not have any state with that account.
-		// So we need to proceed derive process with default account that has AccountKeyLegacy.
-		acct = map[string]interface{}{
-			"accType": float64(1),
-			"account": map[string]interface{}{
-				"balance":       "0x0",
-				"humanReadable": false,
-				"key":           map[string]interface{}{"keyType": float64(1), "key": map[string]interface{}{}},
-				"nonce":         float64(0),
-			},
-		}
+		return nil, wrapErr(ErrUnableToDecompressPubkey, err)
 	}
 
-	// The Klaytn account returned from client format is below.
-	// {
-	// 	 accType: 1,
-	// 	 account: {
-	// 		 balance: 49853...,
-	// 		 humanReadable: false,
-	// 		 key: {
-	// 			 keyType: 2,
-	// 			 key: { x: "0x23003...",  y: "0x18a7f..." },
-	// 		 },
-	// 		 nonce: 11
-	// 	 }
-	// }
-	var accType float64
-	if accType, ok = acct["accType"].(float64); !ok {
-		return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
-	}
-	// If account is not Legacy Account or External Owned Account type,
-	// then throw an error.
-	// See https://docs.klaytn.com/klaytn/design/accounts#klaytn-account-types
-	if accType > float64(1) {
-		return nil, wrapErrWithMetadata(ErrAccountType, acct, nil)
-	}
-
-	var accountMap map[string]interface{}
-	if accountMap, ok = acct["account"].(map[string]interface{}); !ok {
-		return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
-	}
-	var keyMap map[string]interface{}
-	if keyMap, ok = accountMap["key"].(map[string]interface{}); !ok {
-		return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
-	}
-	var keyType float64
-	if keyType, ok = keyMap["keyType"].(float64); !ok {
-		return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
-	}
-
-	// Make an account identifier with the account returned by client in Metadata field.
-	identifier := types.AccountIdentifier{
-		Address:  addr,
-		Metadata: acct,
-	}
-
-	typedError := validatePubKeyForKeyTypes(addr, keyMap, keyType, derived, request.PublicKey.Bytes, acct)
-	if typedError != nil {
-		return nil, typedError
-	}
-
+	addr := crypto.PubkeyToAddress(*pubkey)
 	return &types.ConstructionDeriveResponse{
-		AccountIdentifier: &identifier,
+		AccountIdentifier: &types.AccountIdentifier{
+			Address: addr.Hex(),
+		},
 	}, nil
+	//// We cannot serve /construction/derive
+	//// because we need to get account info from Klaytn Node.
+	//if s.config.Mode != configuration.Online {
+	//	return nil, ErrUnavailableOffline
+	//}
+	//
+	//var addr string
+	//var tErr error
+	//var ok bool
+	//derived := false
+	//// User can send an address string in metadata.
+	//// If user do not send address via metadata, then derive an address from the public key.
+	//// If an address is existed in metadata, then get account info from Klaytn
+	//// to compare the public key parameter and the public key in the Klaytn account.
+	//if request.Metadata == nil {
+	//	addr, tErr = derivedAddress(request.PublicKey.Bytes)
+	//	if tErr != nil {
+	//		return nil, wrapErr(ErrDeriveAddress, tErr)
+	//	}
+	//	derived = true
+	//} else {
+	//	addr, ok = request.Metadata["address"].(string)
+	//	if !ok {
+	//		return nil, ErrExtractAddress
+	//	}
+	//}
+	//
+	//// Get a Klaytn account to get account key.
+	//acct, err := s.client.GetAccount(ctx, addr, "latest")
+	//if err != nil {
+	//	return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, err)
+	//}
+	//if acct == nil {
+	//	// "acct == nil" means that Klaytn does not have any state with that account.
+	//	// So we need to proceed derive process with default account that has AccountKeyLegacy.
+	//	acct = map[string]interface{}{
+	//		"accType": float64(1),
+	//		"account": map[string]interface{}{
+	//			"balance":       "0x0",
+	//			"humanReadable": false,
+	//			"key":           map[string]interface{}{"keyType": float64(1), "key": map[string]interface{}{}},
+	//			"nonce":         float64(0),
+	//		},
+	//	}
+	//}
+	//
+	//// The Klaytn account returned from client format is below.
+	//// {
+	//// 	 accType: 1,
+	//// 	 account: {
+	//// 		 balance: 49853...,
+	//// 		 humanReadable: false,
+	//// 		 key: {
+	//// 			 keyType: 2,
+	//// 			 key: { x: "0x23003...",  y: "0x18a7f..." },
+	//// 		 },
+	//// 		 nonce: 11
+	//// 	 }
+	//// }
+	//var accType float64
+	//if accType, ok = acct["accType"].(float64); !ok {
+	//	return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
+	//}
+	//// If account is not Legacy Account or External Owned Account type,
+	//// then throw an error.
+	//// See https://docs.klaytn.com/klaytn/design/accounts#klaytn-account-types
+	//if accType > float64(1) {
+	//	return nil, wrapErrWithMetadata(ErrAccountType, acct, nil)
+	//}
+	//
+	//var accountMap map[string]interface{}
+	//if accountMap, ok = acct["account"].(map[string]interface{}); !ok {
+	//	return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
+	//}
+	//var keyMap map[string]interface{}
+	//if keyMap, ok = accountMap["key"].(map[string]interface{}); !ok {
+	//	return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
+	//}
+	//var keyType float64
+	//if keyType, ok = keyMap["keyType"].(float64); !ok {
+	//	return nil, wrapErrWithMetadata(ErrGetAccountAPI, acct, nil)
+	//}
+	//
+	//// Make an account identifier with the account returned by client in Metadata field.
+	//identifier := types.AccountIdentifier{
+	//	Address:  addr,
+	//	Metadata: acct,
+	//}
+	//
+	//typedError := validatePubKeyForKeyTypes(addr, keyMap, keyType, derived, request.PublicKey.Bytes, acct)
+	//if typedError != nil {
+	//	return nil, typedError
+	//}
+	//
+	//return &types.ConstructionDeriveResponse{
+	//	AccountIdentifier: &identifier,
+	//}, nil
 }
 
 // validatePubKeyForKeyTypes validates public key byte array received by user as a parameter
