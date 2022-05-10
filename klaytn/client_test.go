@@ -48,7 +48,7 @@ func TestStatus_NotReady(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
 
 	c := &Client{
-		c: mockJSONRPC,
+		c:              mockJSONRPC,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -78,7 +78,7 @@ func TestStatus_NotSyncing(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
 
 	c := &Client{
-		c: mockJSONRPC,
+		c:              mockJSONRPC,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -183,7 +183,7 @@ func TestStatus_NotSyncing_SkipAdminCalls(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
 
 	c := &Client{
-		c: mockJSONRPC,
+		c:              mockJSONRPC,
 		traceSemaphore: semaphore.NewWeighted(100),
 		skipAdminCalls: true,
 	}
@@ -257,7 +257,7 @@ func TestStatus_Syncing(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
 
 	c := &Client{
-		c: mockJSONRPC,
+		c:              mockJSONRPC,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -367,7 +367,7 @@ func TestStatus_Syncing_SkipAdminCalls(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
 
 	c := &Client{
-		c: mockJSONRPC,
+		c:              mockJSONRPC,
 		traceSemaphore: semaphore.NewWeighted(100),
 		skipAdminCalls: true,
 	}
@@ -690,7 +690,7 @@ func TestBalance_Historical_Index(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
 
 	c := &Client{
-		c: mockJSONRPC,
+		c:              mockJSONRPC,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -848,7 +848,7 @@ func TestCall_GetBlockByNumber(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
 
 	c := &Client{
-		c: mockJSONRPC,
+		c:              mockJSONRPC,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -3008,7 +3008,7 @@ func TestBlock_468194(t *testing.T) {
 
 	tc := testTraceConfig()
 	c := &Client{
-		c: mockJSONRPC,
+		c:              mockJSONRPC,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -3178,7 +3178,7 @@ func TestBlock_13998626(t *testing.T) {
 
 	tc := testTraceConfig()
 	c := &Client{
-		c: mockJSONRPC,
+		c:              mockJSONRPC,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -3848,6 +3848,121 @@ func TestBlock_1665(t *testing.T) {
 		ctx,
 		&RosettaTypes.PartialBlockIdentifier{
 			Index: RosettaTypes.Int64(1665),
+		},
+	)
+	assert.NoError(t, err)
+
+	// Ensure types match
+	jsonResp, err := jsonifyBlock(resp)
+
+	assert.NoError(t, err)
+	assert.Equal(t, correctResp.Block, jsonResp)
+
+	mockJSONRPC.AssertExpectations(t)
+}
+
+// Block without KIR and KGF addresses in staking info.
+func TestBlock_4219(t *testing.T) {
+	mockJSONRPC := &mocks.JSONRPC{}
+
+	tc := testTraceConfig()
+	c := &Client{
+		c:              mockJSONRPC,
+		tc:             tc,
+		p:              params.BaobabChainConfig,
+		traceSemaphore: semaphore.NewWeighted(100),
+	}
+
+	ctx := context.Background()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"klay_getBlockByNumber",
+		"0x107b",
+		true,
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*json.RawMessage)
+
+			file, err := ioutil.ReadFile("testdata/block_4219.json")
+			assert.NoError(t, err)
+
+			*r = json.RawMessage(file)
+		},
+	).Once()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"debug_traceBlockByHash",
+		common.HexToHash("0x8870ecb298ae34ef59f53a240d6dd80f07ccc8fa42065cc872b2a1ed85a1bb93"),
+		tc,
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*json.RawMessage)
+
+			file, err := ioutil.ReadFile(
+				"testdata/block_trace_0x8870ecb298ae34ef59f53a240d6dd80f07ccc8fa42065cc872b2a1ed85a1bb93.json",
+			) // nolint
+			assert.NoError(t, err)
+			*r = json.RawMessage(file)
+		},
+	).Once()
+
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_itemsAt",
+		"0x107b",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*map[string]interface{})
+
+			file, err := ioutil.ReadFile("testdata/governance_1665.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
+		},
+	).Once()
+
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_getStakingInfo",
+		"0x107b",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*reward.StakingInfo)
+
+			file, err := ioutil.ReadFile("testdata/stakingInfo_4219.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
+		},
+	).Once()
+
+	correctRaw, err := ioutil.ReadFile("testdata/block_response_4219.json")
+	assert.NoError(t, err)
+	var correctResp *RosettaTypes.BlockResponse
+	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
+
+	resp, err := c.Block(
+		ctx,
+		&RosettaTypes.PartialBlockIdentifier{
+			Index: RosettaTypes.Int64(4219),
 		},
 	)
 	assert.NoError(t, err)
