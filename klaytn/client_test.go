@@ -46,11 +46,9 @@ import (
 
 func TestStatus_NotReady(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
-	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
 		c: mockJSONRPC,
-		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -74,16 +72,13 @@ func TestStatus_NotReady(t *testing.T) {
 	assert.True(t, errors.Is(err, klaytn.NotFound))
 
 	mockJSONRPC.AssertExpectations(t)
-	mockGraphQL.AssertExpectations(t)
 }
 
 func TestStatus_NotSyncing(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
-	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
 		c: mockJSONRPC,
-		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -182,16 +177,13 @@ func TestStatus_NotSyncing(t *testing.T) {
 	assert.NoError(t, err)
 
 	mockJSONRPC.AssertExpectations(t)
-	mockGraphQL.AssertExpectations(t)
 }
 
 func TestStatus_NotSyncing_SkipAdminCalls(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
-	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
 		c: mockJSONRPC,
-		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 		skipAdminCalls: true,
 	}
@@ -259,16 +251,13 @@ func TestStatus_NotSyncing_SkipAdminCalls(t *testing.T) {
 	assert.NoError(t, err)
 
 	mockJSONRPC.AssertExpectations(t)
-	mockGraphQL.AssertExpectations(t)
 }
 
 func TestStatus_Syncing(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
-	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
 		c: mockJSONRPC,
-		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -372,16 +361,13 @@ func TestStatus_Syncing(t *testing.T) {
 	assert.NoError(t, err)
 
 	mockJSONRPC.AssertExpectations(t)
-	mockGraphQL.AssertExpectations(t)
 }
 
 func TestStatus_Syncing_SkipAdminCalls(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
-	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
 		c: mockJSONRPC,
-		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 		skipAdminCalls: true,
 	}
@@ -454,7 +440,6 @@ func TestStatus_Syncing_SkipAdminCalls(t *testing.T) {
 	assert.NoError(t, err)
 
 	mockJSONRPC.AssertExpectations(t)
-	mockGraphQL.AssertExpectations(t)
 }
 
 func TestBalance(t *testing.T) {
@@ -706,7 +691,6 @@ func TestBalance_Historical_Index(t *testing.T) {
 
 	c := &Client{
 		c: mockJSONRPC,
-		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -862,11 +846,9 @@ func TestBalance_InvalidHash(t *testing.T) {
 
 func TestCall_GetBlockByNumber(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
-	mockGraphQL := &mocks.GraphQL{}
 
 	c := &Client{
 		c: mockJSONRPC,
-		//g:              mockGraphQL,
 		traceSemaphore: semaphore.NewWeighted(100),
 	}
 
@@ -915,7 +897,6 @@ func TestCall_GetBlockByNumber(t *testing.T) {
 	assert.NoError(t, err)
 
 	mockJSONRPC.AssertExpectations(t)
-	mockGraphQL.AssertExpectations(t)
 }
 
 func TestCall_GetBlockByNumber_InvalidArgs(t *testing.T) {
@@ -3024,12 +3005,10 @@ func TestBlock_363366(t *testing.T) {
 // Block with blackholed funds
 func TestBlock_468194(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
-	mockGraphQL := &mocks.GraphQL{}
 
 	tc := testTraceConfig()
 	c := &Client{
 		c: mockJSONRPC,
-		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -3189,7 +3168,6 @@ func TestBlock_468194(t *testing.T) {
 	assert.Equal(t, correctResp.Block, jsonResp)
 
 	mockJSONRPC.AssertExpectations(t)
-	mockGraphQL.AssertExpectations(t)
 }
 
 // Block with EIP-1559 base fee & txs. This block taken from mainnet:
@@ -3197,12 +3175,10 @@ func TestBlock_468194(t *testing.T) {
 // This block has 7 transactions, all EIP-1559 type except the last.
 func TestBlock_13998626(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
-	mockGraphQL := &mocks.GraphQL{}
 
 	tc := testTraceConfig()
 	c := &Client{
 		c: mockJSONRPC,
-		//g:              mockGraphQL,
 		tc:             tc,
 		p:              params.BaobabChainConfig,
 		traceSemaphore: semaphore.NewWeighted(100),
@@ -3365,7 +3341,6 @@ func TestBlock_13998626(t *testing.T) {
 	assert.Equal(t, correctResp.Block, jsonResp)
 
 	mockJSONRPC.AssertExpectations(t)
-	mockGraphQL.AssertExpectations(t)
 }
 
 func TestPendingNonceAt(t *testing.T) {
@@ -3708,6 +3683,171 @@ func TestBlock_335049(t *testing.T) {
 		ctx,
 		&RosettaTypes.PartialBlockIdentifier{
 			Index: RosettaTypes.Int64(335049),
+		},
+	)
+	assert.NoError(t, err)
+
+	// Ensure types match
+	jsonResp, err := jsonifyBlock(resp)
+
+	assert.NoError(t, err)
+	assert.Equal(t, correctResp.Block, jsonResp)
+
+	mockJSONRPC.AssertExpectations(t)
+}
+
+// Block with complicate reward distribution.
+func TestBlock_1665(t *testing.T) {
+	mockJSONRPC := &mocks.JSONRPC{}
+
+	tc := testTraceConfig()
+	c := &Client{
+		c:              mockJSONRPC,
+		tc:             tc,
+		p:              params.BaobabChainConfig,
+		traceSemaphore: semaphore.NewWeighted(100),
+	}
+
+	ctx := context.Background()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"klay_getBlockByNumber",
+		"0x681",
+		true,
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*json.RawMessage)
+
+			file, err := ioutil.ReadFile("testdata/block_1665.json")
+			assert.NoError(t, err)
+
+			*r = json.RawMessage(file)
+		},
+	).Once()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"debug_traceBlockByHash",
+		common.HexToHash("0x0f7c5e802a8ebf79611a04b8780bb9c8bc1c00f41c4f829f470b7b6c8fb0d5a6"),
+		tc,
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*json.RawMessage)
+
+			file, err := ioutil.ReadFile(
+				"testdata/block_trace_0x0f7c5e802a8ebf79611a04b8780bb9c8bc1c00f41c4f829f470b7b6c8fb0d5a6.json",
+			) // nolint
+			assert.NoError(t, err)
+			*r = json.RawMessage(file)
+		},
+	).Once()
+	mockJSONRPC.On(
+		"BatchCallContext",
+		ctx,
+		mock.Anything,
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).([]rpc.BatchElem)
+			assert.Len(t, r, 1)
+			for i, txHash := range []string{
+				"0xaff5e2b926e10b4c5dee2c93d0ed9cdd740f013371f8b9b4ec5639bf1c3019d1",
+			} {
+				assert.Equal(
+					t,
+					txHash,
+					r[i].Args[0],
+				)
+
+				file, err := ioutil.ReadFile(
+					"testdata/tx_receipt_" + txHash + ".json",
+				) // nolint
+				assert.NoError(t, err)
+
+				receipt := new(types.Receipt)
+				assert.NoError(t, receipt.UnmarshalJSON(file))
+				*(r[i].Result.(**types.Receipt)) = receipt
+			}
+		},
+	).Once()
+
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"klay_getHeaderByNumber",
+		"0x681",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*map[string]interface{})
+
+			file, err := ioutil.ReadFile("testdata/block_1665.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
+		},
+	)
+
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_itemsAt",
+		"0x681",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*map[string]interface{})
+
+			file, err := ioutil.ReadFile("testdata/governance_1665.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
+		},
+	).Once()
+
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_getStakingInfo",
+		"0x681",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*reward.StakingInfo)
+
+			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
+		},
+	).Once()
+
+	correctRaw, err := ioutil.ReadFile("testdata/block_response_1665.json")
+	assert.NoError(t, err)
+	var correctResp *RosettaTypes.BlockResponse
+	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
+
+	resp, err := c.Block(
+		ctx,
+		&RosettaTypes.PartialBlockIdentifier{
+			Index: RosettaTypes.Int64(1665),
 		},
 	)
 	assert.NoError(t, err)
