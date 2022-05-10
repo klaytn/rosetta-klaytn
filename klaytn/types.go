@@ -26,7 +26,7 @@ import (
 
 const (
 	// NodeVersion is the version of klaytn we are using.
-	NodeVersion = "1.8.2"
+	NodeVersion = "1.8.3"
 
 	// Blockchain is Klaytn.
 	Blockchain string = "Klaytn"
@@ -38,6 +38,10 @@ const (
 	// TestnetNetwork is the value of the network
 	// in TestnetNetworkIdentifier.
 	TestnetNetwork string = "Testnet"
+
+	// LocalNetwork is the value of the network
+	// in LocalNetworkIdentifier.
+	LocalNetwork string = "Local"
 
 	// Symbol is the symbol value
 	// used in Currency.
@@ -126,6 +130,13 @@ var (
 	// of the Testnet(Baobab) genesis block.
 	TestnetGenesisBlockIdentifier = &types.BlockIdentifier{
 		Hash:  params.BaobabGenesisHash.Hex(),
+		Index: GenesisBlockIndex,
+	}
+
+	// LocalGenesisBlockIdentifier is the *types.BlockIdentifier
+	// of the Local network genesis block.
+	LocalGenesisBlockIdentifier = &types.BlockIdentifier{
+		Hash:  "0xb9d1d87259d7c7badd0a4ce2268a2fce81c7fe944905ac04dd2e7872a20b2087",
 		Index: GenesisBlockIndex,
 	}
 

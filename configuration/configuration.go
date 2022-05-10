@@ -139,12 +139,9 @@ func LoadConfiguration() (*Configuration, error) {
 	case Local:
 		config.Network = &types.NetworkIdentifier{
 			Blockchain: klaytn.Blockchain,
-			Network:    "Local",
+			Network:    klaytn.LocalNetwork,
 		}
-		config.GenesisBlockIdentifier = &types.BlockIdentifier{
-			Index: klaytn.GenesisBlockIndex,
-			Hash:  "0xb9d1d87259d7c7badd0a4ce2268a2fce81c7fe944905ac04dd2e7872a20b2087",
-		}
+		config.GenesisBlockIdentifier = klaytn.LocalGenesisBlockIdentifier
 		mintingAmount, _ := new(big.Int).SetString("9600000000000000000", 10) // nolint
 		config.Params = &params.ChainConfig{
 			ChainID:                  big.NewInt(int64(940625)), // nolint
