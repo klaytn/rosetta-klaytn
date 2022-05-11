@@ -26,7 +26,7 @@ import (
 // Test /network/list
 func TestNetworkList(t *testing.T) {
 	initTestValues(t)
-	defer client.Close()
+	defer c.Close()
 
 	ctx := context.Background()
 
@@ -42,7 +42,7 @@ func TestNetworkList(t *testing.T) {
 // Test /network/options
 func TestNetworkOptions(t *testing.T) {
 	initTestValues(t)
-	defer client.Close()
+	defer c.Close()
 
 	ctx := context.Background()
 
@@ -64,7 +64,7 @@ func TestNetworkOptions(t *testing.T) {
 // Test /network/status
 func TestNetworkStatus(t *testing.T) {
 	initTestValues(t)
-	defer client.Close()
+	defer c.Close()
 
 	ctx := context.Background()
 
