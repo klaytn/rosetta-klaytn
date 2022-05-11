@@ -18,64 +18,10 @@ import (
 	"context"
 	"github.com/klaytn/rosetta-klaytn/configuration"
 	"github.com/klaytn/rosetta-klaytn/klaytn"
-	"github.com/klaytn/rosetta-klaytn/services"
-	"github.com/klaytn/rosetta-sdk-go-klaytn/asserter"
 	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
-
-var (
-	// This will use default Klaytn Node URL which is "http://localhost:8551"
-	// rosettaServer = "http://localhost:8551"
-	networkIdf *types.NetworkIdentifier
-	cfg        *configuration.Configuration
-	ast        *asserter.Asserter
-	client     *klaytn.Client
-	err        error
-
-	networkAPIService *services.NetworkAPIService
-)
-
-func initTestValues(t *testing.T) {
-	setTestEnv()
-	genTestConfig(t)
-	genTestAsserter(t)
-	genTestClient(t)
-
-	networkAPIService = services.NewNetworkAPIService(cfg, client)
-}
-
-func setTestEnv() {
-	os.Setenv(configuration.ModeEnv, string(configuration.Online))
-	os.Setenv(configuration.NetworkEnv, configuration.Local)
-	os.Setenv(configuration.PortEnv, "10100")
-}
-
-func genTestConfig(t *testing.T) {
-	cfg, err = configuration.LoadConfiguration()
-	assert.Nil(t, err)
-}
-
-func genTestAsserter(t *testing.T) {
-	// The asserter automatically rejects incorrectly formatted
-	// requests.
-	ast, err = asserter.NewServer(
-		klaytn.OperationTypes,
-		klaytn.HistoricalBalanceSupported,
-		[]*types.NetworkIdentifier{cfg.Network},
-		klaytn.CallMethods,
-		klaytn.IncludeMempoolCoins,
-		"",
-	)
-	assert.Nil(t, err)
-}
-
-func genTestClient(t *testing.T) {
-	client, err = klaytn.NewClient(cfg.KlaytnNodeURL, cfg.Params, cfg.SkipAdmin)
-	assert.Nil(t, err)
-}
 
 // Test /network/list
 func TestNetworkList(t *testing.T) {
