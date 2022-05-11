@@ -55,6 +55,7 @@ build-release-m1:
 update-bootstrap-balances:
 	go run main.go utils:generate-bootstrap klaytn/genesis_files/mainnet.json rosetta-cli-conf/mainnet/bootstrap_balances.json;
 	go run main.go utils:generate-bootstrap klaytn/genesis_files/testnet.json rosetta-cli-conf/testnet/bootstrap_balances.json;
+	go run main.go utils:generate-bootstrap klaytn/genesis_files/localnet.json rosetta-cli-conf/localnet/bootstrap_balances.json;
 
 run-mainnet-online:
 	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/klaytn-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
