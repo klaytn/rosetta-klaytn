@@ -57,10 +57,6 @@ var (
 	receiver    *TestAccount
 
 	klaytnClient *client.Client
-
-	testBlockHash   string
-	testBlockNumber *int64
-	testTxHash      string
 )
 
 type TestAccount struct {
@@ -125,7 +121,7 @@ func getAccountFromCliConfig(t *testing.T) {
 	networkName := strings.ToLower(os.Getenv(configuration.NetworkEnv))
 	if !strings.ContainsAny(networkName, "net") {
 		// Convert local to localnet for path
-		networkName = networkName + "net"
+		networkName += "net"
 	}
 	path = filepath.Join(path, "../rosetta-cli-conf/"+networkName+"/config.json")
 
