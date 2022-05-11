@@ -797,8 +797,12 @@ func traceOps(
 		}
 
 		// Checksum addresses
-		from := MustChecksum(trace.From.String())
-		var to string
+		var from, to string
+		if trace.From != nil {
+			from = MustChecksum(trace.From.String())
+		} else {
+			from = "0x"
+		}
 		if trace.To != nil {
 			to = MustChecksum(trace.To.String())
 		} else {
