@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package integration_tests
+package integration
 
 import (
 	"github.com/klaytn/rosetta-klaytn/configuration"
 	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"github.com/klaytn/rosetta-klaytn/services"
-	"github.com/klaytn/rosetta-sdk-go-klaytn/asserter"
-	"github.com/klaytn/rosetta-sdk-go-klaytn/server"
 	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -31,31 +29,29 @@ var (
 	// nodeURL = "http://localhost:8551"
 	networkIdf *types.NetworkIdentifier
 	cfg        *configuration.Configuration
-	ast        *asserter.Asserter
 	client     *klaytn.Client
 	err        error
 
-	networkAPIService      *services.NetworkAPIService
-	accountAPIService      *services.AccountAPIService
-	blockAPIService        *services.BlockAPIService
-	constructionAPIService *services.ConstructionAPIService
-	mempoolAPIService      server.MempoolAPIServicer
-	callAPIService         *services.CallAPIService
+	networkAPIService *services.NetworkAPIService
+	// accountAPIService      *services.AccountAPIService
+	// blockAPIService        *services.BlockAPIService
+	// constructionAPIService *services.ConstructionAPIService
+	// mempoolAPIService      server.MempoolAPIServicer
+	// callAPIService         *services.CallAPIService
 )
 
 func initTestValues(t *testing.T) {
 	setTestEnv()
 	genTestConfig(t)
-	genTestAsserter(t)
 	genTestClient(t)
 
 	networkAPIService = services.NewNetworkAPIService(cfg, client)
-	accountAPIService = services.NewAccountAPIService(cfg, client)
-	blockAPIService = services.NewBlockAPIService(cfg, client)
-	blockAPIService = services.NewBlockAPIService(cfg, client)
-	constructionAPIService = services.NewConstructionAPIService(cfg, client)
-	mempoolAPIService = services.NewMempoolAPIService(cfg, client)
-	callAPIService = services.NewCallAPIService(cfg, client)
+	// accountAPIService = services.NewAccountAPIService(cfg, client)
+	// blockAPIService = services.NewBlockAPIService(cfg, client)
+	// blockAPIService = services.NewBlockAPIService(cfg, client)
+	// constructionAPIService = services.NewConstructionAPIService(cfg, client)
+	// mempoolAPIService = services.NewMempoolAPIService(cfg, client)
+	// callAPIService = services.NewCallAPIService(cfg, client)
 }
 
 func setTestEnv() {
@@ -66,20 +62,6 @@ func setTestEnv() {
 
 func genTestConfig(t *testing.T) {
 	cfg, err = configuration.LoadConfiguration()
-	assert.Nil(t, err)
-}
-
-func genTestAsserter(t *testing.T) {
-	// The asserter automatically rejects incorrectly formatted
-	// requests.
-	ast, err = asserter.NewServer(
-		klaytn.OperationTypes,
-		klaytn.HistoricalBalanceSupported,
-		[]*types.NetworkIdentifier{cfg.Network},
-		klaytn.CallMethods,
-		klaytn.IncludeMempoolCoins,
-		"",
-	)
 	assert.Nil(t, err)
 }
 
