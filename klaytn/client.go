@@ -255,6 +255,14 @@ func (kc *Client) Transaction(
 	if err != nil {
 		return nil, fmt.Errorf("%w: could not get receipt for %x", err, body.tx.Hash())
 	}
+	// Compare block received as a parameter by user and block in transaction rpc output.
+	if body.BlockHash.Hex() != header.Hash().Hex() {
+		return nil, fmt.Errorf(
+			"tx does not belong to the block passed as a parameter: expected block hash %s for transaction but got %s",
+			header.Hash().Hex(),
+			body.BlockHash.Hex(),
+		)
+	}
 
 	var traces *Call
 	var rawTraces json.RawMessage

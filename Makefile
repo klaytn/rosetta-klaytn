@@ -18,6 +18,7 @@ GOIMPORTS_CMD=go run golang.org/x/tools/cmd/goimports
 GO_PACKAGES=./services/... ./cmd/... ./configuration/... ./klaytn/...
 GO_FOLDERS=$(shell echo ${GO_PACKAGES} | sed -e "s/\.\///g" | sed -e "s/\/\.\.\.//g")
 TEST_SCRIPT=go test ${GO_PACKAGES}
+INTEGRATION_TEST_SCRIPT=go test ./integration/...
 LINT_SETTINGS=golint,misspell,gocyclo,gocritic,whitespace,goconst,gocognit,bodyclose,unconvert,lll,unparam
 PWD=$(shell pwd)
 NOFILE=100000
@@ -27,6 +28,9 @@ deps:
 
 test:
 	${TEST_SCRIPT}
+
+integration-test:
+	${INTEGRATION_TEST_SCRIPT}
 
 build:
 	docker build -t rosetta-klaytn:latest https://github.com/klaytn/rosetta-klaytn.git
