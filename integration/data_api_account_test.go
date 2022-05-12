@@ -31,10 +31,10 @@ func TestAccountBalance(t *testing.T) {
 
 	acctIdf := types.AccountIdentifier{Address: testAccount.Addr.String()}
 	request := &types.AccountBalanceRequest{
-		networkIdf,
-		&acctIdf,
-		&types.PartialBlockIdentifier{Index: testBlockNumber},
-		[]*types.Currency{
+		NetworkIdentifier: networkIdf,
+		AccountIdentifier: &acctIdf,
+		BlockIdentifier:   &types.PartialBlockIdentifier{Index: testBlockNumber},
+		Currencies: []*types.Currency{
 			&types.Currency{Symbol: "KLAY", Decimals: 18},
 		},
 	}
@@ -61,10 +61,10 @@ func TestAccountBalanceNotExisted(t *testing.T) {
 	randomAcct := getRandomTestAccount(t)
 	acctIdf := types.AccountIdentifier{Address: randomAcct.Addr.String()}
 	request := &types.AccountBalanceRequest{
-		networkIdf,
-		&acctIdf,
-		&types.PartialBlockIdentifier{Index: testBlockNumber},
-		[]*types.Currency{
+		NetworkIdentifier: networkIdf,
+		AccountIdentifier: &acctIdf,
+		BlockIdentifier:   &types.PartialBlockIdentifier{Index: testBlockNumber},
+		Currencies: []*types.Currency{
 			&types.Currency{Symbol: "KLAY", Decimals: 18},
 		},
 	}

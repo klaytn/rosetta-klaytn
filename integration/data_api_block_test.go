@@ -32,8 +32,8 @@ func TestBlock(t *testing.T) {
 	ctx := context.Background()
 
 	request := &types.BlockRequest{
-		networkIdf,
-		&types.PartialBlockIdentifier{Index: testBlockNumber},
+		NetworkIdentifier: networkIdf,
+		BlockIdentifier:   &types.PartialBlockIdentifier{Index: testBlockNumber},
 	}
 	ret, err := blockAPIService.Block(ctx, request)
 	assert.Nil(t, err)
@@ -75,13 +75,14 @@ func TestBlockNotExisted(t *testing.T) {
 
 	invalidHash := "0xe9a11d9ef95fb437f75d07ce768d43e74f158dd54b106e7d3746ce29d545b550"
 	request := &types.BlockRequest{
-		networkIdf,
-		&types.PartialBlockIdentifier{Hash: &invalidHash},
+		NetworkIdentifier: networkIdf,
+		BlockIdentifier:   &types.PartialBlockIdentifier{Hash: &invalidHash},
 	}
 	ret, err := blockAPIService.Block(ctx, request)
 	assert.NotNil(t, err)
 	assert.Nil(t, ret)
-	assert.True(t, strings.Contains(err.Details["context"].(string), "could not get block"))
+	expectedMsg := "could not get block"
+	assert.True(t, strings.Contains(err.Details["context"].(string), expectedMsg))
 }
 
 // Test /block/transaction
@@ -93,9 +94,9 @@ func TestBlockTransaction(t *testing.T) {
 	ctx := context.Background()
 
 	request := &types.BlockTransactionRequest{
-		networkIdf,
-		&types.BlockIdentifier{Hash: testBlockHash, Index: *testBlockNumber},
-		&types.TransactionIdentifier{Hash: testTxHash},
+		NetworkIdentifier:     networkIdf,
+		BlockIdentifier:       &types.BlockIdentifier{Hash: testBlockHash, Index: *testBlockNumber},
+		TransactionIdentifier: &types.TransactionIdentifier{Hash: testTxHash},
 	}
 	ret, err := blockAPIService.BlockTransaction(ctx, request)
 	assert.Nil(t, err)
@@ -125,14 +126,15 @@ func TestBlockTransactionNotExisted(t *testing.T) {
 
 	invalidHash := "0xe9a11d9ef95fb437f75d07ce768d43e74f158dd54b106e7d3746ce29d545b550"
 	request := &types.BlockTransactionRequest{
-		networkIdf,
-		&types.BlockIdentifier{Hash: testBlockHash, Index: *testBlockNumber},
-		&types.TransactionIdentifier{Hash: invalidHash},
+		NetworkIdentifier:     networkIdf,
+		BlockIdentifier:       &types.BlockIdentifier{Hash: testBlockHash, Index: *testBlockNumber},
+		TransactionIdentifier: &types.TransactionIdentifier{Hash: invalidHash},
 	}
 	ret, err := blockAPIService.BlockTransaction(ctx, request)
 	assert.NotNil(t, err)
 	assert.Nil(t, ret)
-	assert.True(t, strings.Contains(err.Details["context"].(string), "not found"))
+	expectedMsg := "not found"
+	assert.True(t, strings.Contains(err.Details["context"].(string), expectedMsg))
 
 	request = &types.BlockTransactionRequest{}
 	request.BlockIdentifier = &types.BlockIdentifier{}
@@ -141,14 +143,16 @@ func TestBlockTransactionNotExisted(t *testing.T) {
 	ret, err = blockAPIService.BlockTransaction(ctx, request)
 	assert.NotNil(t, err)
 	assert.Nil(t, ret)
-	assert.True(t, strings.Contains(err.Details["context"].(string), "could not get block header for"))
+	expectedMsg = "could not get block header for"
+	assert.True(t, strings.Contains(err.Details["context"].(string), expectedMsg))
 
 	request = &types.BlockTransactionRequest{}
 	request.TransactionIdentifier = &types.TransactionIdentifier{Hash: ""}
 	ret, err = blockAPIService.BlockTransaction(ctx, request)
 	assert.NotNil(t, err)
 	assert.Nil(t, ret)
-	assert.True(t, strings.Contains(err.Details["context"].(string), "transaction hash is required"))
+	expectedMsg = "transaction hash is required"
+	assert.True(t, strings.Contains(err.Details["context"].(string), expectedMsg))
 
 	request.TransactionIdentifier = &types.TransactionIdentifier{Hash: testTxHash}
 	request.BlockIdentifier = &types.BlockIdentifier{}
@@ -156,5 +160,6 @@ func TestBlockTransactionNotExisted(t *testing.T) {
 	ret, err = blockAPIService.BlockTransaction(ctx, request)
 	assert.NotNil(t, err)
 	assert.Nil(t, ret)
-	assert.True(t, strings.Contains(err.Details["context"].(string), "tx does not belong to the block passed as a parameter"))
+	expectedMsg = "tx does not belong to the block passed as a parameter"
+	assert.True(t, strings.Contains(err.Details["context"].(string), expectedMsg))
 }
