@@ -36,6 +36,17 @@ var (
 		ErrInvalidAddress,
 		ErrKlaytnClientNotReady,
 		ErrInvalidInput,
+		ErrNotSupportedAPI,
+		ErrGetAccountAPI,
+		ErrAccountType,
+		ErrDeriveAddress,
+		ErrDerivedAddrNotMatched,
+		ErrXYPoint,
+		ErrDiffPubKey,
+		ErrExtractAddress,
+		ErrAccountKeyFail,
+		ErrMultiSigNotIncludePubKey,
+		ErrRoleBasedNotIncludePubKey,
 	}
 
 	// ErrUnimplemented is returned when an endpoint
