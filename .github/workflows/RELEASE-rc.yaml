@@ -3,7 +3,8 @@ on:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]'
 jobs:
-  release:
+  initial-release-rc:
+    if: github.ref_name == 'v[0-9]+.[0-9]+.[0-9]+-rc.1'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,5 +27,17 @@ jobs:
           base: master
           title: "[rosetta-klaytn]_release/${Tag%-*}"
           body: |
-              "This PR is automatically created by CI to release a new official version of ${GITHUB_REPOSITORY}.\n
+              "This PR is automatically created by CI to release a new official version of ${GITHUB_REPOSITORY}.
                When this PR is approved by someone, a new rosetta-klaytn version will be released."
+  update-release-rc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set output
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: Push commits to release/tag branch
+        run: |
+          export Tag=${{ steps.vars.outputs.tag }}
+          echo "Push to release branch: release/${Tag%-*}"
+          git push origin release/${Tag%-*}
