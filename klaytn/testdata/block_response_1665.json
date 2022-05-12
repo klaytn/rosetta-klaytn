@@ -1,0 +1,219 @@
+{
+  "block": {
+    "block_identifier": {
+      "index": 1665,
+      "hash": "0x0f7c5e802a8ebf79611a04b8780bb9c8bc1c00f41c4f829f470b7b6c8fb0d5a6"
+    },
+    "parent_block_identifier": {
+      "index": 1664,
+      "hash": "0x01113af50608aa7c9662555b2dfe9d7eb92fd2cdae5305dcb06975e4f06bd37f"
+    },
+    "timestamp": 1652150539000,
+    "transactions": [
+      {
+        "transaction_identifier": {
+          "hash": "0x0f7c5e802a8ebf79611a04b8780bb9c8bc1c00f41c4f829f470b7b6c8fb0d5a6"
+        },
+        "operations": [
+          {
+            "operation_identifier": {
+              "index": 0
+            },
+            "type": "BLOCK_REWARD",
+            "status": "SUCCESS",
+            "account": {
+              "address": "0x9B4723af4ca65CBe7Cd99169577CF9dE840a7a30"
+            },
+            "amount": {
+              "value": "35750763642",
+              "currency": {
+                "symbol": "KLAY",
+                "decimals": 18
+              }
+            }
+          },
+          {
+            "operation_identifier": {
+              "index": 1
+            },
+            "type": "BLOCK_REWARD",
+            "status": "SUCCESS",
+            "account": {
+              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
+            },
+            "amount": {
+              "value": "49278079615",
+              "currency": {
+                "symbol": "KLAY",
+                "decimals": 18
+              }
+            }
+          },
+          {
+            "operation_identifier": {
+              "index": 2
+            },
+            "type": "BLOCK_REWARD",
+            "status": "SUCCESS",
+            "account": {
+              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
+            },
+            "amount": {
+              "value": "11594842262",
+              "currency": {
+                "symbol": "KLAY",
+                "decimals": 18
+              }
+            }
+          }
+        ]
+      },
+      {
+        "transaction_identifier": {
+          "hash": "0xaff5e2b926e10b4c5dee2c93d0ed9cdd740f013371f8b9b4ec5639bf1c3019d1"
+        },
+        "operations": [
+          {
+            "operation_identifier": {
+              "index": 0
+            },
+            "type": "FEE",
+            "status": "SUCCESS",
+            "account": {
+              "address": "0x9B4723af4ca65CBe7Cd99169577CF9dE840a7a30"
+            },
+            "amount": {
+              "value": "-525000000000000",
+              "currency": {
+                "symbol": "KLAY",
+                "decimals": 18
+              }
+            }
+          },
+          {
+            "operation_identifier": {
+              "index": 1
+            },
+            "related_operations": [
+              {
+                "index": 0
+              }
+            ],
+            "type": "FEE",
+            "status": "SUCCESS",
+            "account": {
+              "address": "0x9B4723af4ca65CBe7Cd99169577CF9dE840a7a30"
+            },
+            "amount": {
+              "value": "194250000000000",
+              "currency": {
+                "symbol": "KLAY",
+                "decimals": 18
+              }
+            }
+          },
+          {
+            "operation_identifier": {
+              "index": 2
+            },
+            "related_operations": [
+              {
+                "index": 0
+              }
+            ],
+            "type": "FEE",
+            "status": "SUCCESS",
+            "account": {
+              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
+            },
+            "amount": {
+              "value": "267750000000000",
+              "currency": {
+                "symbol": "KLAY",
+                "decimals": 18
+              }
+            }
+          },
+          {
+            "operation_identifier": {
+              "index": 3
+            },
+            "related_operations": [
+              {
+                "index": 0
+              }
+            ],
+            "type": "FEE",
+            "status": "SUCCESS",
+            "account": {
+              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
+            },
+            "amount": {
+              "value": "63000000000000",
+              "currency": {
+                "symbol": "KLAY",
+                "decimals": 18
+              }
+            }
+          },
+          {
+            "operation_identifier": {
+              "index": 4
+            },
+            "type": "CALL",
+            "status": "SUCCESS",
+            "account": {
+              "address": "0x9B4723af4ca65CBe7Cd99169577CF9dE840a7a30"
+            },
+            "amount": {
+              "value": "-1000000000000000000000000",
+              "currency": {
+                "symbol": "KLAY",
+                "decimals": 18
+              }
+            }
+          },
+          {
+            "operation_identifier": {
+              "index": 5
+            },
+            "related_operations": [
+              {
+                "index": 4
+              }
+            ],
+            "type": "CALL",
+            "status": "SUCCESS",
+            "account": {
+              "address": "0xfB3C06eF749e378dc62f6137e023b3810cC2e409"
+            },
+            "amount": {
+              "value": "1000000000000000000000000",
+              "currency": {
+                "symbol": "KLAY",
+                "decimals": 18
+              }
+            }
+          }
+        ],
+        "metadata": {
+          "gas_limit": "0x7530",
+          "gas_price": "0x5d21dba00",
+          "receipt": {
+            "contractAddress": null,
+            "gasUsed": "0x5208",
+            "logs": [],
+            "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "status": "0x1",
+            "transactionHash": "0xaff5e2b926e10b4c5dee2c93d0ed9cdd740f013371f8b9b4ec5639bf1c3019d1"
+          },
+          "trace": {
+            "type": "",
+            "value": "0x0"
+          }
+        }
+      }
+    ]
+  }
+}
+

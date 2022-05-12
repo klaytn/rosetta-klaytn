@@ -1,0 +1,40 @@
+{
+  "block": {
+    "block_identifier": {
+      "index": 4219,
+      "hash": "0x8870ecb298ae34ef59f53a240d6dd80f07ccc8fa42065cc872b2a1ed85a1bb93"
+    },
+    "parent_block_identifier": {
+      "index": 4218,
+      "hash": "0x368eb25bb94856777ed6871122dfbb67b4b651e5693eda446f1dbe36b7b43f4a"
+    },
+    "timestamp": 1652153093000,
+    "transactions": [
+      {
+        "transaction_identifier": {
+          "hash": "0x8870ecb298ae34ef59f53a240d6dd80f07ccc8fa42065cc872b2a1ed85a1bb93"
+        },
+        "operations": [
+          {
+            "operation_identifier": {
+              "index": 0
+            },
+            "type": "BLOCK_REWARD",
+            "status": "SUCCESS",
+            "account": {
+              "address": "0x9B4723af4ca65CBe7Cd99169577CF9dE840a7a30"
+            },
+            "amount": {
+              "value": "96623685519",
+              "currency": {
+                "symbol": "KLAY",
+                "decimals": 18
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+
