@@ -1,0 +1,48 @@
+name: rosetta-klaytn Release workflow
+on:
+  pull_request:
+    branches:
+      - master
+    types: [closed]
+jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set output
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: Create release/tag branch
+        run: |
+          export Tag=${{ steps.vars.outputs.tag }}
+          echo "Create production release tag: ${Tag%-*}"
+          git checkout master
+          git tag ${Tag%-*}
+          git push origin ${Tag%-*}
+  
+  # release:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Set output
+  #       id: vars
+  #       run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+  #     - name: Create release/tag branch
+  #       run: |
+  #         export Tag=${{ steps.vars.outputs.tag }}
+  #         echo "Create to release branch: release/${Tag%-*}"
+  #         git checkout -b release/${Tag%-*}
+  #         git push origin release/${Tag%-*}
+  #     - name: create pull request
+  #       id: create_pr
+  #       run: |
+  #         export Tag=${{ steps.vars.outputs.tag }}
+  #         gh pr create --base ${{ env.base }} --title ${{ env.title }} --head release/${Tag%-*} --body ${{ env.body }}
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         base: master
+  #         title: "[rosetta-klaytn]_release/${Tag%-*}"
+  #         body: |
+  #             "This PR is automatically created by CI to release a new official version of ${GITHUB_REPOSITORY}.
+  #             When this PR is approved by someone, a new rosetta-klaytn version will be released."
