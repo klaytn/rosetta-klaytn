@@ -1,0 +1,58 @@
+name: rosetta-klaytn Release workflow
+on:
+  push: # can use "create" event
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc.*'
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set output
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: Create release/tag branch
+        run: |
+          export Tag=${{ steps.vars.outputs.tag }}
+          echo "Create release branch: release/${Tag%-*}"
+          git checkout -b release/${Tag%-*}
+          git push origin release/${Tag%-*}
+      - name: create pull request
+        id: create_pr
+        run: |
+          export Tag=${{ steps.vars.outputs.tag }}
+          gh pr create --base ${{ env.base }} --title ${{ env.title }} --head release/${Tag%-*} --body ${{ env.body }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          base: master
+          title: "[rosetta-klaytn]_release/${Tag%-*}"
+          body: |
+              "This PR is automatically created by CI to release a new official version of ${GITHUB_REPOSITORY}.
+               When this PR is approved by someone, a new rosetta-klaytn version will be released."
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [release]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set output
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: Checkout to release branch
+        run: |
+          export Tag=${{ steps.vars.outputs.tag }}
+          git checkout release/${Tag%-*}
+      - name: Set up Docker buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ivorish/rosetta-klaytn:${{ steps.vars.outputs.tag }}
