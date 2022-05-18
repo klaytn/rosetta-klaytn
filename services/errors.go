@@ -50,6 +50,8 @@ var (
 		ErrAccountKeyFail,
 		ErrMultiSigNotIncludePubKey,
 		ErrRoleBasedNotIncludePubKey,
+		ErrInvalidPubKey,
+		ErrInvalidFrom,
 	}
 
 	// ErrUnimplemented is returned when an endpoint
@@ -231,6 +233,18 @@ var (
 	ErrRoleBasedNotIncludePubKey = &types.Error{
 		Code:    25, // nolint
 		Message: "AccountKeyRoleBased does not include public key passed as a parameter in the RoleTransactionKey",
+	}
+
+	// ErrInvalidPubKey is returned when the public key is invalid.
+	ErrInvalidPubKey = &types.Error{
+		Code:    26, // nolint
+		Message: "public key is invalid",
+	}
+
+	// ErrInvalidFrom is returned when from address is invalid
+	ErrInvalidFrom = &types.Error{
+		Code:    27, // nolint
+		Message: "from address is invalid",
 	}
 )
 

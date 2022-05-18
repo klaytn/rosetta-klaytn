@@ -19,6 +19,7 @@ package services
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
 	"math/big"
@@ -57,12 +58,27 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	ctx context.Context,
 	request *types.ConstructionDeriveRequest,
 ) (*types.ConstructionDeriveResponse, *types.Error) {
-	pubkey, err := crypto.DecompressPubkey(request.PublicKey.Bytes)
-	if err != nil {
-		return nil, wrapErr(ErrUnableToDecompressPubkey, err)
+	// When pubKey is compressed public key format that starts with 0x02 or 0x03,
+	// get ecdsa public key from byte array like below.
+	var pubKey *ecdsa.PublicKey
+	var err error
+	if len(request.PublicKey.Bytes) == 33 { // nolint: gomnd
+		pubKey, err = crypto.DecompressPubkey(request.PublicKey.Bytes)
+		if err != nil {
+			return nil, wrapErr(ErrUnableToDecompressPubkey, err)
+		}
+	} else if len(request.PublicKey.Bytes) == 64 {
+		// When pubKey is uncompressed public key format,
+		// get ecdsa public key from byte array like below.
+		pubKey = &ecdsa.PublicKey{
+			X: new(big.Int).SetBytes(request.PublicKey.Bytes[:32]),
+			Y: new(big.Int).SetBytes(request.PublicKey.Bytes[32:]),
+		}
+	} else {
+		return nil, ErrInvalidPubKey
 	}
 
-	addr := crypto.PubkeyToAddress(*pubkey)
+	addr := crypto.PubkeyToAddress(*pubKey)
 	return &types.ConstructionDeriveResponse{
 		AccountIdentifier: &types.AccountIdentifier{
 			Address: addr.Hex(),
@@ -402,6 +418,10 @@ func (s *ConstructionAPIService) ConstructionMetadata(
 	var input options
 	if err := unmarshalJSONMap(request.Options, &input); err != nil {
 		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
+	}
+
+	if input.From == "" {
+		return nil, ErrInvalidFrom
 	}
 
 	nonce, err := s.client.PendingNonceAt(ctx, common.HexToAddress(input.From))
