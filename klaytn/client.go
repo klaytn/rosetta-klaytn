@@ -774,7 +774,16 @@ func traceOps(
 				// Appends a to address operation.
 				fromOpIndex := idx
 				toIdx := fromOpIndex + 1
-				to := tx.Transaction.To().String()
+
+				// Handle sending KLAY to 0x000..000 address
+				// Only smart contract deployment can have nil in To field.
+				var to string
+				if tx.Transaction.To() == nil && !(tx.Transaction.Type().IsContractDeploy() || tx.Transaction.Type().IsLegacyTransaction()) {
+					emptyAddress := &common.Address{}
+					to = emptyAddress.String()
+				} else {
+					to = tx.Transaction.To().String()
+				}
 				relatedOps := []*RosettaTypes.OperationIdentifier{
 					{
 						Index: fromOpIndex,
