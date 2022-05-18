@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Modifications Copyright © 2022 Klaytn
+# Modified and improved for the Klaytn development
 
 # I used below command to make docker image (If you do not use the Mac M1 chip, remove `--platform=linux/amd64`).
 # docker build --platform=linux/amd64 -t rosetta-klaytn:latest .
