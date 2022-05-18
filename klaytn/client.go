@@ -778,7 +778,7 @@ func traceOps(
 				// Handle sending KLAY to 0x000..000 address
 				// Only smart contract deployment can have nil in To field.
 				var to string
-				if tx.Transaction.To() == nil && !(tx.Transaction.Type().IsContractDeploy() || tx.Transaction.Type().IsLegacyTransaction()) {
+				if tx.Transaction.To() == nil && !(tx.Transaction.Type().IsEthereumTransaction() || tx.Transaction.Type().IsLegacyTransaction()) {
 					emptyAddress := &common.Address{}
 					to = emptyAddress.String()
 				} else {
