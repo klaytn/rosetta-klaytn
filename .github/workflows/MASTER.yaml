@@ -1,22 +1,51 @@
-name: rosetta-klaytn Release workflow
+name: rosetta-klaytn Master workflow
 on:
   pull_request:
     branches:
       - master
     types: [closed]
 jobs:
-  if_merged:
+  tagging-master:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set output
-        id: vars
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       - name: Create release/tag branch
         run: |
-          export Tag=${{ steps.vars.outputs.tag }}
-          echo "Create production release tag: ${Tag%-*}"
-          git checkout master
-          git tag ${Tag%-*}
-          git push origin ${Tag%-*}
+          export Branch=${{ github.head_ref }}
+          echo "Create production release tag: ${Branch#*/}"
+          git tag ${Branch#*/}
+          git push origin ${Branch#*/}
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [tagging-master]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set output
+        id: vars
+        run: |
+          export Branch=${{ github.head_ref }}
+          echo ::set-output name=tag::${Branch#*/}
+      - name: Set up Docker buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Master tag Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: klaytn/rosetta-klaytn:${{ steps.vars.outputs.tag }}
+      - name: Latest tag Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: klaytn/rosetta-klaytn:latest
