@@ -62,19 +62,20 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	// get ecdsa public key from byte array like below.
 	var pubKey *ecdsa.PublicKey
 	var err error
-	if len(request.PublicKey.Bytes) == 33 { // nolint: gomnd
+	switch len(request.PublicKey.Bytes) {
+	case 33: // nolint: gomnd
 		pubKey, err = crypto.DecompressPubkey(request.PublicKey.Bytes)
 		if err != nil {
 			return nil, wrapErr(ErrUnableToDecompressPubkey, err)
 		}
-	} else if len(request.PublicKey.Bytes) == 64 {
+	case 64: // nolint: gomnd
 		// When pubKey is uncompressed public key format,
 		// get ecdsa public key from byte array like below.
 		pubKey = &ecdsa.PublicKey{
 			X: new(big.Int).SetBytes(request.PublicKey.Bytes[:32]),
 			Y: new(big.Int).SetBytes(request.PublicKey.Bytes[32:]),
 		}
-	} else {
+	default:
 		return nil, ErrInvalidPubKey
 	}
 

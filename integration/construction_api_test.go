@@ -62,7 +62,7 @@ func TestConstructionDerive(t *testing.T) {
 	assert.NotNil(t, res)
 	assert.Equal(t, res.AccountIdentifier.Address, expectedAddress)
 
-	pubKey, err = hex.DecodeString("f557fe349fec4c29b4f18b8544cc670c6c1b33bdae2f91f98166d0cd16270ce204b62ba0ae9f726519d546083cc849e5b8c762b0e21306788b71acda4e3b2ae9")
+	pubKey, err = hex.DecodeString("f557fe349fec4c29b4f18b8544cc670c6c1b33bdae2f91f98166d0cd16270ce204b62ba0ae9f726519d546083cc849e5b8c762b0e21306788b71acda4e3b2ae9") // nolint: lll
 	assert.Nil(t, err)
 	req.PublicKey.Bytes = pubKey
 	res, tErr = constructionAPIService.ConstructionDerive(ctx, req)
@@ -114,7 +114,7 @@ func TestConstructionPreprocess(t *testing.T) {
 	// Test construction service under offline mode
 	cfg.Mode = configuration.Offline
 
-	setDefaultOperations(t)
+	setDefaultOperations()
 	req := &types.ConstructionPreprocessRequest{
 		NetworkIdentifier: networkIdf,
 		Operations:        operations,
@@ -147,7 +147,7 @@ func TestConstructionPreprocessInvalidOps(t *testing.T) {
 	assert.True(t, strings.Contains(tErr.Details["context"].(string), expectedMsg))
 
 	// There is no negative value operation
-	setDefaultOperations(t)
+	setDefaultOperations()
 	ops = operations
 	ops[0].Amount.Value = "1"
 	ops[1].Amount.Value = "1"
@@ -254,7 +254,7 @@ func TestConstructionPayloads(t *testing.T) {
 	initTestValues(t)
 	defer c.Close()
 
-	setDefaultOperations(t)
+	setDefaultOperations()
 	setMetadataAndSuggestedFee(t)
 
 	// Test construction service under offline mode
@@ -284,7 +284,7 @@ func TestConstructionPayloadsWithInvalidData(t *testing.T) {
 	initTestValues(t)
 	defer c.Close()
 
-	setDefaultOperations(t)
+	setDefaultOperations()
 	setMetadataAndSuggestedFee(t)
 
 	// Test construction service under offline mode
@@ -317,7 +317,7 @@ func TestConstructionCombine(t *testing.T) {
 	cfg.Mode = configuration.Offline
 
 	// Have to sign a txhash
-	sig, err := crypto.Sign(payloads.Bytes[:], testAccount.Key[0])
+	sig, err := crypto.Sign(payloads.Bytes, testAccount.Key[0])
 	assert.Nil(t, err)
 
 	req := &types.ConstructionCombineRequest{
@@ -442,7 +442,7 @@ func TestConstructionSubmit(t *testing.T) {
 }
 
 func getUnsignedTx(t *testing.T) {
-	setDefaultOperations(t)
+	setDefaultOperations()
 	setMetadataAndSuggestedFee(t)
 
 	cfg.Mode = configuration.Offline
@@ -467,7 +467,7 @@ func getSignedTx(t *testing.T) {
 	cfg.Mode = configuration.Offline
 
 	// Sign to the tx
-	sig, err := crypto.Sign(payloads.Bytes[:], testAccount.Key[0])
+	sig, err := crypto.Sign(payloads.Bytes, testAccount.Key[0])
 	assert.Nil(t, err)
 
 	req := &types.ConstructionCombineRequest{
@@ -491,7 +491,7 @@ func getSignedTx(t *testing.T) {
 	signedTransaction = res.SignedTransaction
 }
 
-func setDefaultOperations(t *testing.T) {
+func setDefaultOperations() {
 	operations = []*types.Operation{
 		&types.Operation{
 			OperationIdentifier: &types.OperationIdentifier{Index: 0},

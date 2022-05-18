@@ -49,9 +49,7 @@ var (
 	networkAPIService      *services.NetworkAPIService
 	accountAPIService      *services.AccountAPIService
 	blockAPIService        *services.BlockAPIService
-	mempoolAPIService      server.MempoolAPIServicer
 	constructionAPIService *services.ConstructionAPIService
-	// callAPIService         *services.CallAPIService
 
 	testAccount *TestAccount
 	receiver    *TestAccount
@@ -79,9 +77,7 @@ func initTestValues(t *testing.T) {
 	networkAPIService = services.NewNetworkAPIService(cfg, c)
 	accountAPIService = services.NewAccountAPIService(cfg, c)
 	blockAPIService = services.NewBlockAPIService(cfg, c)
-	mempoolAPIService = services.NewMempoolAPIService(cfg, c)
 	constructionAPIService = services.NewConstructionAPIService(cfg, c)
-	// callAPIService = services.NewCallAPIService(cfg, c)
 }
 
 func setTestEnv() {
