@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 // Modifications Copyright © 2022 Klaytn
-// Modified and improved for the Klaytn development
+// Modified and improved for the Klaytn development.
 
 package klaytn
 
@@ -1125,7 +1125,7 @@ func feeOps(
 			if tx.FeeBurned != nil {
 				feePayerBurnAmount := new(
 					big.Int,
-				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100)) // nolint: gomnd
+				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100))  // nolint: gomnd
 				senderBurnAmount := new(big.Int).Sub(tx.FeeBurned, feePayerBurnAmount) // nolint: gomnd
 				burntOps := []*RosettaTypes.Operation{
 					createSuccessFeeOperation(

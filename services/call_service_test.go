@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 // Modifications Copyright © 2022 Klaytn
-// Modified and improved for the Klaytn developments
+// Modified and improved for the Klaytn development.s
 
 package services
 
