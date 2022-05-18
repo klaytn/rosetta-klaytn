@@ -46,11 +46,11 @@ var (
 	c          *klaytn.Client
 	err        error
 
-	networkAPIService *services.NetworkAPIService
-	accountAPIService *services.AccountAPIService
-	blockAPIService   *services.BlockAPIService
-	// constructionAPIService *services.ConstructionAPIService
-	// mempoolAPIService      server.MempoolAPIServicer
+	networkAPIService      *services.NetworkAPIService
+	accountAPIService      *services.AccountAPIService
+	blockAPIService        *services.BlockAPIService
+	mempoolAPIService      server.MempoolAPIServicer
+	constructionAPIService *services.ConstructionAPIService
 	// callAPIService         *services.CallAPIService
 
 	testAccount *TestAccount
@@ -79,8 +79,8 @@ func initTestValues(t *testing.T) {
 	networkAPIService = services.NewNetworkAPIService(cfg, c)
 	accountAPIService = services.NewAccountAPIService(cfg, c)
 	blockAPIService = services.NewBlockAPIService(cfg, c)
-	// constructionAPIService = services.NewConstructionAPIService(cfg, c)
-	// mempoolAPIService = services.NewMempoolAPIService(cfg, c)
+	mempoolAPIService = services.NewMempoolAPIService(cfg, c)
+	constructionAPIService = services.NewConstructionAPIService(cfg, c)
 	// callAPIService = services.NewCallAPIService(cfg, c)
 }
 
@@ -106,6 +106,7 @@ func setTestEnv() {
 func genTestConfig(t *testing.T) {
 	cfg, err = configuration.LoadConfiguration()
 	assert.Nil(t, err)
+	networkIdf = cfg.Network
 }
 
 func genTestClient(t *testing.T) {
