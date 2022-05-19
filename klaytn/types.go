@@ -29,7 +29,7 @@ import (
 
 const (
 	// NodeVersion is the version of klaytn we are using.
-	NodeVersion = "1.8.3"
+	NodeVersion = "1.8.4"
 
 	// Blockchain is Klaytn.
 	Blockchain string = "Klaytn"
