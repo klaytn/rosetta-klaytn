@@ -24,6 +24,10 @@ import (
 	"testing"
 )
 
+var (
+	clientError = "klaytn client error"
+)
+
 // Test /call with klay_call
 func TestCallKlayCall(t *testing.T) {
 	initTestValues(t)
@@ -128,9 +132,8 @@ func TestCallKlayGetBlokcByNumberWithFutureBlock(t *testing.T) {
 	res, err := callAPIService.Call(ctx, req)
 	assert.NotNil(t, err)
 	assert.Nil(t, res)
-	expectedMsg := "klaytn client error"
-	assert.True(t, strings.Contains(err.Message, expectedMsg))
-	expectedMsg = "the block does not exist"
+	assert.True(t, strings.Contains(err.Message, clientError))
+	expectedMsg := "the block does not exist"
 	assert.True(t, strings.Contains(err.Details["context"].(string), expectedMsg))
 }
 
@@ -179,17 +182,16 @@ func TestCallKlayGetTransactionReceiptWithInvalidData(t *testing.T) {
 	res, err := callAPIService.Call(ctx, req)
 	assert.NotNil(t, err)
 	assert.Nil(t, res)
-	expectedMsg := "klaytn client error"
-	assert.True(t, strings.Contains(err.Message, expectedMsg))
-	expectedMsg = "cannot unmarshal hex string without 0x prefix"
+	assert.True(t, strings.Contains(err.Message, clientError))
+	expectedMsg := "cannot unmarshal hex string without 0x prefix"
 	assert.True(t, strings.Contains(err.Details["context"].(string), expectedMsg))
 
-	req.Parameters["tx_hash"] = common.HexToHash("0x6aff81a284d362d198060c6cd3e4b2162595f94de41c287d85b59f42851125fe").Hex()
+	notExists := "0x6aff81a284d362d198060c6cd3e4b2162595f94de41c287d85b59f42851125fe"
+	req.Parameters["tx_hash"] = common.HexToHash(notExists).Hex()
 	res, err = callAPIService.Call(ctx, req)
 	assert.NotNil(t, err)
 	assert.Nil(t, res)
-	expectedMsg = "klaytn client error"
-	assert.True(t, strings.Contains(err.Message, expectedMsg))
+	assert.True(t, strings.Contains(err.Message, clientError))
 	expectedMsg = "not found"
 	assert.True(t, strings.Contains(err.Details["context"].(string), expectedMsg))
 }
