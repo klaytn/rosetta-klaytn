@@ -19,6 +19,15 @@ import (
 	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"math/big"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"testing"
+	"time"
+
 	klaytnTypes "github.com/klaytn/klaytn/blockchain/types"
 	"github.com/klaytn/klaytn/blockchain/types/accountkey"
 	"github.com/klaytn/klaytn/client"
@@ -30,14 +39,6 @@ import (
 	"github.com/klaytn/rosetta-klaytn/services"
 	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"math/big"
-	"os"
-	"path/filepath"
-	"strconv"
-	"strings"
-	"testing"
-	"time"
 )
 
 var (

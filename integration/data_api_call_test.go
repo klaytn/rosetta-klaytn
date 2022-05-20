@@ -16,12 +16,13 @@ package integration
 
 import (
 	"context"
-	"github.com/klaytn/klaytn/common"
-	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
-	"github.com/stretchr/testify/assert"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/klaytn/klaytn/common"
+	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
+	"github.com/stretchr/testify/assert"
 )
 
 var (

@@ -16,11 +16,12 @@ package integration
 
 import (
 	"context"
+	"strings"
+	"testing"
+
 	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/stretchr/testify/assert"
-	"strings"
-	"testing"
 )
 
 // Test /block

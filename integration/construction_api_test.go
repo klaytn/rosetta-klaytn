@@ -17,6 +17,11 @@ package integration
 import (
 	"context"
 	"encoding/hex"
+	"math/big"
+	"strconv"
+	"strings"
+	"testing"
+
 	klayTypes "github.com/klaytn/klaytn/blockchain/types"
 	"github.com/klaytn/klaytn/common/hexutil"
 	"github.com/klaytn/klaytn/crypto"
@@ -24,10 +29,6 @@ import (
 	"github.com/klaytn/rosetta-klaytn/klaytn"
 	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/stretchr/testify/assert"
-	"math/big"
-	"strconv"
-	"strings"
-	"testing"
 )
 
 var (
@@ -324,7 +325,7 @@ func TestConstructionCombine(t *testing.T) {
 		NetworkIdentifier:   networkIdf,
 		UnsignedTransaction: unsignedTransaction,
 		Signatures: []*types.Signature{
-			&types.Signature{
+			{
 				SigningPayload: payloads,
 				PublicKey: &types.PublicKey{
 					Bytes: crypto.CompressPubkey(&testAccount.Key[0].PublicKey),
@@ -355,7 +356,7 @@ func TestConstructionCombineWithInvalidUnsignedTx(t *testing.T) {
 		NetworkIdentifier:   networkIdf,
 		UnsignedTransaction: "",
 		Signatures: []*types.Signature{
-			&types.Signature{
+			{
 				SigningPayload: payloads,
 				PublicKey: &types.PublicKey{
 					Bytes: crypto.CompressPubkey(&testAccount.Key[0].PublicKey),
@@ -474,7 +475,7 @@ func getSignedTx(t *testing.T) {
 		NetworkIdentifier:   networkIdf,
 		UnsignedTransaction: unsignedTransaction,
 		Signatures: []*types.Signature{
-			&types.Signature{
+			{
 				SigningPayload: payloads,
 				PublicKey: &types.PublicKey{
 					Bytes: crypto.CompressPubkey(&testAccount.Key[0].PublicKey),
@@ -493,14 +494,14 @@ func getSignedTx(t *testing.T) {
 
 func setDefaultOperations() {
 	operations = []*types.Operation{
-		&types.Operation{
+		{
 			OperationIdentifier: &types.OperationIdentifier{Index: 0},
 			Type:                klaytn.CallOpType,
 			Status:              types.String(klaytn.SuccessStatus),
 			Account:             &types.AccountIdentifier{Address: testAccount.Addr.Hex()},
 			Amount:              &types.Amount{Value: "-1", Currency: &types.Currency{Symbol: "KLAY", Decimals: 18}},
 		},
-		&types.Operation{
+		{
 			OperationIdentifier: &types.OperationIdentifier{Index: 1},
 			Type:                klaytn.CallOpType,
 			Status:              types.String(klaytn.SuccessStatus),
