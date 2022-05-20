@@ -425,6 +425,10 @@ func (s *ConstructionAPIService) ConstructionMetadata(
 		return nil, ErrInvalidFrom
 	}
 
+	// If address is not in 0x hex prefixed string, return an error.
+	if !common.IsHexAddress(input.From) {
+		return nil, ErrInvalidFrom
+	}
 	nonce, err := s.client.PendingNonceAt(ctx, common.HexToAddress(input.From))
 	if err != nil {
 		return nil, wrapErr(ErrKlaytnClient, err)
