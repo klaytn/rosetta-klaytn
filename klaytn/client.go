@@ -1134,7 +1134,7 @@ func feeOps(
 			if tx.FeeBurned != nil {
 				feePayerBurnAmount := new(
 					big.Int,
-				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100))  // nolint: gomnd
+				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100)) // nolint: gomnd
 				senderBurnAmount := new(big.Int).Sub(tx.FeeBurned, feePayerBurnAmount) // nolint: gomnd
 				burntOps := []*RosettaTypes.Operation{
 					createSuccessFeeOperation(
@@ -1868,6 +1868,9 @@ func (kc *Client) Call(
 		// types.Receipt has empty common.Address{} instead of nil.
 		var receiptMap map[string]interface{}
 		err := kc.c.CallContext(ctx, &receiptMap, "klay_getTransactionReceipt", input.TxHash)
+		if err != nil {
+			return nil, err
+		}
 		if err == nil && receiptMap == nil {
 			return nil, klaytn.NotFound
 		}

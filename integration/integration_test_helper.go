@@ -50,6 +50,7 @@ var (
 	accountAPIService      *services.AccountAPIService
 	blockAPIService        *services.BlockAPIService
 	constructionAPIService *services.ConstructionAPIService
+	callAPIService         *services.CallAPIService
 
 	testAccount *TestAccount
 	receiver    *TestAccount
@@ -78,6 +79,7 @@ func initTestValues(t *testing.T) {
 	accountAPIService = services.NewAccountAPIService(cfg, c)
 	blockAPIService = services.NewBlockAPIService(cfg, c)
 	constructionAPIService = services.NewConstructionAPIService(cfg, c)
+	callAPIService = services.NewCallAPIService(cfg, c)
 }
 
 func setTestEnv() {
