@@ -280,10 +280,12 @@ func (kc *Client) Transaction(
 
 	loadedTx := body.LoadedTransaction()
 	loadedTx.Transaction = body.tx
-	_, feeAmount, feeBurned, err := kc.calculateGas(ctx, body.tx, receipt, *header, nil)
+
+	baseFee, err := kc.getBaseFee(ctx, *body.BlockNumber)
 	if err != nil {
 		return nil, err
 	}
+	_, feeAmount, feeBurned := kc.calculateGas(body.tx, receipt, baseFee)
 	loadedTx.FeeAmount = feeAmount
 	loadedTx.FeeBurned = feeBurned
 	loadedTx.Receipt = receipt
@@ -419,7 +421,18 @@ func (kc *Client) getBlock(
 	// Convert all txs to loaded txs
 	txs := make([]*types.Transaction, len(body.Transactions))
 	loadedTxs := make([]*loadedTransaction, len(body.Transactions))
+
+	// Klaytn types.Header does not have `BaseFee` field.
+	// To get baseFee, we need to use rpc output.
+	// And get base fee only when txs length is not 0
 	var baseFee *big.Int
+	if len(body.Transactions) > 0 {
+		baseFee, err = kc.getBaseFee(ctx, toBlockNumArg(head.Number))
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
 	for i, tx := range body.Transactions {
 		txs[i] = tx.tx
 		receipt := receipts[i]
@@ -430,10 +443,7 @@ func (kc *Client) getBlock(
 		loadedTxs[i].Transaction = txs[i]
 
 		var feeAmount, feeBurned *big.Int
-		baseFee, feeAmount, feeBurned, err = kc.calculateGas(ctx, txs[i], receipt, head, baseFee)
-		if err != nil {
-			return nil, nil, err
-		}
+		baseFee, feeAmount, feeBurned = kc.calculateGas(txs[i], receipt, baseFee)
 		loadedTxs[i].FeeAmount = feeAmount
 		loadedTxs[i].FeeBurned = feeBurned
 		loadedTxs[i].Receipt = receipt
@@ -476,24 +486,13 @@ func (kc *Client) getBaseFee(ctx context.Context, block string) (*big.Int, error
 
 // calculateGas calculates the fee amount and burn amount of the transaction.
 func (kc *Client) calculateGas(
-	ctx context.Context,
 	tx *types.Transaction,
 	txReceipt *types.Receipt,
-	head types.Header,
 	baseFee *big.Int,
 ) (
-	*big.Int, *big.Int, *big.Int, error,
+	*big.Int, *big.Int, *big.Int,
 ) {
 	gasUsed := new(big.Int).SetUint64(txReceipt.GasUsed)
-	// Klaytn types.Header does not have `BaseFee` field.
-	// To get baseFee, we need to use rpc output.
-	if baseFee == nil {
-		var err error
-		baseFee, err = kc.getBaseFee(ctx, toBlockNumArg(head.Number))
-		if err != nil {
-			return nil, nil, nil, fmt.Errorf("%w: failure getting base fee", err)
-		}
-	}
 	gasPrice := effectiveGasPrice(tx, baseFee)
 	feeAmount := new(big.Int).Mul(gasUsed, gasPrice)
 	var feeBurned *big.Int
@@ -501,7 +500,7 @@ func (kc *Client) calculateGas(
 		feeBurned = new(big.Int).Mul(gasUsed, baseFee)
 	}
 
-	return baseFee, feeAmount, feeBurned, nil
+	return baseFee, feeAmount, feeBurned
 }
 
 // effectiveGasPrice returns the price of gas charged to this transaction to be included in the
