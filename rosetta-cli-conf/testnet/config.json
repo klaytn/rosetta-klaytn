@@ -21,7 +21,7 @@
     "stale_depth": 3,
     "broadcast_limit": 5,
     "constructor_dsl_file": "klaytn.ros"
-  }
+  },
   "data": {
     "active_reconciliation_concurrency": 16,
     "inactive_reconciliation_concurrency": 32,
