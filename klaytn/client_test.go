@@ -2241,7 +2241,7 @@ func TestBlock_363415(t *testing.T) {
 			err = json.Unmarshal(file, r)
 			assert.NoError(t, err)
 		},
-	).Twice()
+	)
 
 	mockJSONRPC.On(
 		"CallContext",
@@ -2409,7 +2409,7 @@ func TestBlock_363753(t *testing.T) {
 			err = json.Unmarshal(file, r)
 			assert.NoError(t, err)
 		},
-	).Twice()
+	)
 
 	mockJSONRPC.On(
 		"CallContext",
@@ -2673,7 +2673,7 @@ func TestBlock_468179(t *testing.T) {
 			err = json.Unmarshal(file, r)
 			assert.NoError(t, err)
 		},
-	).Twice()
+	)
 
 	mockJSONRPC.On(
 		"CallContext",
@@ -2842,7 +2842,7 @@ func TestBlock_363366(t *testing.T) {
 			err = json.Unmarshal(file, r)
 			assert.NoError(t, err)
 		},
-	).Times(3)
+	)
 
 	mockJSONRPC.On(
 		"CallContext",
@@ -3107,7 +3107,7 @@ func TestBlock_468194(t *testing.T) {
 			err = json.Unmarshal(file, r)
 			assert.NoError(t, err)
 		},
-	).Twice()
+	)
 
 	mockJSONRPC.On(
 		"CallContext",
