@@ -19,6 +19,7 @@ package services
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
 	"math/big"
@@ -57,12 +58,28 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	ctx context.Context,
 	request *types.ConstructionDeriveRequest,
 ) (*types.ConstructionDeriveResponse, *types.Error) {
-	pubkey, err := crypto.DecompressPubkey(request.PublicKey.Bytes)
-	if err != nil {
-		return nil, wrapErr(ErrUnableToDecompressPubkey, err)
+	// When pubKey is compressed public key format that starts with 0x02 or 0x03,
+	// get ecdsa public key from byte array like below.
+	var pubKey *ecdsa.PublicKey
+	var err error
+	switch len(request.PublicKey.Bytes) {
+	case 33: // nolint: gomnd
+		pubKey, err = crypto.DecompressPubkey(request.PublicKey.Bytes)
+		if err != nil {
+			return nil, wrapErr(ErrUnableToDecompressPubkey, err)
+		}
+	case 64: // nolint: gomnd
+		// When pubKey is uncompressed public key format,
+		// get ecdsa public key from byte array like below.
+		pubKey = &ecdsa.PublicKey{
+			X: new(big.Int).SetBytes(request.PublicKey.Bytes[:32]),
+			Y: new(big.Int).SetBytes(request.PublicKey.Bytes[32:]),
+		}
+	default:
+		return nil, ErrInvalidPubKey
 	}
 
-	addr := crypto.PubkeyToAddress(*pubkey)
+	addr := crypto.PubkeyToAddress(*pubKey)
 	return &types.ConstructionDeriveResponse{
 		AccountIdentifier: &types.AccountIdentifier{
 			Address: addr.Hex(),
@@ -404,6 +421,14 @@ func (s *ConstructionAPIService) ConstructionMetadata(
 		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 	}
 
+	if input.From == "" {
+		return nil, ErrInvalidFrom
+	}
+
+	// If address is not in 0x hex prefixed string, return an error.
+	if !common.IsHexAddress(input.From) {
+		return nil, ErrInvalidFrom
+	}
 	nonce, err := s.client.PendingNonceAt(ctx, common.HexToAddress(input.From))
 	if err != nil {
 		return nil, wrapErr(ErrKlaytnClient, err)

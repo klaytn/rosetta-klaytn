@@ -19,6 +19,15 @@ import (
 	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"math/big"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"testing"
+	"time"
+
 	klaytnTypes "github.com/klaytn/klaytn/blockchain/types"
 	"github.com/klaytn/klaytn/blockchain/types/accountkey"
 	"github.com/klaytn/klaytn/client"
@@ -30,14 +39,6 @@ import (
 	"github.com/klaytn/rosetta-klaytn/services"
 	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"math/big"
-	"os"
-	"path/filepath"
-	"strconv"
-	"strings"
-	"testing"
-	"time"
 )
 
 var (
@@ -46,12 +47,11 @@ var (
 	c          *klaytn.Client
 	err        error
 
-	networkAPIService *services.NetworkAPIService
-	accountAPIService *services.AccountAPIService
-	blockAPIService   *services.BlockAPIService
-	// constructionAPIService *services.ConstructionAPIService
-	// mempoolAPIService      server.MempoolAPIServicer
-	// callAPIService         *services.CallAPIService
+	networkAPIService      *services.NetworkAPIService
+	accountAPIService      *services.AccountAPIService
+	blockAPIService        *services.BlockAPIService
+	constructionAPIService *services.ConstructionAPIService
+	callAPIService         *services.CallAPIService
 
 	testAccount *TestAccount
 	receiver    *TestAccount
@@ -79,9 +79,8 @@ func initTestValues(t *testing.T) {
 	networkAPIService = services.NewNetworkAPIService(cfg, c)
 	accountAPIService = services.NewAccountAPIService(cfg, c)
 	blockAPIService = services.NewBlockAPIService(cfg, c)
-	// constructionAPIService = services.NewConstructionAPIService(cfg, c)
-	// mempoolAPIService = services.NewMempoolAPIService(cfg, c)
-	// callAPIService = services.NewCallAPIService(cfg, c)
+	constructionAPIService = services.NewConstructionAPIService(cfg, c)
+	callAPIService = services.NewCallAPIService(cfg, c)
 }
 
 func setTestEnv() {
@@ -106,6 +105,7 @@ func setTestEnv() {
 func genTestConfig(t *testing.T) {
 	cfg, err = configuration.LoadConfiguration()
 	assert.Nil(t, err)
+	networkIdf = cfg.Network
 }
 
 func genTestClient(t *testing.T) {

@@ -781,7 +781,8 @@ func traceOps(
 				// Handle sending KLAY to 0x000..000 address
 				// Only smart contract deployment can have nil in To field.
 				var to string
-				if tx.Transaction.To() == nil && !(tx.Transaction.Type().IsEthereumTransaction() || tx.Transaction.Type().IsLegacyTransaction()) {
+				if tx.Transaction.To() == nil &&
+					!(tx.Transaction.Type().IsEthereumTransaction() || tx.Transaction.Type().IsLegacyTransaction()) {
 					emptyAddress := &common.Address{}
 					to = emptyAddress.String()
 				} else {
@@ -1134,7 +1135,7 @@ func feeOps(
 			if tx.FeeBurned != nil {
 				feePayerBurnAmount := new(
 					big.Int,
-				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100))  // nolint: gomnd
+				).Div(new(big.Int).Mul(tx.FeeBurned, feePayerRatio), big.NewInt(100)) // nolint: gomnd
 				senderBurnAmount := new(big.Int).Sub(tx.FeeBurned, feePayerBurnAmount) // nolint: gomnd
 				burntOps := []*RosettaTypes.Operation{
 					createSuccessFeeOperation(
@@ -1868,6 +1869,9 @@ func (kc *Client) Call(
 		// types.Receipt has empty common.Address{} instead of nil.
 		var receiptMap map[string]interface{}
 		err := kc.c.CallContext(ctx, &receiptMap, "klay_getTransactionReceipt", input.TxHash)
+		if err != nil {
+			return nil, err
+		}
 		if err == nil && receiptMap == nil {
 			return nil, klaytn.NotFound
 		}

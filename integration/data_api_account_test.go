@@ -16,9 +16,10 @@ package integration
 
 import (
 	"context"
+	"testing"
+
 	"github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // Test /account/balance
@@ -35,7 +36,7 @@ func TestAccountBalance(t *testing.T) {
 		AccountIdentifier: &acctIdf,
 		BlockIdentifier:   &types.PartialBlockIdentifier{Index: testBlockNumber},
 		Currencies: []*types.Currency{
-			&types.Currency{Symbol: "KLAY", Decimals: 18},
+			{Symbol: "KLAY", Decimals: 18},
 		},
 	}
 	ret, err := accountAPIService.AccountBalance(ctx, request)
@@ -65,7 +66,7 @@ func TestAccountBalanceNotExisted(t *testing.T) {
 		AccountIdentifier: &acctIdf,
 		BlockIdentifier:   &types.PartialBlockIdentifier{Index: testBlockNumber},
 		Currencies: []*types.Currency{
-			&types.Currency{Symbol: "KLAY", Decimals: 18},
+			{Symbol: "KLAY", Decimals: 18},
 		},
 	}
 	ret, err := accountAPIService.AccountBalance(ctx, request)
