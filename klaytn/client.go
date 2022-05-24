@@ -396,7 +396,7 @@ func (kc *Client) getBlock(
 	}
 
 	// Get all transaction receipts
-	receipts, err := kc.getBlockReceipts(ctx, body.Transactions)
+	receipts, err := kc.getBlockReceipts(ctx, head.Hash(), len(body.Transactions))
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: could not get receipts for %x", err, body.Hash[:])
 	}
@@ -571,34 +571,16 @@ func (kc *Client) getBlockTraces(
 
 func (kc *Client) getBlockReceipts(
 	ctx context.Context,
-	txs []rpcTransaction,
+	blockHash common.Hash,
+	txsLen int,
 ) ([]*types.Receipt, error) {
-	receipts := make([]*types.Receipt, len(txs))
-	if len(txs) == 0 {
+	receipts := make([]*types.Receipt, txsLen)
+	if txsLen == 0 {
 		return receipts, nil
 	}
 
-	reqs := make([]rpc.BatchElem, len(txs))
-	for i := range reqs {
-		reqs[i] = rpc.BatchElem{
-			Method: "klay_getTransactionReceipt",
-			Args:   []interface{}{txs[i].tx.Hash().Hex()},
-			Result: &receipts[i],
-		}
-	}
-	if err := kc.c.BatchCallContext(ctx, reqs); err != nil {
-		return nil, err
-	}
-	for i := range reqs {
-		if reqs[i].Error != nil {
-			return nil, reqs[i].Error
-		}
-		if receipts[i] == nil {
-			return nil, fmt.Errorf("got empty receipt for %x", txs[i].tx.Hash().Hex())
-		}
-	}
-
-	return receipts, nil
+	err := kc.c.CallContext(ctx, &receipts, "klay_getBlockReceipts", blockHash)
+	return receipts, err
 }
 
 type rpcCall struct {
