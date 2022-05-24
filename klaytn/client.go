@@ -46,7 +46,7 @@ import (
 )
 
 const (
-	clientHTTPTimeout = 120 * time.Second
+	clientHTTPTimeout = 960 * time.Second
 
 	maxTraceConcurrency  = int64(16) // nolint:gomnd
 	semaphoreTraceWeight = int64(1)  // nolint:gomnd

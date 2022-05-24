@@ -5,10 +5,10 @@
   },
   "online_url": "http://localhost:9090",
   "data_directory": "cli-data-testnet",
-  "http_timeout": 15,
+  "http_timeout":1024,
   "max_retries": 15,
-  "max_online_connections": 120,
-  "max_sync_concurrency": 32,
+  "max_online_connections": 256,
+  "max_sync_concurrency": 256,
   "tip_delay": 300,
   "max_reorg_depth": 100,
   "log_configuration": false,
@@ -23,8 +23,8 @@
     "constructor_dsl_file": "klaytn.ros"
   },
   "data": {
-    "active_reconciliation_concurrency": 16,
-    "inactive_reconciliation_concurrency": 32,
+    "active_reconciliation_concurrency": 128,
+    "inactive_reconciliation_concurrency": 64,
     "inactive_reconciliation_frequency": 250,
     "log_blocks": true,
     "log_transactions": true,
@@ -40,11 +40,6 @@
     "results_output_file": "",
     "pruning_disabled": false,
     "initial_balance_fetch_disabled": false,
-    "bootstrap_balances": "bootstrap_balances.json",
-    "end_conditions": {
-      "reconciliation_coverage": {
-        "coverage": 0.95
-      }
-    }
+    "bootstrap_balances": "bootstrap_balances.json"
   }
 }
