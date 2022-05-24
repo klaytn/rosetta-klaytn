@@ -30,7 +30,6 @@ import (
 	"github.com/klaytn/klaytn/blockchain/types/account"
 	"github.com/klaytn/klaytn/common"
 	"github.com/klaytn/klaytn/networks/p2p"
-	"github.com/klaytn/klaytn/networks/rpc"
 	"github.com/klaytn/klaytn/node/cn"
 	"github.com/klaytn/klaytn/params"
 	"github.com/klaytn/klaytn/reward"
@@ -1842,32 +1841,25 @@ func TestBlock_2500994(t *testing.T) {
 			*r = json.RawMessage(file)
 		},
 	).Once()
-
 	mockJSONRPC.On(
-		"BatchCallContext",
+		"CallContext",
 		ctx,
 		mock.Anything,
+		"klay_getBlockReceipts",
+		common.HexToHash("0x2c1792f411ec54ef09d0c93d71133cac48a88da91c7fc0f620a451995f9169f8"),
 	).Return(
 		nil,
 	).Run(
 		func(args mock.Arguments) {
-			r := args.Get(1).([]rpc.BatchElem)
-
-			assert.Len(t, r, 1)
-			assert.Equal(
-				t,
-				"0x6b26d82822c597db055d75ce131ec1ef73a3b2d3bffd81d2a630e2dc166dd88b",
-				r[0].Args[0],
-			)
+			r := args.Get(1).(*[]*types.Receipt)
 
 			file, err := ioutil.ReadFile(
-				"testdata/tx_receipt_0x6b26d82822c597db055d75ce131ec1ef73a3b2d3bffd81d2a630e2dc166dd88b.json",
+				"testdata/block_receipts_0x2c1792f411ec54ef09d0c93d71133cac48a88da91c7fc0f620a451995f9169f8.json",
 			) // nolint
 			assert.NoError(t, err)
 
-			receipt := new(types.Receipt)
-			assert.NoError(t, receipt.UnmarshalJSON(file))
-			*(r[0].Result.(**types.Receipt)) = receipt
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
 		},
 	).Once()
 
@@ -2028,30 +2020,24 @@ func TestBlock_87561170(t *testing.T) {
 		},
 	).Once()
 	mockJSONRPC.On(
-		"BatchCallContext",
+		"CallContext",
 		ctx,
 		mock.Anything,
+		"klay_getBlockReceipts",
+		common.HexToHash("0x5f7c9debf1b2f7fc0beefb2478acfb331a271e5f8c42a971040d0ea19e9acfa3"),
 	).Return(
 		nil,
 	).Run(
 		func(args mock.Arguments) {
-			r := args.Get(1).([]rpc.BatchElem)
-
-			assert.Len(t, r, 1)
-			assert.Equal(
-				t,
-				"0x86dca34524c4dc7c4abaf41d3a921bd1a190f6d0af92234e07ac2711ff3f9d87",
-				r[0].Args[0],
-			)
+			r := args.Get(1).(*[]*types.Receipt)
 
 			file, err := ioutil.ReadFile(
-				"testdata/tx_receipt_0x86dca34524c4dc7c4abaf41d3a921bd1a190f6d0af92234e07ac2711ff3f9d87.json",
+				"testdata/block_receipts_0x5f7c9debf1b2f7fc0beefb2478acfb331a271e5f8c42a971040d0ea19e9acfa3.json",
 			) // nolint
 			assert.NoError(t, err)
 
-			receipt := new(types.Receipt)
-			assert.NoError(t, receipt.UnmarshalJSON(file))
-			*(r[0].Result.(**types.Receipt)) = receipt
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
 		},
 	).Once()
 
@@ -2190,36 +2176,24 @@ func TestBlock_363415(t *testing.T) {
 		},
 	).Once()
 	mockJSONRPC.On(
-		"BatchCallContext",
+		"CallContext",
 		ctx,
 		mock.Anything,
+		"klay_getBlockReceipts",
+		common.HexToHash("0x61c3e87c8a2b7f83cba5a03d027fbabeefbc7cc4653a50c2277d7047a1dfbe9b"),
 	).Return(
 		nil,
 	).Run(
 		func(args mock.Arguments) {
-			r := args.Get(1).([]rpc.BatchElem)
+			r := args.Get(1).(*[]*types.Receipt)
 
-			assert.Len(t, r, 2)
+			file, err := ioutil.ReadFile(
+				"testdata/block_receipts_0x61c3e87c8a2b7f83cba5a03d027fbabeefbc7cc4653a50c2277d7047a1dfbe9b.json",
+			) // nolint
+			assert.NoError(t, err)
 
-			for i, txHash := range []string{
-				"0x9e0f7c64a5bf1fc9f3d7b7963cf23f74e3d2c0b2b3f35f26df031954e5581179",
-				"0x0046a7c3ca126864a3e851235ca6bf030300f9138f035f5f190e59ff9a4b22ff",
-			} {
-				assert.Equal(
-					t,
-					txHash,
-					r[i].Args[0],
-				)
-
-				file, err := ioutil.ReadFile(
-					"testdata/tx_receipt_" + txHash + ".json",
-				) // nolint
-				assert.NoError(t, err)
-
-				receipt := new(types.Receipt)
-				assert.NoError(t, receipt.UnmarshalJSON(file))
-				*(r[i].Result.(**types.Receipt)) = receipt
-			}
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
 		},
 	).Once()
 
@@ -2358,36 +2332,24 @@ func TestBlock_363753(t *testing.T) {
 		},
 	).Once()
 	mockJSONRPC.On(
-		"BatchCallContext",
+		"CallContext",
 		ctx,
 		mock.Anything,
+		"klay_getBlockReceipts",
+		common.HexToHash("0x8d244c9940f6d54df863fa2abfceb14a2a77f5e61f885dab780e0158435ccc38"),
 	).Return(
 		nil,
 	).Run(
 		func(args mock.Arguments) {
-			r := args.Get(1).([]rpc.BatchElem)
+			r := args.Get(1).(*[]*types.Receipt)
 
-			assert.Len(t, r, 2)
+			file, err := ioutil.ReadFile(
+				"testdata/block_receipts_0x8d244c9940f6d54df863fa2abfceb14a2a77f5e61f885dab780e0158435ccc38.json",
+			) // nolint
+			assert.NoError(t, err)
 
-			for i, txHash := range []string{
-				"0x586d0a158f29da3d0e8fa4d24596d1a9f6ded03b5ccdb68f40e9372980488fc8",
-				"0x80fb7e6bfa8dae67cf79f21b9e68c5af727ba52f3ab1e5a5be5c8048a9758f56",
-			} {
-				assert.Equal(
-					t,
-					txHash,
-					r[i].Args[0],
-				)
-
-				file, err := ioutil.ReadFile(
-					"testdata/tx_receipt_" + txHash + ".json",
-				) // nolint
-				assert.NoError(t, err)
-
-				receipt := new(types.Receipt)
-				assert.NoError(t, receipt.UnmarshalJSON(file))
-				*(r[i].Result.(**types.Receipt)) = receipt
-			}
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
 		},
 	).Once()
 
@@ -2622,36 +2584,24 @@ func TestBlock_468179(t *testing.T) {
 		},
 	).Once()
 	mockJSONRPC.On(
-		"BatchCallContext",
+		"CallContext",
 		ctx,
 		mock.Anything,
+		"klay_getBlockReceipts",
+		common.HexToHash("0x4fa7e8fc07281539a7aecc0a045ced15916ed28f0605bd3cdab68f22cb5415c2"),
 	).Return(
 		nil,
 	).Run(
 		func(args mock.Arguments) {
-			r := args.Get(1).([]rpc.BatchElem)
+			r := args.Get(1).(*[]*types.Receipt)
 
-			assert.Len(t, r, 2)
+			file, err := ioutil.ReadFile(
+				"testdata/block_receipts_0x4fa7e8fc07281539a7aecc0a045ced15916ed28f0605bd3cdab68f22cb5415c2.json",
+			) // nolint
+			assert.NoError(t, err)
 
-			for i, txHash := range []string{
-				"0x613f1a743af5a791ceba6e4b51673b1949b9ff509b00183965ea5d43213623b7",
-				"0x42ddc8a99274894595091e1b743386675e0db610f352a740bd3e9360184f55ad",
-			} {
-				assert.Equal(
-					t,
-					txHash,
-					r[i].Args[0],
-				)
-
-				file, err := ioutil.ReadFile(
-					"testdata/tx_receipt_" + txHash + ".json",
-				) // nolint
-				assert.NoError(t, err)
-
-				receipt := new(types.Receipt)
-				assert.NoError(t, receipt.UnmarshalJSON(file))
-				*(r[i].Result.(**types.Receipt)) = receipt
-			}
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
 		},
 	).Once()
 
@@ -2790,37 +2740,24 @@ func TestBlock_363366(t *testing.T) {
 		},
 	).Once()
 	mockJSONRPC.On(
-		"BatchCallContext",
+		"CallContext",
 		ctx,
 		mock.Anything,
+		"klay_getBlockReceipts",
+		common.HexToHash("0xe2cecd530e305403af6184100d1cca6cbfa07ede30d6c01800aea8412691c0c2"),
 	).Return(
 		nil,
 	).Run(
 		func(args mock.Arguments) {
-			r := args.Get(1).([]rpc.BatchElem)
+			r := args.Get(1).(*[]*types.Receipt)
 
-			assert.Len(t, r, 3)
+			file, err := ioutil.ReadFile(
+				"testdata/block_receipts_0xe2cecd530e305403af6184100d1cca6cbfa07ede30d6c01800aea8412691c0c2.json",
+			) // nolint
+			assert.NoError(t, err)
 
-			for i, txHash := range []string{
-				"0x3f11ca203c7fd814751725c2c5a3efa00bebbbd5e89f406a28b4a36559393b6f",
-				"0x4cc86d845b6ee5c12db00cc75c42e98f8bbf62060bc925942c5ff6a36878549b",
-				"0xf8b84ff00db596c9db15de1a44c939cce36c0dfd60ef6171db6951b11d7d015d",
-			} {
-				assert.Equal(
-					t,
-					txHash,
-					r[i].Args[0],
-				)
-
-				file, err := ioutil.ReadFile(
-					"testdata/tx_receipt_" + txHash + ".json",
-				) // nolint
-				assert.NoError(t, err)
-
-				receipt := new(types.Receipt)
-				assert.NoError(t, receipt.UnmarshalJSON(file))
-				*(r[i].Result.(**types.Receipt)) = receipt
-			}
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
 		},
 	).Once()
 
@@ -3056,36 +2993,24 @@ func TestBlock_468194(t *testing.T) {
 		},
 	).Once()
 	mockJSONRPC.On(
-		"BatchCallContext",
+		"CallContext",
 		ctx,
 		mock.Anything,
+		"klay_getBlockReceipts",
+		common.HexToHash("0xd7d24fe1cc82182ba7b8af19c102d54b65e5c14c131ccc24462859df9480a54e"),
 	).Return(
 		nil,
 	).Run(
 		func(args mock.Arguments) {
-			r := args.Get(1).([]rpc.BatchElem)
+			r := args.Get(1).(*[]*types.Receipt)
 
-			assert.Len(t, r, 2)
+			file, err := ioutil.ReadFile(
+				"testdata/block_receipts_0xd7d24fe1cc82182ba7b8af19c102d54b65e5c14c131ccc24462859df9480a54e.json",
+			) // nolint
+			assert.NoError(t, err)
 
-			for i, txHash := range []string{
-				"0xbd54f0c5742a5c96ffb358680b88a0f6cfbf83d599dbd0b8fff66b59ed0d7f81",
-				"0xf3626ec6a7aba22137b012e8e68513dcaf8574d0412b97e4381513a3ca9ecfc0",
-			} {
-				assert.Equal(
-					t,
-					txHash,
-					r[i].Args[0],
-				)
-
-				file, err := ioutil.ReadFile(
-					"testdata/tx_receipt_" + txHash + ".json",
-				) // nolint
-				assert.NoError(t, err)
-
-				receipt := new(types.Receipt)
-				assert.NoError(t, receipt.UnmarshalJSON(file))
-				*(r[i].Result.(**types.Receipt)) = receipt
-			}
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
 		},
 	).Once()
 
@@ -3225,39 +3150,24 @@ func TestBlock_13998626(t *testing.T) {
 		},
 	).Once()
 	mockJSONRPC.On(
-		"BatchCallContext",
+		"CallContext",
 		ctx,
 		mock.Anything,
+		"klay_getBlockReceipts",
+		common.HexToHash("0x25e04d924eda304af2ea0a2ff830547eb8f952ccc7a1a5d24430aab95a86daca"),
 	).Return(
 		nil,
 	).Run(
 		func(args mock.Arguments) {
-			r := args.Get(1).([]rpc.BatchElem)
-			assert.Len(t, r, 7)
-			for i, txHash := range []string{
-				"0xf121c8c07ed51b6ac2d11fe3f0892bff2221ec9168280d12581ea8ff45e71421",
-				"0xef0748860f1c1ba28a5ae3ae9d2d1133940f7c8090fc862acf48de42b00ae2b5",
-				"0xb240b922161bb0aeaa5ebe67e6cf77311092bd945b9582b8deba61e2ebdde74f",
-				"0xfac8149f95c20f62264991fe15dc74ca77c92ad6e4329496548277fb4d520509",
-				"0x0a4cd36d72c2ed4767c1d228a7aa0638c3e46397f48b6b09f35ed455c851bb04",
-				"0x9ee03d5922b2a901e3fc05d8a6351165b9f211162363c790c98746ef229e395c",
-				"0x0d4a4f924858a5b19f6b931a914701d4258e73fa738da3d38eb3be1d1e862a7a",
-			} {
-				assert.Equal(
-					t,
-					txHash,
-					r[i].Args[0],
-				)
+			r := args.Get(1).(*[]*types.Receipt)
 
-				file, err := ioutil.ReadFile(
-					"testdata/tx_receipt_" + txHash + ".json",
-				) // nolint
-				assert.NoError(t, err)
+			file, err := ioutil.ReadFile(
+				"testdata/block_receipts_0x25e04d924eda304af2ea0a2ff830547eb8f952ccc7a1a5d24430aab95a86daca.json",
+			) // nolint
+			assert.NoError(t, err)
 
-				receipt := new(types.Receipt)
-				assert.NoError(t, receipt.UnmarshalJSON(file))
-				*(r[i].Result.(**types.Receipt)) = receipt
-			}
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
 		},
 	).Once()
 
@@ -3561,56 +3471,24 @@ func TestBlock_335049(t *testing.T) {
 		},
 	).Once()
 	mockJSONRPC.On(
-		"BatchCallContext",
+		"CallContext",
 		ctx,
 		mock.Anything,
+		"klay_getBlockReceipts",
+		common.HexToHash("0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6"),
 	).Return(
 		nil,
 	).Run(
 		func(args mock.Arguments) {
-			r := args.Get(1).([]rpc.BatchElem)
-			assert.Len(t, r, 24)
-			for i, txHash := range []string{
-				"0xaf8df8a2aaa635a4267c586fe326cfb23690b79e36adb91c903aa7bb498a6e4a",
-				"0x12258648f1b94289b8980b5b97d3724977195e39930f482271aeaa7f025f85d8",
-				"0xad7a6040410e8538134b7a919c870ed5471a04837255dfae1eeda0039d713687",
-				"0xf185918830847ff3d56a3350c14a4606e52ff0103a337d2b0e23c1b0123d0be1",
-				"0x2af6753388d6911575aaa80f0be16fd29802cd1eea47af641155ccc04198a31f",
-				"0x5ef129c8134a398ff878df0715400a0a2c321e9597af427239ec934f3ca0886c",
-				"0x16c31596ab3103be3cc1e545328ced91be38463eeda0aabea540bbf101ec3e4b",
-				"0x8573bfc129a0c14b81bf66d1dd73a076e7aa50172dcd71d3422b91121d8e53cc",
-				"0xbd10270f40017f2afb0907f8dc2f5e240b145140b6e95a55a4e060be1bb9e81b",
-				"0x31264a1dc24f71cbebb8c88a0d6dea424aa814ad8db04c7d136e19c9cbb3936e",
-				"0x19f7cb9a074f40f078419fca329b6a519ee20051d1a9ed3a5f3f9d56a0cc6337",
-				"0xe7b5699339f863be3c4882844c0857b45f78fc38773c7aff9eab05ea35e02919",
-				"0xbd4911ce9ae31b904dc23a92fd0156232e25bbdb99cfe1878b06a25fe332f777",
-				"0x61ff801199df31080523c98da173c6a432b7c22215d79b0d0b7b23991a3bead6",
-				"0x4f69fdcbb557fd6492f6846cdb1fa149dc7cc0e960ac0e12552a8cc5a4ab6bcf",
-				"0x6cc534f4c1dbb85f77e446d1df5a32c850dc1420d0c2d13d54accc9fbb7fd89b",
-				"0xf84e743c09043075fceaf3a55999968f2628114fc613c255bcb21d8a9efeb8ed",
-				"0x79d45408665ef54d21e00e7b42a4a96b6393247af64852c47dab4e9b7c48852f",
-				"0x5baf44d00f01d36b861411ff6cfbbe74f62e90063ff03ca7c9b7a3ad1d57c090",
-				"0xe79833a79934d59a8b743edadd01f33fca1da7ad40ff7ba245f37146f3f4c53f",
-				"0x627534a39f380e03907d39cabb9ec13daf02759dcfa93f25f51e420bf471ceb1",
-				"0x2eb1be28e5a0479017f13e919d18ff14bfab81011588f166728d136f2c887d02",
-				"0xba382d839a64400658e684f8931914ac29f6a44dd2853107dc9bc9938c2785d1",
-				"0x2be0f8c1453b1cd6e780b41012433da2f54a49c33f0254e321d4dbbc008b284b",
-			} {
-				assert.Equal(
-					t,
-					txHash,
-					r[i].Args[0],
-				)
+			r := args.Get(1).(*[]*types.Receipt)
 
-				file, err := ioutil.ReadFile(
-					"testdata/tx_receipt_" + txHash + ".json",
-				) // nolint
-				assert.NoError(t, err)
+			file, err := ioutil.ReadFile(
+				"testdata/block_receipts_0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6.json",
+			) // nolint
+			assert.NoError(t, err)
 
-				receipt := new(types.Receipt)
-				assert.NoError(t, receipt.UnmarshalJSON(file))
-				*(r[i].Result.(**types.Receipt)) = receipt
-			}
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
 		},
 	).Once()
 
@@ -3749,36 +3627,26 @@ func TestBlock_1665(t *testing.T) {
 		},
 	).Once()
 	mockJSONRPC.On(
-		"BatchCallContext",
+		"CallContext",
 		ctx,
 		mock.Anything,
+		"klay_getBlockReceipts",
+		common.HexToHash("0x0f7c5e802a8ebf79611a04b8780bb9c8bc1c00f41c4f829f470b7b6c8fb0d5a6"),
 	).Return(
 		nil,
 	).Run(
 		func(args mock.Arguments) {
-			r := args.Get(1).([]rpc.BatchElem)
-			assert.Len(t, r, 1)
-			for i, txHash := range []string{
-				"0xaff5e2b926e10b4c5dee2c93d0ed9cdd740f013371f8b9b4ec5639bf1c3019d1",
-			} {
-				assert.Equal(
-					t,
-					txHash,
-					r[i].Args[0],
-				)
+			r := args.Get(1).(*[]*types.Receipt)
 
-				file, err := ioutil.ReadFile(
-					"testdata/tx_receipt_" + txHash + ".json",
-				) // nolint
-				assert.NoError(t, err)
+			file, err := ioutil.ReadFile(
+				"testdata/block_receipts_0x0f7c5e802a8ebf79611a04b8780bb9c8bc1c00f41c4f829f470b7b6c8fb0d5a6.json",
+			) // nolint
+			assert.NoError(t, err)
 
-				receipt := new(types.Receipt)
-				assert.NoError(t, receipt.UnmarshalJSON(file))
-				*(r[i].Result.(**types.Receipt)) = receipt
-			}
+			err = json.Unmarshal(file, r)
+			assert.NoError(t, err)
 		},
 	).Once()
-
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
