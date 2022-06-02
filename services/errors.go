@@ -71,8 +71,9 @@ var (
 	// ErrKlaytnClient is returned when Klaytn Node
 	// errors on a request.
 	ErrKlaytnClient = &types.Error{
-		Code:    2, // nolint
-		Message: "klaytn client error",
+		Code:      2, // nolint
+		Message:   "klaytn client error",
+		Retriable: true,
 	}
 
 	// ErrUnableToDecompressPubkey is returned when
