@@ -304,7 +304,7 @@ func (kc *Client) Transaction(
 	// Since populateTransaction calculates the transaction fee,
 	// the addresses receiving the fee and the fee distribution ratios must be passed together as
 	// parameters.
-	tx, err := kc.populateTransaction(loadedTx, rewardAddrs, ratioMap)
+	tx, err := kc.populateTransaction(ctx, header.Number, loadedTx, rewardAddrs, ratioMap)
 	if err != nil {
 		return nil, fmt.Errorf("%w: cannot parse %s", err, loadedTx.Transaction.Hash().Hex())
 	}
@@ -1052,7 +1052,10 @@ func createSuccessFeeOperationWithRelatedOperations(
 // In the case of Klaytn, depending on the transaction type, the address where the fee is paid may
 // be different. In addition, transaction fees must be allocated to CN, KIR, and KGF addresses
 // according to a fixed rate.
-func feeOps(
+// nolint: gocognit
+func (kc *Client) feeOps(
+	ctx context.Context,
+	bn *big.Int,
 	tx *loadedTransaction,
 	rewardAddresses []string,
 	rewardRatioMap map[string]*big.Int,
@@ -1166,6 +1169,16 @@ func feeOps(
 		relatedOpID[i] = int64(i)
 	}
 
+	// In a specific block (84715206) on the Baobab testnet,
+	// the fee reward must be recalculated with the gas price at that block.
+	if bn.Cmp(big.NewInt(84715206)) == 0 && tx.Transaction.ChainId().Cmp(big.NewInt(1001)) == 0 { // nolint: gomnd
+		gasPriceAt, err := kc.GasPriceAt(ctx, bn.Int64())
+		if err != nil {
+			return nil, fmt.Errorf("could not get gas price at %v", bn.Int64())
+		}
+		gasUsed := new(big.Int).Div(proposerEarnedAmount, tx.Transaction.GasPrice())
+		proposerEarnedAmount = new(big.Int).Mul(gasUsed, gasPriceAt)
+	}
 	rewardSum := new(big.Int)
 	rewardOperations := []*RosettaTypes.Operation{}
 	for _, addr := range rewardAddresses {
@@ -1377,7 +1390,7 @@ func (kc *Client) getParsedBlock(
 		}
 	}
 
-	txs, err := kc.populateTransactions(block, loadedTransactions)
+	txs, err := kc.populateTransactions(ctx, block, loadedTransactions)
 	if err != nil {
 		return nil, err
 	}
@@ -1395,6 +1408,7 @@ func convertTime(time uint64) int64 {
 }
 
 func (kc *Client) populateTransactions(
+	ctx context.Context,
 	block *types.Block,
 	loadedTransactions []*loadedTransaction,
 ) ([]*RosettaTypes.Transaction, error) {
@@ -1415,6 +1429,8 @@ func (kc *Client) populateTransactions(
 
 	for _, tx := range loadedTransactions {
 		transaction, err := kc.populateTransaction(
+			ctx,
+			block.Number(),
 			tx,
 			rewardAddresses,
 			rewardRatioMap,
@@ -1430,6 +1446,8 @@ func (kc *Client) populateTransactions(
 }
 
 func (kc *Client) populateTransaction(
+	ctx context.Context,
+	blockNumber *big.Int,
 	tx *loadedTransaction,
 	rewardAddresses []string,
 	rewardRatioMap map[string]*big.Int,
@@ -1437,7 +1455,7 @@ func (kc *Client) populateTransaction(
 	var ops []*RosettaTypes.Operation
 
 	// Compute fee operations
-	feeOperations, err := feeOps(tx, rewardAddresses, rewardRatioMap)
+	feeOperations, err := kc.feeOps(ctx, blockNumber, tx, rewardAddresses, rewardRatioMap)
 	if err != nil {
 		return nil, err
 	}
