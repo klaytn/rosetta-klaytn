@@ -37,10 +37,10 @@ jobs:
       - name: Set output
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-      - name: Checkout to release branch
-        run: |
-          export Tag=${{ steps.vars.outputs.tag }}
-          git checkout release/${Tag%-*}
+#      - name: Checkout to release branch
+#        run: |
+#          export Tag=${{ steps.vars.outputs.tag }}
+#          git checkout release/${Tag%-*}
       - name: Set up Docker buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
@@ -55,4 +55,4 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ivorish/rosetta-klaytn:${{ steps.vars.outputs.tag }}
+          tags: klaytn/rosetta-klaytn:${{ steps.vars.outputs.tag }}
