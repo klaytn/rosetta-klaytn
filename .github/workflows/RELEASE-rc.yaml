@@ -55,4 +55,4 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ivorish/rosetta-klaytn:${{ steps.vars.outputs.tag }}
+          tags: klaytn/rosetta-klaytn:${{ steps.vars.outputs.tag }}
