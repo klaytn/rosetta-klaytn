@@ -20,7 +20,7 @@ require (
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
 	github.com/prometheus/common v0.34.0 // indirect
 	github.com/rs/cors v1.8.2 // indirect
-	github.com/spf13/cobra v1.4.0
+	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.1
 	go.uber.org/atomic v1.9.0 // indirect
