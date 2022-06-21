@@ -21,8 +21,7 @@ require (
 	github.com/prometheus/common v0.34.0 // indirect
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/spf13/cobra v1.4.0
-	github.com/stretchr/objx v0.3.0 // indirect
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.7.4
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/goleak v1.1.12 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
