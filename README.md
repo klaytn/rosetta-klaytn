@@ -18,11 +18,12 @@ The project started with a fork of [23561f903bc93d4fa97bebc1fbbe4c7e5b374e5e com
 * Idempotent access to all transaction traces and receipts
 
 ## System Requirements
+### For rosetta-klaytn
 `rosetta-klaytn` has been tested on an [AWS c5.2xlarge instance](https://aws.amazon.com/ec2/instance-types/c5).
 This instance type has 8 vCPU and 16 GB of RAM. If you use a computer with less than 16 GB of RAM,
 it is possible that `rosetta-klaytn` will exit with an OOM error.
 
-### Recommended OS Settings
+#### Recommended OS Settings
 To increase the load `rosetta-klaytn` can handle, it is recommended to tune your OS
 settings to allow for more connections. On a linux-based OS, you can run the following
 commands ([source](http://www.tweaked.io/guide/kernel)):
@@ -39,6 +40,29 @@ enabling it._
 
 You should also modify your open file settings to `100000`. This can be done on a linux-based OS
 with the command: `ulimit -n 100000`.
+
+### For Klaytn Node
+For Klaytn Node, you should operate an [EN(Endpoint Node)](https://docs.klaytn.foundation/node/endpoint-node) with `arcive` mode.
+And also you can see the system requirements for [Endpoint Node](https://docs.klaytn.foundation/node/endpoint-node/system-requirements) in here.
+
+#### Recommended `kend.conf` configuration
+To serve rosetta-klaytn API, EN should enable rpc api like `RPC_ENABLE=1` and serve `klay`, `debug`, `txpool`, `governance` and `admin`(admin rpc api is optional) rpc apis.
+
+```text
+# rpc options setting
+RPC_ENABLE=1 # if this is set, the following options will be used
+RPC_API="admin,debug,klay,txpool,governance"
+RPC_CONCURRENCYLIMIT=48000
+RPC_READ_TIMEOUT=48000
+RPC_WRITE_TIMEOUT=48000
+RPC_IDLE_TIMEOUT=48000
+RPC_EXECUTION_TIMEOUT=48000
+
+# Raw options e.g) "--txpool.nolocals"
+ADDITIONAL="--gcmode archive"
+```
+
+To run EN in archive mode, you can append the `--gcmode archive` flag to `ADDITIONAL`.
 
 ## Usage
 As specified in the [Rosetta API Principles](https://www.rosetta-api.org/docs/automated_deployment.html),
