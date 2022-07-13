@@ -160,6 +160,7 @@
         "metadata": {
           "gas_limit": "0xf4240",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0xe421",
@@ -289,6 +290,7 @@
         "metadata": {
           "gas_limit": "0xf4240",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x5208",
@@ -400,6 +402,7 @@
         "metadata": {
           "gas_limit": "0xf4240",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x5208",
@@ -550,6 +553,7 @@
         "metadata": {
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x5208",
@@ -695,6 +699,7 @@
         "metadata": {
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x7918",
@@ -866,6 +871,7 @@
         "metadata": {
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x8ca0",
@@ -1011,6 +1017,7 @@
         "metadata": {
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x53fc",
@@ -1156,6 +1163,7 @@
         "metadata": {
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x7b0c",
@@ -1327,6 +1335,7 @@
         "metadata": {
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x8e94",
@@ -1433,6 +1442,7 @@
         "metadata": {
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x5208",
@@ -1539,6 +1549,7 @@
         "metadata": {
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x7918",
@@ -1671,6 +1682,7 @@
         "metadata": {
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x8ca0",
@@ -1802,6 +1814,7 @@
         "metadata": {
           "gas_limit": "0x5f5e100",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": "0x5c12f41766335913a89bd11824afe728f0f349ae",
             "gasUsed": "0x372f38",
@@ -1984,6 +1997,7 @@
         "metadata": {
           "gas_limit": "0x5f5e100",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": "0x88827e941532a1866c981907150927692b692db8",
             "gasUsed": "0x375648",
@@ -2192,6 +2206,7 @@
         "metadata": {
           "gas_limit": "0x5f5e100",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": "0xf29d7e170cc5a280a02a12585e38b573d9c9b5b7",
             "gasUsed": "0x3769d0",
@@ -2349,6 +2364,7 @@
         "metadata": {
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0xe421",
@@ -2478,6 +2494,7 @@
         "metadata": {
           "gas_limit": "0x30d40",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x10b31",
@@ -2633,6 +2650,7 @@
         "metadata": {
           "gas_limit": "0x30d40",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x11eb9",
@@ -2762,6 +2780,7 @@
         "metadata": {
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x5208",
@@ -2868,6 +2887,7 @@
         "metadata": {
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x7918",
@@ -3000,6 +3020,7 @@
         "metadata": {
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x8ca0",
@@ -3106,6 +3127,7 @@
         "metadata": {
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0xab18",
@@ -3212,6 +3234,7 @@
         "metadata": {
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0xd228",
@@ -3344,6 +3367,7 @@
         "metadata": {
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0xe5b0",

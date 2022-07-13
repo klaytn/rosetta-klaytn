@@ -20674,6 +20674,7 @@
         "metadata": {
           "gas_limit": "0x3d0900",
           "gas_price": "0x4a817c800",
+          "effective_gas_price": "0x4a817c800",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x3c9572",
@@ -24989,6 +24990,7 @@
         "metadata": {
           "gas_limit": "0x3d090",
           "gas_price": "0x500ca09ff",
+          "effective_gas_price": "0x500ca09ff",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x1810b",
