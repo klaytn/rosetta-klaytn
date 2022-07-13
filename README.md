@@ -188,7 +188,7 @@ Create a `block_trace_0x{block hash}.json` file using the value of the "result" 
 curl -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"debug_traceBlockByHash","params":["0x{block hash}", {"tracer": "fastCallTracer"}],"id":1}' http://{your en url}:8551 > trace.txt
 ```
 
-### Make expected reponse data
+### Make expected response data
 Create a response object to be returned based on the above result in the `block_response_{block number}.json` file.
 
 You can refer to `block_response_1078.json` file.
