@@ -3095,10 +3095,8 @@ func TestBlock_468194(t *testing.T) {
 	mockJSONRPC.AssertExpectations(t)
 }
 
-// Block with EIP-1559 base fee & txs. This block taken from mainnet:
-//   https://etherscan.io/block/0x25e04d924eda304af2ea0a2ff830547eb8f952ccc7a1a5d24430aab95a86daca
-// This block has 7 transactions, all EIP-1559 type except the last.
-func TestBlock_13998626(t *testing.T) {
+// Block with Magma hard fork dynamic gas pricing txs.
+func TestBlock_1078(t *testing.T) {
 	mockJSONRPC := &mocks.JSONRPC{}
 
 	tc := testTraceConfig()
@@ -3115,7 +3113,7 @@ func TestBlock_13998626(t *testing.T) {
 		ctx,
 		mock.Anything,
 		"klay_getBlockByNumber",
-		"0xd59a22",
+		"0x436",
 		true,
 	).Return(
 		nil,
@@ -3123,7 +3121,7 @@ func TestBlock_13998626(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_13998626.json")
+			file, err := ioutil.ReadFile("testdata/block_1078.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -3134,7 +3132,7 @@ func TestBlock_13998626(t *testing.T) {
 		ctx,
 		mock.Anything,
 		"debug_traceBlockByHash",
-		common.HexToHash("0x25e04d924eda304af2ea0a2ff830547eb8f952ccc7a1a5d24430aab95a86daca"),
+		common.HexToHash("0x9ad608123d4c896c57a7dbdd7560873eb988a083cd43401f8be157700c268d68"),
 		tc,
 	).Return(
 		nil,
@@ -3143,7 +3141,7 @@ func TestBlock_13998626(t *testing.T) {
 			r := args.Get(1).(*json.RawMessage)
 
 			file, err := ioutil.ReadFile(
-				"testdata/block_trace_0x25e04d924eda304af2ea0a2ff830547eb8f952ccc7a1a5d24430aab95a86daca.json",
+				"testdata/block_trace_0x9ad608123d4c896c57a7dbdd7560873eb988a083cd43401f8be157700c268d68.json",
 			) // nolint
 			assert.NoError(t, err)
 			*r = json.RawMessage(file)
@@ -3154,7 +3152,7 @@ func TestBlock_13998626(t *testing.T) {
 		ctx,
 		mock.Anything,
 		"klay_getBlockReceipts",
-		common.HexToHash("0x25e04d924eda304af2ea0a2ff830547eb8f952ccc7a1a5d24430aab95a86daca"),
+		common.HexToHash("0x9ad608123d4c896c57a7dbdd7560873eb988a083cd43401f8be157700c268d68"),
 	).Return(
 		nil,
 	).Run(
@@ -3162,7 +3160,7 @@ func TestBlock_13998626(t *testing.T) {
 			r := args.Get(1).(*[]*types.Receipt)
 
 			file, err := ioutil.ReadFile(
-				"testdata/block_receipts_0x25e04d924eda304af2ea0a2ff830547eb8f952ccc7a1a5d24430aab95a86daca.json",
+				"testdata/block_receipts_0x9ad608123d4c896c57a7dbdd7560873eb988a083cd43401f8be157700c268d68.json",
 			) // nolint
 			assert.NoError(t, err)
 
@@ -3176,14 +3174,14 @@ func TestBlock_13998626(t *testing.T) {
 		ctx,
 		mock.Anything,
 		"klay_getHeaderByNumber",
-		"0xd59a22",
+		"0x436",
 	).Return(
 		nil,
 	).Run(
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_13998626.json")
+			file, err := ioutil.ReadFile("testdata/block_1078.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3196,7 +3194,7 @@ func TestBlock_13998626(t *testing.T) {
 		ctx,
 		mock.Anything,
 		"governance_itemsAt",
-		"0xd59a22",
+		"0x436",
 	).Return(
 		nil,
 	).Run(
@@ -3216,7 +3214,7 @@ func TestBlock_13998626(t *testing.T) {
 		ctx,
 		mock.Anything,
 		"governance_getStakingInfo",
-		"0xd59a22",
+		"0x436",
 	).Return(
 		nil,
 	).Run(
@@ -3231,7 +3229,7 @@ func TestBlock_13998626(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_13998626.json")
+	correctRaw, err := ioutil.ReadFile("testdata/block_response_1078.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
@@ -3239,7 +3237,7 @@ func TestBlock_13998626(t *testing.T) {
 	resp, err := c.Block(
 		ctx,
 		&RosettaTypes.PartialBlockIdentifier{
-			Index: RosettaTypes.Int64(13998626),
+			Index: RosettaTypes.Int64(1078),
 		},
 	)
 	assert.NoError(t, err)

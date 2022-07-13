@@ -285,9 +285,10 @@ func (kc *Client) Transaction(
 	if err != nil {
 		return nil, err
 	}
-	_, feeAmount, feeBurned := kc.calculateGas(body.tx, receipt, baseFee)
+	effectivePrice, feeAmount, feeBurned := kc.calculateGas(body.tx, receipt, baseFee)
 	loadedTx.FeeAmount = feeAmount
 	loadedTx.FeeBurned = feeBurned
+	loadedTx.EffectiveGasPrice = effectivePrice
 	loadedTx.Receipt = receipt
 
 	if addTraces {
@@ -406,7 +407,6 @@ func (kc *Client) getBlock(
 	// We fetch traces last because we want to avoid limiting the number of other
 	// block-related data fetches we perform concurrently (we limit the number of
 	// concurrent traces that are computed to 16 to avoid overwhelming Node).
-	// TODO-Klaytn: Need to make sure those logic is fine with Klaytn
 	var traces []*rpcCall
 	var rawTraces []*rpcRawCall
 	var addTraces bool
@@ -442,10 +442,11 @@ func (kc *Client) getBlock(
 		loadedTxs[i] = tx.LoadedTransaction()
 		loadedTxs[i].Transaction = txs[i]
 
-		var feeAmount, feeBurned *big.Int
-		baseFee, feeAmount, feeBurned = kc.calculateGas(txs[i], receipt, baseFee)
+		var feeAmount, feeBurned, effectivePrice *big.Int
+		effectivePrice, feeAmount, feeBurned = kc.calculateGas(txs[i], receipt, baseFee)
 		loadedTxs[i].FeeAmount = feeAmount
 		loadedTxs[i].FeeBurned = feeBurned
+		loadedTxs[i].EffectiveGasPrice = effectivePrice
 		loadedTxs[i].Receipt = receipt
 
 		// Continue if calls does not exist (occurs at genesis)
@@ -471,6 +472,9 @@ func (kc *Client) getBaseFee(ctx context.Context, block string) (*big.Int, error
 		return nil, klaytn.NotFound
 	}
 
+	// ~ EthTxTypeCompatibleBlock: `baseFeePerGas` is not existed. (`baseFee` in types.Header is nil)
+	// EthTxTypeCompatibleBlock ~ KIP71CompatibleBlock: `baseFeePerGas` is 0. (`baseFee` in types.Header is nil)
+	// KIP71CompatibleBlock ~: `baseFeePerGas` is bigger than 0. (`baseFee` in types.Header is not nil)
 	bf, found := header["baseFeePerGas"].(string)
 	if !found {
 		// If header rpc output does not have `baseFeePerGas`,
@@ -493,26 +497,34 @@ func (kc *Client) calculateGas(
 	*big.Int, *big.Int, *big.Int,
 ) {
 	gasUsed := new(big.Int).SetUint64(txReceipt.GasUsed)
-	gasPrice := effectiveGasPrice(tx, baseFee)
-	feeAmount := new(big.Int).Mul(gasUsed, gasPrice)
+	effectivePrice := effectiveGasPrice(tx, baseFee)
+	feeAmount := new(big.Int).Mul(gasUsed, effectivePrice)
 	var feeBurned *big.Int
-	if baseFee != nil && baseFee.Cmp(big.NewInt(0)) != 0 { // EIP-1559
-		feeBurned = new(big.Int).Mul(gasUsed, baseFee)
+	// After Magma hard fork, burn 50% of transaction fee
+	if baseFee != nil && baseFee.Cmp(big.NewInt(0)) > 0 {
+		feeBurned = new(big.Int).Div(feeAmount, big.NewInt(2)) // nolint:gomnd
 	}
 
-	return baseFee, feeAmount, feeBurned
+	return effectivePrice, feeAmount, feeBurned
 }
 
-// effectiveGasPrice returns the price of gas charged to this transaction to be included in the
-// block.
+// effectiveGasPrice returns the price of gas charged to this transaction
+// to be included in the block.
 func effectiveGasPrice(tx *types.Transaction, baseFee *big.Int) *big.Int {
-	if tx.Type() != types.TxTypeEthereumDynamicFee {
-		return tx.GasPrice()
+	header := &types.Header{}
+
+	// Only set `BaseFee` in the `types.Header` when base is not 0.
+	// The 'baseFee' parameter is the `baseFeePerGas` field of the rpc return object,
+	// so it is 0 if the Magma hard fork is not already enabled.
+	// The actual `types.Header` will have the BaseFee field non-nil
+	// only after the Magma hard fork is enabled.
+	if baseFee != nil && baseFee.Cmp(big.NewInt(0)) > 0 {
+		header.BaseFee = baseFee
 	}
-	// For EIP-1559 (TxTypeEthereumDynamicFee) the gas price is determined
-	// by the base fee & gas tip instead of the tx-specified gas price.
-	tip := tx.EffectiveGasTip(baseFee)
-	return new(big.Int).Add(tip, baseFee)
+
+	// EffectiveGasPrice returns base fee after Magma hard fork.
+	// Otherwise, return gasPrice of tx, which is the unit price.
+	return tx.EffectiveGasPrice(header)
 }
 
 func (kc *Client) getTransactionTraces(
@@ -990,13 +1002,14 @@ func (tx *rpcTransaction) LoadedTransaction() *loadedTransaction {
 }
 
 type loadedTransaction struct {
-	Transaction *types.Transaction
-	From        *common.Address
-	BlockNumber *string
-	BlockHash   *common.Hash
-	FeeAmount   *big.Int
-	FeeBurned   *big.Int // nil if no fees were burned
-	Status      bool
+	Transaction       *types.Transaction
+	From              *common.Address
+	BlockNumber       *string
+	BlockHash         *common.Hash
+	FeeAmount         *big.Int
+	FeeBurned         *big.Int // nil if no fees were burned
+	EffectiveGasPrice *big.Int // gas priced used when tx is processed
+	Status            bool
 
 	Trace    *Call
 	RawTrace json.RawMessage
@@ -1087,7 +1100,6 @@ func (kc *Client) feeOps(
 			}
 			feePayerRatio := big.NewInt(int64(ratio))
 
-			// TODO-Klaytn: Have to consider gas burning when calculate fee operations.
 			// For same fee logic with Klaytn,
 			// use original gas fee which is calculated with user input in the gas first
 			// and then subtract refund gas which is (gas - gasUsed).
@@ -1468,7 +1480,6 @@ func (kc *Client) populateTransaction(
 	ops = append(ops, traceOperations...)
 
 	// Marshal receipt and trace data
-	// TODO: replace with marshalJSONMap (used in `services`)
 	receiptBytes, err := tx.Receipt.MarshalJSON()
 	if err != nil {
 		return nil, err
@@ -1497,10 +1508,11 @@ func (kc *Client) populateTransaction(
 		},
 		Operations: ops,
 		Metadata: map[string]interface{}{
-			"gas_limit": hexutil.EncodeUint64(tx.Transaction.Gas()),
-			"gas_price": hexutil.EncodeBig(tx.Transaction.GasPrice()),
-			"receipt":   receiptMap,
-			"trace":     traceMap,
+			"gas_limit":           hexutil.EncodeUint64(tx.Transaction.Gas()),
+			"gas_price":           hexutil.EncodeBig(tx.Transaction.GasPrice()),
+			"effective_gas_price": hexutil.EncodeBig(tx.EffectiveGasPrice),
+			"receipt":             receiptMap,
+			"trace":               traceMap,
 		},
 	}
 
