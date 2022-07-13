@@ -20,6 +20,7 @@ Below is the genesis.json used in local testnet.
         "istanbulCompatibleBlock": 0,
         "londonCompatibleBlock": 0,
         "ethTxTypeCompatibleBlock": 0,
+        "kip71CompatibleBlock": 0,
         "istanbul": {
             "epoch": 30,
             "policy": 2,
