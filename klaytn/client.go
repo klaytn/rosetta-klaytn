@@ -502,7 +502,8 @@ func (kc *Client) calculateGas(
 	var feeBurned *big.Int
 	// After Magma hard fork, burn 50% of transaction fee
 	if baseFee != nil && baseFee.Cmp(big.NewInt(0)) > 0 {
-		feeBurned = new(big.Int).Div(feeAmount, big.NewInt(2)) // nolint:gomnd
+		feeReward := new(big.Int).Div(feeAmount, big.NewInt(2)) // nolint:gomnd
+		feeBurned = new(big.Int).Sub(feeAmount, feeReward)
 	}
 
 	return effectivePrice, feeAmount, feeBurned
