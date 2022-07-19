@@ -162,6 +162,39 @@ Interested in helping fix issues in this repository? You can find to-dos in the 
 * `make build-local` to build a Docker image from the local context
 * `make coverage-local` to generate a coverage report
 
+## How to create test data for block testing in client_test.go
+We need to execute client_test.go by generating the API result and creating the expected result as json data.
+
+### Generate a test data in the network
+You can create test data by sending a transaction to the network.
+
+Alternatively, it is okay to use data that already exists in the network.
+
+### Make test data files
+In this step, the return data of the API called when the client function is executed is made into a json file, and when the actual test is performed, the data is returned using a mock.
+
+Create a `block_{block number}.json` file using the value of the "result" field of the API result below.
+```shell
+curl -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"klay_getBlockByNumber","params":["0x{block number}", true],"id":1}' http://{your en url}:8551 > block.txt
+```
+
+Create a `block_receipts_0x{block hash}.json` file using the value of the "result" field of the API result below.
+```shell
+curl -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"klay_getBlockReceipts","params":["0x{block hash}"],"id":1}' http://{your en url}:8551 > receipts.txt
+```
+
+Create a `block_trace_0x{block hash}.json` file using the value of the "result" field of the API result below.
+```shell
+curl -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"debug_traceBlockByHash","params":["0x{block hash}", {"tracer": "fastCallTracer"}],"id":1}' http://{your en url}:8551 > trace.txt
+```
+
+### Make expected response data
+Create a response object to be returned based on the above result in the `block_response_{block number}.json` file.
+
+You can refer to `block_response_1078.json` file.
+
+- 
+
 ## License
 This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
 
