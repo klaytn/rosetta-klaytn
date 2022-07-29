@@ -473,8 +473,8 @@ func (kc *Client) getBaseFee(ctx context.Context, block string) (*big.Int, error
 	}
 
 	// ~ EthTxTypeCompatibleBlock: `baseFeePerGas` is not existed. (`baseFee` in types.Header is nil)
-	// EthTxTypeCompatibleBlock ~ KIP71CompatibleBlock: `baseFeePerGas` is 0. (`baseFee` in types.Header is nil)
-	// KIP71CompatibleBlock ~: `baseFeePerGas` is bigger than 0. (`baseFee` in types.Header is not nil)
+	// EthTxTypeCompatibleBlock ~ MagmaCompatibleBlock: `baseFeePerGas` is 0. (`baseFee` in types.Header is nil)
+	// MagmaCompatibleBlock ~: `baseFeePerGas` is bigger than 0. (`baseFee` in types.Header is not nil)
 	bf, found := header["baseFeePerGas"].(string)
 	if !found {
 		// If header rpc output does not have `baseFeePerGas`,
