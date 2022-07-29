@@ -32,7 +32,7 @@ import (
 
 var (
 	// rosetta-klaytn version
-	middlewareVersion = "1.0.0"
+	middlewareVersion = "1.0.1"
 
 	defaultNetworkOptions = &types.NetworkOptionsResponse{
 		Version: &types.Version{

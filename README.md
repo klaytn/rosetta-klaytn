@@ -145,7 +145,7 @@ docker run --platform linux/amd64 -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET"
 ```
 
 ## Testing with rosetta-cli
-To validate `rosetta-klaytn`, [install `rosetta-cli`](https://github.com/klaytn/rosetta-cli#install)
+To validate `rosetta-klaytn`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
 and run one of the following commands:
 * `rosetta-cli check:data --configuration-file rosetta-cli-conf/testnet/config.json` - This command validates that the Data API implementation is correct using the Klaytn `testnet` node. It also ensures that the implementation does not miss any balance-changing operations.
 * `rosetta-cli check:construction --configuration-file rosetta-cli-conf/testnet/config.json` - This command validates the Construction API implementation. It also verifies transaction construction, signing, and submissions to the `testnet` network.
