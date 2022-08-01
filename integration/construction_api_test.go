@@ -34,7 +34,6 @@ import (
 var (
 	operations          []*types.Operation
 	metadata            map[string]interface{}
-	suggestedFee        *types.Amount
 	unsignedTransaction string
 	signedTransaction   string
 	payloads            *types.SigningPayload
@@ -203,15 +202,16 @@ func TestConstructionMetadata(t *testing.T) {
 	assert.NotNil(t, res)
 
 	expectedUnitPrice := new(big.Int).SetUint64(cfg.Params.UnitPrice)
+	expectedGasPrice := new(big.Int).Mul(expectedUnitPrice, big.NewInt(2))
 	transferGasLimit := new(big.Int).SetInt64(klaytn.TransferGasLimit)
+	expectedTxFee := new(big.Int).Mul(expectedGasPrice, transferGasLimit)
 	assert.True(t, n > 0)
-	assert.Equal(t, gp, expectedUnitPrice)
-	assert.Equal(t, res.SuggestedFee[0].Value, new(big.Int).Mul(expectedUnitPrice, transferGasLimit).String())
+	assert.Equal(t, gp, expectedGasPrice)
+	assert.Equal(t, res.SuggestedFee[0].Value, expectedTxFee.String())
 	assert.Equal(t, res.SuggestedFee[0].Currency.Symbol, "KLAY")
 	assert.Equal(t, res.SuggestedFee[0].Currency.Decimals, int32(18))
 
 	metadata = res.Metadata
-	suggestedFee = res.SuggestedFee[0]
 }
 
 // Test /construction/metadata with offline mode or invalid data
@@ -524,7 +524,6 @@ func setMetadataAndSuggestedFee(t *testing.T) {
 	res, tErr := constructionAPIService.ConstructionMetadata(ctx, req)
 	assert.Nil(t, tErr)
 	metadata = res.Metadata
-	suggestedFee = res.SuggestedFee[0]
 
 	cfg.Mode = configuration.Offline
 }
