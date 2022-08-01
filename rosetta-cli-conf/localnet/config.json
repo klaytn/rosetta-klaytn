@@ -3,7 +3,7 @@
     "blockchain": "Klaytn",
     "network": "Local"
   },
-  "online_url": "http://localhost:10100",
+  "online_url": "http://localhost:8080",
   "data_directory": "cli-data-localnet",
   "http_timeout": 15,
   "max_retries": 15,
@@ -92,9 +92,7 @@
     "historical_balance_disabled": false,
     "bootstrap_balances": "bootstrap_balances.json",
     "end_conditions": {
-      "reconciliation_coverage": {
-        "coverage": 0.95
-      }
+      "index": 100
     }
   }
 }
