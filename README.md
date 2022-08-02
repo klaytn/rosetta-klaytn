@@ -18,11 +18,12 @@ The project started with a fork of [23561f903bc93d4fa97bebc1fbbe4c7e5b374e5e com
 * Idempotent access to all transaction traces and receipts
 
 ## System Requirements
+### For rosetta-klaytn
 `rosetta-klaytn` has been tested on an [AWS c5.2xlarge instance](https://aws.amazon.com/ec2/instance-types/c5).
 This instance type has 8 vCPU and 16 GB of RAM. If you use a computer with less than 16 GB of RAM,
 it is possible that `rosetta-klaytn` will exit with an OOM error.
 
-### Recommended OS Settings
+#### Recommended OS Settings
 To increase the load `rosetta-klaytn` can handle, it is recommended to tune your OS
 settings to allow for more connections. On a linux-based OS, you can run the following
 commands ([source](http://www.tweaked.io/guide/kernel)):
@@ -39,6 +40,29 @@ enabling it._
 
 You should also modify your open file settings to `100000`. This can be done on a linux-based OS
 with the command: `ulimit -n 100000`.
+
+### For Klaytn Node
+For Klaytn Node, you should operate an [EN(Endpoint Node)](https://docs.klaytn.foundation/node/endpoint-node) with `arcive` mode.
+And also you can see the system requirements for [Endpoint Node](https://docs.klaytn.foundation/node/endpoint-node/system-requirements) in here.
+
+#### Recommended `kend.conf` configuration
+To serve rosetta-klaytn API, EN should enable rpc api like `RPC_ENABLE=1` and serve `klay`, `debug`, `txpool`, `governance` and `admin`(admin rpc api is optional) rpc apis.
+
+```text
+# rpc options setting
+RPC_ENABLE=1 # if this is set, the following options will be used
+RPC_API="admin,debug,klay,txpool,governance"
+RPC_CONCURRENCYLIMIT=48000
+RPC_READ_TIMEOUT=48000
+RPC_WRITE_TIMEOUT=48000
+RPC_IDLE_TIMEOUT=48000
+RPC_EXECUTION_TIMEOUT=48000
+
+# Raw options e.g) "--txpool.nolocals"
+ADDITIONAL="--gcmode archive"
+```
+
+To run EN in archive mode, you can append the `--gcmode archive` flag to `ADDITIONAL`.
 
 ## Usage
 As specified in the [Rosetta API Principles](https://www.rosetta-api.org/docs/automated_deployment.html),
@@ -121,7 +145,7 @@ docker run --platform linux/amd64 -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET"
 ```
 
 ## Testing with rosetta-cli
-To validate `rosetta-klaytn`, [install `rosetta-cli`](https://github.com/klaytn/rosetta-cli#install)
+To validate `rosetta-klaytn`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
 and run one of the following commands:
 * `rosetta-cli check:data --configuration-file rosetta-cli-conf/testnet/config.json` - This command validates that the Data API implementation is correct using the Klaytn `testnet` node. It also ensures that the implementation does not miss any balance-changing operations.
 * `rosetta-cli check:construction --configuration-file rosetta-cli-conf/testnet/config.json` - This command validates the Construction API implementation. It also verifies transaction construction, signing, and submissions to the `testnet` network.
@@ -137,6 +161,39 @@ Interested in helping fix issues in this repository? You can find to-dos in the 
 * `make salus` to check for security concerns
 * `make build-local` to build a Docker image from the local context
 * `make coverage-local` to generate a coverage report
+
+## How to create test data for block testing in client_test.go
+We need to execute client_test.go by generating the API result and creating the expected result as json data.
+
+### Generate a test data in the network
+You can create test data by sending a transaction to the network.
+
+Alternatively, it is okay to use data that already exists in the network.
+
+### Make test data files
+In this step, the return data of the API called when the client function is executed is made into a json file, and when the actual test is performed, the data is returned using a mock.
+
+Create a `block_{block number}.json` file using the value of the "result" field of the API result below.
+```shell
+curl -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"klay_getBlockByNumber","params":["0x{block number}", true],"id":1}' http://{your en url}:8551 > block.txt
+```
+
+Create a `block_receipts_0x{block hash}.json` file using the value of the "result" field of the API result below.
+```shell
+curl -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"klay_getBlockReceipts","params":["0x{block hash}"],"id":1}' http://{your en url}:8551 > receipts.txt
+```
+
+Create a `block_trace_0x{block hash}.json` file using the value of the "result" field of the API result below.
+```shell
+curl -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"debug_traceBlockByHash","params":["0x{block hash}", {"tracer": "fastCallTracer"}],"id":1}' http://{your en url}:8551 > trace.txt
+```
+
+### Make expected response data
+Create a response object to be returned based on the above result in the `block_response_{block number}.json` file.
+
+You can refer to `block_response_1078.json` file.
+
+- 
 
 ## License
 This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).

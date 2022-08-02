@@ -199,6 +199,7 @@
         "metadata": {
           "gas_limit": "0x7530",
           "gas_price": "0x5d21dba00",
+          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x5208",

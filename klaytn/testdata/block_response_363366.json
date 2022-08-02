@@ -160,6 +160,7 @@
         "metadata": {
           "gas_limit": "0x3d0900",
           "gas_price": "0x9502f9000",
+          "effective_gas_price": "0x9502f9000",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x395ef",
@@ -8281,6 +8282,7 @@
         "metadata": {
           "gas_limit": "0x3d0900",
           "gas_price": "0x9502f9000",
+          "effective_gas_price": "0x9502f9000",
           "receipt": {
             "contractAddress": "0x72e7845220483451e0b16e053f13dfdc3887bd40",
             "gasUsed": "0x369270",
@@ -10206,6 +10208,7 @@
         "metadata": {
           "gas_limit": "0x3d090",
           "gas_price": "0x50858c747",
+          "effective_gas_price": "0x50858c747",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x1810b",

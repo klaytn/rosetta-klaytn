@@ -85,6 +85,18 @@ run-testnet-offline:
 run-testnet-offline-m1:
 	docker run --platform linux/amd64 -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
 
+run-local-online:
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/klaytn-data:/data" -e "MODE=ONLINE" -e "NETWORK=LOCAL" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+
+run-local-online-m1:
+	docker run --platform linux/amd64 -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/klaytn-data:/data" -e "MODE=ONLINE" -e "NETWORK=LOCAL" -e "PORT=8080" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+
+run-local-offline:
+	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=LOCAL" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
+
+run-local-offline-m1:
+	docker run --platform linux/amd64 -d --rm -e "MODE=OFFLINE" -e "NETWORK=LOCAL" -e "PORT=8081" -p 8081:8081 rosetta-klaytn:latest
+
 run-mainnet-remote:
 	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 
@@ -97,6 +109,12 @@ run-testnet-remote:
 
 run-testnet-remote-m1:
 	docker run --platform linux/amd64 -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+
+run-local-remote:
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=LOCAL" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
+
+run-local-remote-m1:
+	docker run --platform linux/amd64 -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=LOCAL" -e "PORT=8080" -e "KEN=$(ken)" -p 8080:8080 -p 30303:30303 rosetta-klaytn:latest
 
 check-comments:
 	${GOLINT_INSTALL}

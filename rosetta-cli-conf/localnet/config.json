@@ -3,14 +3,14 @@
     "blockchain": "Klaytn",
     "network": "Local"
   },
-  "online_url": "http://localhost:10100",
+  "online_url": "http://localhost:8080",
   "data_directory": "cli-data-localnet",
   "http_timeout": 15,
   "max_retries": 15,
   "max_online_connections": 120,
   "max_sync_concurrency": 32,
   "tip_delay": 300,
-  "max_reorg_depth": 100,
+  "max_reorg_depth": 0,
   "log_configuration": false,
   "compression_disabled":true,
   "memory_limit_disabled":false,
@@ -92,9 +92,7 @@
     "historical_balance_disabled": false,
     "bootstrap_balances": "bootstrap_balances.json",
     "end_conditions": {
-      "reconciliation_coverage": {
-        "coverage": 0.95
-      }
+      "index": 100
     }
   }
 }
