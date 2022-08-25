@@ -19,8 +19,8 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/klaytn/klaytn/node/cn/tracers"
-	"io/ioutil"
 	"math/big"
+	"os"
 	"reflect"
 	"sort"
 	"strings"
@@ -94,7 +94,7 @@ func TestStatus_NotSyncing(t *testing.T) {
 	).Run(
 		func(args mock.Arguments) {
 			header := args.Get(1).(**types.Header)
-			file, err := ioutil.ReadFile("testdata/basic_header.json")
+			file, err := os.ReadFile("testdata/basic_header.json")
 			assert.NoError(t, err)
 
 			*header = new(types.Header)
@@ -129,7 +129,7 @@ func TestStatus_NotSyncing(t *testing.T) {
 		func(args mock.Arguments) {
 			info := args.Get(1).(*[]*p2p.PeerInfo)
 
-			file, err := ioutil.ReadFile("testdata/peers.json")
+			file, err := os.ReadFile("testdata/peers.json")
 			assert.NoError(t, err)
 
 			assert.NoError(t, json.Unmarshal(file, info))
@@ -200,7 +200,7 @@ func TestStatus_NotSyncing_SkipAdminCalls(t *testing.T) {
 	).Run(
 		func(args mock.Arguments) {
 			header := args.Get(1).(**types.Header)
-			file, err := ioutil.ReadFile("testdata/basic_header.json")
+			file, err := os.ReadFile("testdata/basic_header.json")
 			assert.NoError(t, err)
 
 			*header = new(types.Header)
@@ -273,7 +273,7 @@ func TestStatus_Syncing(t *testing.T) {
 	).Run(
 		func(args mock.Arguments) {
 			header := args.Get(1).(**types.Header)
-			file, err := ioutil.ReadFile("testdata/basic_header.json")
+			file, err := os.ReadFile("testdata/basic_header.json")
 			assert.NoError(t, err)
 
 			*header = new(types.Header)
@@ -292,7 +292,7 @@ func TestStatus_Syncing(t *testing.T) {
 	).Run(
 		func(args mock.Arguments) {
 			progress := args.Get(1).(*json.RawMessage)
-			file, err := ioutil.ReadFile("testdata/syncing_info.json")
+			file, err := os.ReadFile("testdata/syncing_info.json")
 			assert.NoError(t, err)
 
 			*progress = json.RawMessage(file)
@@ -310,7 +310,7 @@ func TestStatus_Syncing(t *testing.T) {
 		func(args mock.Arguments) {
 			info := args.Get(1).(*[]*p2p.PeerInfo)
 
-			file, err := ioutil.ReadFile("testdata/peers.json")
+			file, err := os.ReadFile("testdata/peers.json")
 			assert.NoError(t, err)
 
 			assert.NoError(t, json.Unmarshal(file, info))
@@ -384,7 +384,7 @@ func TestStatus_Syncing_SkipAdminCalls(t *testing.T) {
 	).Run(
 		func(args mock.Arguments) {
 			header := args.Get(1).(**types.Header)
-			file, err := ioutil.ReadFile("testdata/basic_header.json")
+			file, err := os.ReadFile("testdata/basic_header.json")
 			assert.NoError(t, err)
 
 			*header = new(types.Header)
@@ -403,7 +403,7 @@ func TestStatus_Syncing_SkipAdminCalls(t *testing.T) {
 	).Run(
 		func(args mock.Arguments) {
 			progress := args.Get(1).(*json.RawMessage)
-			file, err := ioutil.ReadFile("testdata/syncing_info.json")
+			file, err := os.ReadFile("testdata/syncing_info.json")
 			assert.NoError(t, err)
 
 			*progress = json.RawMessage(file)
@@ -465,7 +465,7 @@ func TestBalance(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*types.Header)
 
-			file, err := ioutil.ReadFile("testdata/basic_header.json")
+			file, err := os.ReadFile("testdata/basic_header.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -486,7 +486,7 @@ func TestBalance(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*account.AccountSerializer)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/account_balance_0xe63960c1c07a3041195ea1bd505f971b9f01e4e2.json",
 			)
 			assert.NoError(t, err)
@@ -547,7 +547,7 @@ func TestBalanceWithNotFoundAccount(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*types.Header)
 
-			file, err := ioutil.ReadFile("testdata/basic_header.json")
+			file, err := os.ReadFile("testdata/basic_header.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -622,7 +622,7 @@ func TestBalance_Historical_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*types.Header)
 
-			file, err := ioutil.ReadFile("testdata/basic_header.json")
+			file, err := os.ReadFile("testdata/basic_header.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -643,7 +643,7 @@ func TestBalance_Historical_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*account.AccountSerializer)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/account_balance_0xe63960c1c07a3041195ea1bd505f971b9f01e4e2.json",
 			)
 			assert.NoError(t, err)
@@ -709,7 +709,7 @@ func TestBalance_Historical_Index(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*types.Header)
 
-			file, err := ioutil.ReadFile("testdata/basic_header.json")
+			file, err := os.ReadFile("testdata/basic_header.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -730,7 +730,7 @@ func TestBalance_Historical_Index(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*account.AccountSerializer)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/account_balance_0xe63960c1c07a3041195ea1bd505f971b9f01e4e2.json",
 			)
 			assert.NoError(t, err)
@@ -866,7 +866,7 @@ func TestCall_GetBlockByNumber(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_10992.json")
+			file, err := os.ReadFile("testdata/block_10992.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -874,7 +874,7 @@ func TestCall_GetBlockByNumber(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_10992.json")
+	correctRaw, err := os.ReadFile("testdata/block_10992.json")
 	assert.NoError(t, err)
 	var correct map[string]interface{}
 	assert.NoError(t, json.Unmarshal(correctRaw, &correct))
@@ -945,7 +945,7 @@ func TestCall_GetTransactionReceipt(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/call_0x3ee9ad0bd4e344e5492fdb5e3446534d6a3f815278979fe7c75449cc2ab6eee8.json",
 			)
 			assert.NoError(t, err)
@@ -1027,7 +1027,7 @@ func TestCall_Call(t *testing.T) {
 			r := args.Get(1).(*string)
 
 			var expected map[string]interface{}
-			file, err := ioutil.ReadFile("testdata/call_balance_11408349.json")
+			file, err := os.ReadFile("testdata/call_balance_11408349.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, &expected)
@@ -1037,7 +1037,7 @@ func TestCall_Call(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/call_balance_11408349.json")
+	correctRaw, err := os.ReadFile("testdata/call_balance_11408349.json")
 	assert.NoError(t, err)
 	var correct map[string]interface{}
 	assert.NoError(t, json.Unmarshal(correctRaw, &correct))
@@ -1117,7 +1117,7 @@ func TestCall_EstimateGas(t *testing.T) {
 			r := args.Get(1).(*string)
 
 			var expected map[string]interface{}
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/estimate_gas_0xaD6D458402F60fD3Bd25163575031ACDce07538D.json",
 			)
 			assert.NoError(t, err)
@@ -1129,7 +1129,7 @@ func TestCall_EstimateGas(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile(
+	correctRaw, err := os.ReadFile(
 		"testdata/estimate_gas_0xaD6D458402F60fD3Bd25163575031ACDce07538D.json",
 	)
 	assert.NoError(t, err)
@@ -1236,7 +1236,7 @@ func TestBlock_Current(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_10992.json")
+			file, err := os.ReadFile("testdata/block_10992.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -1255,7 +1255,7 @@ func TestBlock_Current(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0xb83667486a9d55238120b71b0f2e0e60e314cf25bb32020a813c6281dd43211e.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -1276,7 +1276,7 @@ func TestBlock_Current(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -1296,7 +1296,7 @@ func TestBlock_Current(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -1304,7 +1304,7 @@ func TestBlock_Current(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_10992.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_10992.json")
 	assert.NoError(t, err)
 	var correct *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correct))
@@ -1344,7 +1344,7 @@ func TestBlock_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_10992.json")
+			file, err := os.ReadFile("testdata/block_10992.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -1363,7 +1363,7 @@ func TestBlock_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0xb83667486a9d55238120b71b0f2e0e60e314cf25bb32020a813c6281dd43211e.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -1384,7 +1384,7 @@ func TestBlock_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -1404,7 +1404,7 @@ func TestBlock_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -1412,7 +1412,7 @@ func TestBlock_Hash(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_10992.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_10992.json")
 	assert.NoError(t, err)
 	var correct *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correct))
@@ -1456,7 +1456,7 @@ func TestBlock_Index(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_10992.json")
+			file, err := os.ReadFile("testdata/block_10992.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -1475,7 +1475,7 @@ func TestBlock_Index(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0xb83667486a9d55238120b71b0f2e0e60e314cf25bb32020a813c6281dd43211e.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -1496,7 +1496,7 @@ func TestBlock_Index(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -1516,7 +1516,7 @@ func TestBlock_Index(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -1524,7 +1524,7 @@ func TestBlock_Index(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_10992.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_10992.json")
 	assert.NoError(t, err)
 	var correct *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correct))
@@ -1566,14 +1566,14 @@ func TestBlock_FirstBlock(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_0.json")
+			file, err := os.ReadFile("testdata/block_0.json")
 			assert.NoError(t, err)
 
 			*r = file
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_0.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_0.json")
 	assert.NoError(t, err)
 	var correct *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correct))
@@ -1644,7 +1644,7 @@ func TestTransaction_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/transaction_0x99a7de4441bcac267741a269aecf4a498fcd6b33bbe442955eac1d17b74ab547.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -1666,7 +1666,7 @@ func TestTransaction_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(**types.Header)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_0x03cb20a342485a5bed95291b8e03fab32f5309ca69d342ef8884213b90bd454f.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -1689,7 +1689,7 @@ func TestTransaction_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(**types.Receipt)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/tx_receipt_0x99a7de4441bcac267741a269aecf4a498fcd6b33bbe442955eac1d17b74ab547.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -1713,7 +1713,7 @@ func TestTransaction_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/transaction_trace_0x99a7de4441bcac267741a269aecf4a498fcd6b33bbe442955eac1d17b74ab547.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -1734,7 +1734,7 @@ func TestTransaction_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_0x03cb20a342485a5bed95291b8e03fab32f5309ca69d342ef8884213b90bd454f.json",
 			) // nolint:lll
 			assert.NoError(t, err)
@@ -1756,7 +1756,7 @@ func TestTransaction_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -1776,7 +1776,7 @@ func TestTransaction_Hash(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -1784,7 +1784,7 @@ func TestTransaction_Hash(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile(
+	correctRaw, err := os.ReadFile(
 		"testdata/transaction_response_0x99a7de4441bcac267741a269aecf4a498fcd6b33bbe442955eac1d17b74ab547.json",
 	) // nolint
 	assert.NoError(t, err)
@@ -1835,7 +1835,7 @@ func TestBlock_2500994(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_2500994.json")
+			file, err := os.ReadFile("testdata/block_2500994.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -1853,7 +1853,7 @@ func TestBlock_2500994(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*[]*types.Receipt)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_receipts_0x2c1792f411ec54ef09d0c93d71133cac48a88da91c7fc0f620a451995f9169f8.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -1876,7 +1876,7 @@ func TestBlock_2500994(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0x2c1792f411ec54ef09d0c93d71133cac48a88da91c7fc0f620a451995f9169f8.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -1897,7 +1897,7 @@ func TestBlock_2500994(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_2500994.json")
+			file, err := os.ReadFile("testdata/block_2500994.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -1917,7 +1917,7 @@ func TestBlock_2500994(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -1937,7 +1937,7 @@ func TestBlock_2500994(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -1945,7 +1945,7 @@ func TestBlock_2500994(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_2500994.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_2500994.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
@@ -1992,7 +1992,7 @@ func TestBlock_87561170(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_87561170.json")
+			file, err := os.ReadFile("testdata/block_87561170.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -2011,7 +2011,7 @@ func TestBlock_87561170(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0x5f7c9debf1b2f7fc0beefb2478acfb331a271e5f8c42a971040d0ea19e9acfa3.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -2031,7 +2031,7 @@ func TestBlock_87561170(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*[]*types.Receipt)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_receipts_0x5f7c9debf1b2f7fc0beefb2478acfb331a271e5f8c42a971040d0ea19e9acfa3.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -2053,7 +2053,7 @@ func TestBlock_87561170(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_87561170.json")
+			file, err := os.ReadFile("testdata/block_87561170.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2073,7 +2073,7 @@ func TestBlock_87561170(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2093,7 +2093,7 @@ func TestBlock_87561170(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2101,7 +2101,7 @@ func TestBlock_87561170(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_87561170.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_87561170.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
@@ -2148,7 +2148,7 @@ func TestBlock_363415(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_363415.json")
+			file, err := os.ReadFile("testdata/block_363415.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -2167,7 +2167,7 @@ func TestBlock_363415(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0x61c3e87c8a2b7f83cba5a03d027fbabeefbc7cc4653a50c2277d7047a1dfbe9b.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -2187,7 +2187,7 @@ func TestBlock_363415(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*[]*types.Receipt)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_receipts_0x61c3e87c8a2b7f83cba5a03d027fbabeefbc7cc4653a50c2277d7047a1dfbe9b.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -2209,7 +2209,7 @@ func TestBlock_363415(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_363415.json")
+			file, err := os.ReadFile("testdata/block_363415.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2229,7 +2229,7 @@ func TestBlock_363415(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2249,7 +2249,7 @@ func TestBlock_363415(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2257,7 +2257,7 @@ func TestBlock_363415(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_363415.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_363415.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
@@ -2304,7 +2304,7 @@ func TestBlock_363753(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_363753.json")
+			file, err := os.ReadFile("testdata/block_363753.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -2323,7 +2323,7 @@ func TestBlock_363753(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0x8d244c9940f6d54df863fa2abfceb14a2a77f5e61f885dab780e0158435ccc38.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -2343,7 +2343,7 @@ func TestBlock_363753(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*[]*types.Receipt)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_receipts_0x8d244c9940f6d54df863fa2abfceb14a2a77f5e61f885dab780e0158435ccc38.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -2365,7 +2365,7 @@ func TestBlock_363753(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_363753.json")
+			file, err := os.ReadFile("testdata/block_363753.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2385,7 +2385,7 @@ func TestBlock_363753(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2405,7 +2405,7 @@ func TestBlock_363753(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2413,7 +2413,7 @@ func TestBlock_363753(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_363753.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_363753.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
@@ -2435,7 +2435,7 @@ func TestBlock_363753(t *testing.T) {
 
 	// Additional reward distribution check
 	var gov map[string]interface{}
-	file, err := ioutil.ReadFile("testdata/governance.json")
+	file, err := os.ReadFile("testdata/governance.json")
 	assert.NoError(t, err)
 	err = json.Unmarshal(file, &gov)
 	assert.NoError(t, err)
@@ -2446,7 +2446,7 @@ func TestBlock_363753(t *testing.T) {
 	assert.True(t, ok)
 
 	var b map[string]interface{}
-	file, err = ioutil.ReadFile("testdata/block_363753.json")
+	file, err = os.ReadFile("testdata/block_363753.json")
 	assert.NoError(t, err)
 	err = json.Unmarshal(file, &b)
 	assert.NoError(t, err)
@@ -2459,7 +2459,7 @@ func TestBlock_363753(t *testing.T) {
 		"0x80fb7e6bfa8dae67cf79f21b9e68c5af727ba52f3ab1e5a5be5c8048a9758f56",
 	}
 	for i, hash := range txs {
-		file, err := ioutil.ReadFile(
+		file, err := os.ReadFile(
 			"testdata/tx_receipt_" + hash + ".json",
 		) // nolint
 		assert.NoError(t, err)
@@ -2556,7 +2556,7 @@ func TestBlock_468179(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_468179.json")
+			file, err := os.ReadFile("testdata/block_468179.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -2575,7 +2575,7 @@ func TestBlock_468179(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0x4fa7e8fc07281539a7aecc0a045ced15916ed28f0605bd3cdab68f22cb5415c2.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -2595,7 +2595,7 @@ func TestBlock_468179(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*[]*types.Receipt)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_receipts_0x4fa7e8fc07281539a7aecc0a045ced15916ed28f0605bd3cdab68f22cb5415c2.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -2617,7 +2617,7 @@ func TestBlock_468179(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_468179.json")
+			file, err := os.ReadFile("testdata/block_468179.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2637,7 +2637,7 @@ func TestBlock_468179(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2657,7 +2657,7 @@ func TestBlock_468179(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2665,7 +2665,7 @@ func TestBlock_468179(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_468179.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_468179.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
@@ -2712,7 +2712,7 @@ func TestBlock_363366(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_363366.json")
+			file, err := os.ReadFile("testdata/block_363366.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -2731,7 +2731,7 @@ func TestBlock_363366(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0xe2cecd530e305403af6184100d1cca6cbfa07ede30d6c01800aea8412691c0c2.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -2751,7 +2751,7 @@ func TestBlock_363366(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*[]*types.Receipt)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_receipts_0xe2cecd530e305403af6184100d1cca6cbfa07ede30d6c01800aea8412691c0c2.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -2773,7 +2773,7 @@ func TestBlock_363366(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_363366.json")
+			file, err := os.ReadFile("testdata/block_363366.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2793,7 +2793,7 @@ func TestBlock_363366(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2813,7 +2813,7 @@ func TestBlock_363366(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -2821,7 +2821,7 @@ func TestBlock_363366(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_363366.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_363366.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
@@ -2843,7 +2843,7 @@ func TestBlock_363366(t *testing.T) {
 
 	// Additional reward distribution check
 	var gov map[string]interface{}
-	file, err := ioutil.ReadFile("testdata/governance.json")
+	file, err := os.ReadFile("testdata/governance.json")
 	assert.NoError(t, err)
 	err = json.Unmarshal(file, &gov)
 	assert.NoError(t, err)
@@ -2854,7 +2854,7 @@ func TestBlock_363366(t *testing.T) {
 	assert.True(t, ok)
 
 	var b map[string]interface{}
-	file, err = ioutil.ReadFile("testdata/block_363366.json")
+	file, err = os.ReadFile("testdata/block_363366.json")
 	assert.NoError(t, err)
 	err = json.Unmarshal(file, &b)
 	assert.NoError(t, err)
@@ -2868,7 +2868,7 @@ func TestBlock_363366(t *testing.T) {
 		"0xf8b84ff00db596c9db15de1a44c939cce36c0dfd60ef6171db6951b11d7d015d",
 	}
 	for i, hash := range txs {
-		file, err := ioutil.ReadFile(
+		file, err := os.ReadFile(
 			"testdata/tx_receipt_" + hash + ".json",
 		) // nolint
 		assert.NoError(t, err)
@@ -2965,7 +2965,7 @@ func TestBlock_468194(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_468194.json")
+			file, err := os.ReadFile("testdata/block_468194.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -2984,7 +2984,7 @@ func TestBlock_468194(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0xd7d24fe1cc82182ba7b8af19c102d54b65e5c14c131ccc24462859df9480a54e.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -3004,7 +3004,7 @@ func TestBlock_468194(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*[]*types.Receipt)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_receipts_0xd7d24fe1cc82182ba7b8af19c102d54b65e5c14c131ccc24462859df9480a54e.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -3026,7 +3026,7 @@ func TestBlock_468194(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_468194.json")
+			file, err := os.ReadFile("testdata/block_468194.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3046,7 +3046,7 @@ func TestBlock_468194(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3066,7 +3066,7 @@ func TestBlock_468194(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3074,7 +3074,7 @@ func TestBlock_468194(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_468194.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_468194.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
@@ -3121,7 +3121,7 @@ func TestBlock_1078(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_1078.json")
+			file, err := os.ReadFile("testdata/block_1078.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -3140,7 +3140,7 @@ func TestBlock_1078(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0x9ad608123d4c896c57a7dbdd7560873eb988a083cd43401f8be157700c268d68.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -3159,7 +3159,7 @@ func TestBlock_1078(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*[]*types.Receipt)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_receipts_0x9ad608123d4c896c57a7dbdd7560873eb988a083cd43401f8be157700c268d68.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -3181,7 +3181,7 @@ func TestBlock_1078(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_1078.json")
+			file, err := os.ReadFile("testdata/block_1078.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3201,7 +3201,7 @@ func TestBlock_1078(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3221,7 +3221,7 @@ func TestBlock_1078(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3229,7 +3229,7 @@ func TestBlock_1078(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_1078.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_1078.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
@@ -3337,7 +3337,7 @@ func TestSendTransaction(t *testing.T) {
 		nil,
 	).Once()
 
-	rawTx, err := ioutil.ReadFile("testdata/submitted_tx.json")
+	rawTx, err := os.ReadFile("testdata/submitted_tx.json")
 	assert.NoError(t, err)
 
 	tx := new(types.Transaction)
@@ -3389,7 +3389,7 @@ func TestGetMempool(t *testing.T) {
 			r, ok := args.Get(1).(*txPoolContentResponse)
 			assert.True(t, ok)
 
-			file, err := ioutil.ReadFile("testdata/txpool_content.json")
+			file, err := os.ReadFile("testdata/txpool_content.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3442,7 +3442,7 @@ func TestBlock_335049(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_335049.json")
+			file, err := os.ReadFile("testdata/block_335049.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -3461,7 +3461,7 @@ func TestBlock_335049(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -3480,7 +3480,7 @@ func TestBlock_335049(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*[]*types.Receipt)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_receipts_0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -3502,7 +3502,7 @@ func TestBlock_335049(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_335049.json")
+			file, err := os.ReadFile("testdata/block_335049.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3522,7 +3522,7 @@ func TestBlock_335049(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance.json")
+			file, err := os.ReadFile("testdata/governance.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3542,7 +3542,7 @@ func TestBlock_335049(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3550,7 +3550,7 @@ func TestBlock_335049(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_335049.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_335049.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
@@ -3598,7 +3598,7 @@ func TestBlock_1665(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_1665.json")
+			file, err := os.ReadFile("testdata/block_1665.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -3617,7 +3617,7 @@ func TestBlock_1665(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0x0f7c5e802a8ebf79611a04b8780bb9c8bc1c00f41c4f829f470b7b6c8fb0d5a6.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -3636,7 +3636,7 @@ func TestBlock_1665(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*[]*types.Receipt)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_receipts_0x0f7c5e802a8ebf79611a04b8780bb9c8bc1c00f41c4f829f470b7b6c8fb0d5a6.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -3657,7 +3657,7 @@ func TestBlock_1665(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/block_1665.json")
+			file, err := os.ReadFile("testdata/block_1665.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3677,7 +3677,7 @@ func TestBlock_1665(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance_1665.json")
+			file, err := os.ReadFile("testdata/governance_1665.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3697,7 +3697,7 @@ func TestBlock_1665(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo.json")
+			file, err := os.ReadFile("testdata/stakingInfo.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3705,7 +3705,7 @@ func TestBlock_1665(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_1665.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_1665.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))
@@ -3753,7 +3753,7 @@ func TestBlock_4219(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile("testdata/block_4219.json")
+			file, err := os.ReadFile("testdata/block_4219.json")
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
@@ -3772,7 +3772,7 @@ func TestBlock_4219(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*json.RawMessage)
 
-			file, err := ioutil.ReadFile(
+			file, err := os.ReadFile(
 				"testdata/block_trace_0x8870ecb298ae34ef59f53a240d6dd80f07ccc8fa42065cc872b2a1ed85a1bb93.json",
 			) // nolint
 			assert.NoError(t, err)
@@ -3792,7 +3792,7 @@ func TestBlock_4219(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*map[string]interface{})
 
-			file, err := ioutil.ReadFile("testdata/governance_1665.json")
+			file, err := os.ReadFile("testdata/governance_1665.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3812,7 +3812,7 @@ func TestBlock_4219(t *testing.T) {
 		func(args mock.Arguments) {
 			r := args.Get(1).(*reward.StakingInfo)
 
-			file, err := ioutil.ReadFile("testdata/stakingInfo_4219.json")
+			file, err := os.ReadFile("testdata/stakingInfo_4219.json")
 			assert.NoError(t, err)
 
 			err = json.Unmarshal(file, r)
@@ -3820,7 +3820,7 @@ func TestBlock_4219(t *testing.T) {
 		},
 	).Once()
 
-	correctRaw, err := ioutil.ReadFile("testdata/block_response_4219.json")
+	correctRaw, err := os.ReadFile("testdata/block_response_4219.json")
 	assert.NoError(t, err)
 	var correctResp *RosettaTypes.BlockResponse
 	assert.NoError(t, json.Unmarshal(correctRaw, &correctResp))

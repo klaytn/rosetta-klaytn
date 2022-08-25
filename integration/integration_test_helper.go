@@ -19,7 +19,6 @@ import (
 	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -128,7 +127,7 @@ func getAccountFromCliConfig(t *testing.T) {
 	}
 	path = filepath.Join(path, "../rosetta-cli-conf/"+networkName+"/config.json")
 
-	cliConfFile, err := ioutil.ReadFile(path)
+	cliConfFile, err := os.ReadFile(path)
 	assert.Nil(t, err)
 	var cliConf map[string]interface{}
 	err = json.Unmarshal(cliConfFile, &cliConf)
