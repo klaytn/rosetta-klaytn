@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/klaytn/klaytn/node/cn/tracers"
 	"log"
 	"math/big"
 	"net/http"
@@ -35,7 +36,6 @@ import (
 	"github.com/klaytn/klaytn/common"
 	"github.com/klaytn/klaytn/networks/p2p"
 	"github.com/klaytn/klaytn/networks/rpc"
-	"github.com/klaytn/klaytn/node/cn"
 	"github.com/klaytn/klaytn/params"
 	"github.com/klaytn/klaytn/reward"
 	"github.com/klaytn/klaytn/rlp"
@@ -66,7 +66,7 @@ const (
 // Client borrows HEAVILY from https://github.com/klaytn/klaytn/blob/dev/client/klay_client.go
 type Client struct {
 	p  *params.ChainConfig
-	tc *cn.TraceConfig
+	tc *tracers.TraceConfig
 
 	c JSONRPC
 

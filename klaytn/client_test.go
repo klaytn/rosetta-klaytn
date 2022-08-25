@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/klaytn/klaytn/node/cn/tracers"
 	"io/ioutil"
 	"math/big"
 	"reflect"
@@ -30,7 +31,6 @@ import (
 	"github.com/klaytn/klaytn/blockchain/types/account"
 	"github.com/klaytn/klaytn/common"
 	"github.com/klaytn/klaytn/networks/p2p"
-	"github.com/klaytn/klaytn/node/cn"
 	"github.com/klaytn/klaytn/params"
 	"github.com/klaytn/klaytn/reward"
 
@@ -1203,9 +1203,9 @@ func TestCall_InvalidMethod(t *testing.T) {
 	mockJSONRPC.AssertExpectations(t)
 }
 
-func testTraceConfig() *cn.TraceConfig {
+func testTraceConfig() *tracers.TraceConfig {
 	fct := "fastCallTracer"
-	return &cn.TraceConfig{
+	return &tracers.TraceConfig{
 		Timeout: &tracerTimeout,
 		Tracer:  &fct,
 	}

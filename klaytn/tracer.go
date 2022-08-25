@@ -18,7 +18,7 @@
 package klaytn
 
 import (
-	"github.com/klaytn/klaytn/node/cn"
+	"github.com/klaytn/klaytn/node/cn/tracers"
 )
 
 // convert raw eth data from client to rosetta
@@ -27,10 +27,10 @@ var (
 	tracerTimeout = "120s"
 )
 
-func loadTraceConfig() *cn.TraceConfig {
+func loadTraceConfig() *tracers.TraceConfig {
 	// Use fastCallTracer instead of call_tracer.js
 	fct := "fastCallTracer"
-	return &cn.TraceConfig{
+	return &tracers.TraceConfig{
 		Timeout: &tracerTimeout,
 		Tracer:  &fct,
 	}
