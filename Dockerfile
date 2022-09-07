@@ -48,7 +48,7 @@ FROM golang-builder as ken-builder
 # VERSION: klaytn v.1.8.3-rc.1
 RUN git clone https://github.com/klaytn/klaytn \
   && cd klaytn \
-  && git checkout 6a8902f34346d188f57a4140e24936669a387bb2
+  && git checkout v1.9.1
 
 RUN cd klaytn \
   && make ken
