@@ -66,7 +66,7 @@ RUN cd src \
 
 RUN mv src/rosetta-klaytn /app/rosetta-klaytn \
   && mkdir /app/klaytn \
-  && mv src/klaytn/ken.toml /app/klaytn/ken.toml \
+  && mv src/klaytn/ken.yaml /app/klaytn/ken.yaml \
   && rm -rf src
 
 ## Build Final Image
