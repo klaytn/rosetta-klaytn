@@ -1,0 +1,10 @@
+syncmode: full
+datadir: /data
+rpcaddr: 0.0.0.0
+rpcport: 8551
+rpcvhosts: \*
+rpcapi: debug,admin,txpool,klay,governance
+ipcpath: ''
+rpcreadtimeout: 120000000000
+rpcwritetimeout: 120000000000
+rpcidletimeout: 120000000000
