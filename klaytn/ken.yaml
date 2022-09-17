@@ -1,5 +1,6 @@
 syncmode: full
 datadir: /data
+rpc: true
 rpcaddr: 0.0.0.0
 rpcport: 8551
 rpcvhosts: \*

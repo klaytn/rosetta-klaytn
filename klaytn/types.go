@@ -108,7 +108,7 @@ const (
 	TransferGasLimit = int64(21000) //nolint:gomnd
 
 	// KlaytnNodeArguments are the arguments to start a klaytn node instance.
-	KlaytnNodeArguments = `--conf=/app/klaytn/ken.yaml --gcmode=archive`
+	KlaytnNodeArguments = `--conf /app/klaytn/ken.yaml --gcmode archive --rpc --rpcapi debug,admin,txpool,klay,governance --rpcport 8551`
 
 	// IncludeMempoolCoins does not apply to rosetta-klaytn as it is not UTXO-based.
 	IncludeMempoolCoins = false
