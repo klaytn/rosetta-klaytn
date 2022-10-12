@@ -4,7 +4,7 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/klaytn/klaytn v1.9.1
 	github.com/klaytn/rosetta-sdk-go-klaytn v0.7.10
-	github.com/spf13/cobra v1.5.0
+	github.com/spf13/cobra v1.6.0
 	github.com/stretchr/testify v1.8.0
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 )
