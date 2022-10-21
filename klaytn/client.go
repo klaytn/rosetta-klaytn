@@ -1035,34 +1035,6 @@ func createSuccessFeeOperation(idx int64, account string, amount *big.Int) *Rose
 	}
 }
 
-func createSuccessFeeOperationWithRelatedOperations(
-	idx int64,
-	relatedOperationsIdx []int64,
-	account string,
-	amount *big.Int,
-) *RosettaTypes.Operation { // nolint
-	op := RosettaTypes.Operation{
-		OperationIdentifier: &RosettaTypes.OperationIdentifier{
-			Index: idx,
-		},
-		RelatedOperations: []*RosettaTypes.OperationIdentifier{},
-		Type:              FeeOpType,
-		Status:            RosettaTypes.String(SuccessStatus),
-		Account: &RosettaTypes.AccountIdentifier{
-			Address: MustChecksum(account),
-		},
-		Amount: &RosettaTypes.Amount{
-			Value:    amount.String(),
-			Currency: Currency,
-		},
-	}
-	for _, rid := range relatedOperationsIdx {
-		ridOp := RosettaTypes.OperationIdentifier{Index: rid}
-		op.RelatedOperations = append(op.RelatedOperations, &ridOp)
-	}
-	return &op
-}
-
 // feeOps returns the transaction's fee operations.
 // In the case of Klaytn, depending on the transaction type, the address where the fee is paid may
 // be different. In addition, transaction fees must be allocated to CN, KIR, and KGF addresses
