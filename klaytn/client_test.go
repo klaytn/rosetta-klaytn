@@ -3543,6 +3543,7 @@ func TestBlock_335049(t *testing.T) {
 
 	// Ensure types match
 	jsonResp, err := jsonifyBlock(resp)
+	assert.NoError(t, err)
 	assert.Equal(t, correctResp.Block, jsonResp)
 
 	mockJSONRPC.AssertExpectations(t)
