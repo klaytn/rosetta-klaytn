@@ -18,13 +18,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/klaytn/klaytn/node/cn/tracers"
 	"math/big"
 	"os"
 	"reflect"
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/klaytn/klaytn/node/cn/tracers"
 
 	"github.com/klaytn/klaytn"
 	"github.com/klaytn/klaytn/blockchain/types"
@@ -2510,18 +2511,6 @@ func TestBlock_363753(t *testing.T) {
 			r, ok = new(big.Int).SetString(tx.Operations[2].Amount.Value, 10)
 			assert.True(t, ok)
 			kirReward = new(big.Int).Add(kirReward, r)
-		} else {
-			r, ok := new(big.Int).SetString(tx.Operations[1].Amount.Value, 10)
-			assert.True(t, ok)
-			cnReward = new(big.Int).Add(cnReward, r)
-
-			r, ok = new(big.Int).SetString(tx.Operations[2].Amount.Value, 10)
-			assert.True(t, ok)
-			kgfReward = new(big.Int).Add(kgfReward, r)
-
-			r, ok = new(big.Int).SetString(tx.Operations[3].Amount.Value, 10)
-			assert.True(t, ok)
-			kirReward = new(big.Int).Add(kirReward, r)
 		}
 	}
 
@@ -2919,18 +2908,6 @@ func TestBlock_363366(t *testing.T) {
 			r, ok = new(big.Int).SetString(tx.Operations[2].Amount.Value, 10)
 			assert.True(t, ok)
 			kirReward = new(big.Int).Add(kirReward, r)
-		} else {
-			r, ok := new(big.Int).SetString(tx.Operations[1].Amount.Value, 10)
-			assert.True(t, ok)
-			cnReward = new(big.Int).Add(cnReward, r)
-
-			r, ok = new(big.Int).SetString(tx.Operations[2].Amount.Value, 10)
-			assert.True(t, ok)
-			kgfReward = new(big.Int).Add(kgfReward, r)
-
-			r, ok = new(big.Int).SetString(tx.Operations[3].Amount.Value, 10)
-			assert.True(t, ok)
-			kirReward = new(big.Int).Add(kirReward, r)
 		}
 	}
 
@@ -3089,6 +3066,7 @@ func TestBlock_468194(t *testing.T) {
 
 	// Ensure types match
 	jsonResp, err := jsonifyBlock(resp)
+
 	assert.NoError(t, err)
 	assert.Equal(t, correctResp.Block, jsonResp)
 
@@ -3565,8 +3543,6 @@ func TestBlock_335049(t *testing.T) {
 
 	// Ensure types match
 	jsonResp, err := jsonifyBlock(resp)
-
-	assert.NoError(t, err)
 	assert.Equal(t, correctResp.Block, jsonResp)
 
 	mockJSONRPC.AssertExpectations(t)
