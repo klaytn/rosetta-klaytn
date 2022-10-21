@@ -25,7 +25,7 @@
               "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
             },
             "amount": {
-              "value": "3264000000000000000",
+              "value": "3363324268000000000",
               "currency": {
                 "symbol": "KLAY",
                 "decimals": 18
@@ -42,7 +42,7 @@
               "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
             },
             "amount": {
-              "value": "5184000000000000000",
+              "value": "5341750308000000000",
               "currency": {
                 "symbol": "KLAY",
                 "decimals": 18
@@ -59,7 +59,7 @@
               "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
             },
             "amount": {
-              "value": "1152000000000000000",
+              "value": "1187055624000000000",
               "currency": {
                 "symbol": "KLAY",
                 "decimals": 18
@@ -89,96 +89,30 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 1
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "496408500000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "788413500000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "175203000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0xf4240",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0xe421",
             "logs": [
               {
                 "address": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "logIndex": "0x0",
+                "removed": false,
                 "topics": [
                   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
                   "0x00000000000000000000000024b144c7128fde8343c0b3c1330c013490214d7a"
                 ],
-                "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0xaf8df8a2aaa635a4267c586fe326cfb23690b79e36adb91c903aa7bb498a6e4a",
-                "transactionIndex": "0x0",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0x0",
-                "removed": false
+                "transactionIndex": "0x0"
               }
             ],
             "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000010000000000080000000000000000000000000000000000000000000000000000000000000000000020000000000008000000000000000000000100000000000000000000000000002000000000000010000000000000000000000000000000000000000000004000000000000000000000000000000000400000000000000000000000000",
@@ -186,15 +120,15 @@
             "transactionHash": "0xaf8df8a2aaa635a4267c586fe326cfb23690b79e36adb91c903aa7bb498a6e4a"
           },
           "trace": {
-            "type": "CALL",
             "from": "0x0f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
-            "to": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
-            "value": "0x0",
-            "gasUsed": "0xe421",
             "gas": "0xf4240",
+            "gasUsed": "0xe421",
             "input": "0xa9059cbb00000000000000000000000024b144c7128fde8343c0b3c1330c013490214d7a00000000000000000000000000",
             "output": "0x0000000000000000000000000000000000000000000000000000000000000001",
-            "time": "172.096µs"
+            "time": "172.096µs",
+            "to": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
+            "type": "CALL",
+            "value": "0x0"
           }
         }
       },
@@ -219,78 +153,12 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 1
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "178500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "283500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "63000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0xf4240",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x5208",
@@ -300,13 +168,13 @@
             "transactionHash": "0x12258648f1b94289b8980b5b97d3724977195e39930f482271aeaa7f025f85d8"
           },
           "trace": {
-            "type": "CALL",
             "from": "0x0f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
-            "to": "0xac73948ae4f92eab25dd08965b2038588c5cbabf",
-            "value": "0x0",
             "gas": "0xf4240",
             "input": "0x",
-            "output": "0x"
+            "output": "0x",
+            "to": "0xac73948ae4f92eab25dd08965b2038588c5cbabf",
+            "type": "CALL",
+            "value": "0x0"
           }
         }
       },
@@ -331,78 +199,12 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 1
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "178500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "283500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "63000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0xf4240",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x5208",
@@ -412,13 +214,13 @@
             "transactionHash": "0xad7a6040410e8538134b7a919c870ed5471a04837255dfae1eeda0039d713687"
           },
           "trace": {
-            "type": "CALL",
             "from": "0x0f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
-            "to": "0x00106dd513507e41906901edc893cc18e1557e80",
-            "value": "0x0",
             "gas": "0xf4240",
             "input": "0x",
-            "output": "0x"
+            "output": "0x",
+            "to": "0x00106dd513507e41906901edc893cc18e1557e80",
+            "type": "CALL",
+            "value": "0x0"
           }
         }
       },
@@ -448,72 +250,6 @@
             "operation_identifier": {
               "index": 1
             },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "178500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "283500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "63000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
             "type": "CALL",
             "status": "SUCCESS",
             "account": {
@@ -529,11 +265,11 @@
           },
           {
             "operation_identifier": {
-              "index": 5
+              "index": 2
             },
             "related_operations": [
               {
-                "index": 4
+                "index": 1
               }
             ],
             "type": "CALL",
@@ -551,9 +287,9 @@
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x5208",
@@ -594,72 +330,6 @@
             "operation_identifier": {
               "index": 1
             },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "263500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "418500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "93000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
             "type": "CALL",
             "status": "SUCCESS",
             "account": {
@@ -675,11 +345,11 @@
           },
           {
             "operation_identifier": {
-              "index": 5
+              "index": 2
             },
             "related_operations": [
               {
-                "index": 4
+                "index": 1
               }
             ],
             "type": "CALL",
@@ -697,9 +367,9 @@
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x7918",
@@ -757,81 +427,6 @@
             "operation_identifier": {
               "index": 2
             },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "306000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "486000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "108000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 5
-            },
             "type": "CALL",
             "status": "SUCCESS",
             "account": {
@@ -847,11 +442,11 @@
           },
           {
             "operation_identifier": {
-              "index": 6
+              "index": 3
             },
             "related_operations": [
               {
-                "index": 5
+                "index": 2
               }
             ],
             "type": "CALL",
@@ -869,9 +464,9 @@
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x8ca0",
@@ -912,72 +507,6 @@
             "operation_identifier": {
               "index": 1
             },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "182750000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "290250000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "64500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
             "type": "CALL",
             "status": "SUCCESS",
             "account": {
@@ -993,11 +522,11 @@
           },
           {
             "operation_identifier": {
-              "index": 5
+              "index": 2
             },
             "related_operations": [
               {
-                "index": 4
+                "index": 1
               }
             ],
             "type": "CALL",
@@ -1015,9 +544,9 @@
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x53fc",
@@ -1058,72 +587,6 @@
             "operation_identifier": {
               "index": 1
             },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "267750000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "425250000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "94500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
             "type": "CALL",
             "status": "SUCCESS",
             "account": {
@@ -1139,11 +602,11 @@
           },
           {
             "operation_identifier": {
-              "index": 5
+              "index": 2
             },
             "related_operations": [
               {
-                "index": 4
+                "index": 1
               }
             ],
             "type": "CALL",
@@ -1161,9 +624,9 @@
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x7b0c",
@@ -1221,81 +684,6 @@
             "operation_identifier": {
               "index": 2
             },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "310250000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "492750000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "109500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 5
-            },
             "type": "CALL",
             "status": "SUCCESS",
             "account": {
@@ -1311,11 +699,11 @@
           },
           {
             "operation_identifier": {
-              "index": 6
+              "index": 3
             },
             "related_operations": [
               {
-                "index": 5
+                "index": 2
               }
             ],
             "type": "CALL",
@@ -1333,9 +721,9 @@
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x8e94",
@@ -1371,78 +759,12 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 1
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "178500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "283500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "63000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x5208",
@@ -1478,78 +800,12 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 1
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "263500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "418500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "93000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x7918",
@@ -1602,87 +858,12 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "306000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "486000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "108000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x8ca0",
@@ -1723,72 +904,6 @@
             "operation_identifier": {
               "index": 1
             },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "30740828000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "48823668000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "10849704000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
             "type": "CREATE",
             "status": "SUCCESS",
             "account": {
@@ -1797,11 +912,11 @@
           },
           {
             "operation_identifier": {
-              "index": 5
+              "index": 2
             },
             "related_operations": [
               {
-                "index": 4
+                "index": 1
               }
             ],
             "type": "CREATE",
@@ -1812,55 +927,55 @@
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x5f5e100",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": "0x5c12f41766335913a89bd11824afe728f0f349ae",
             "gasUsed": "0x372f38",
             "logs": [
               {
                 "address": "0x5c12f41766335913a89bd11824afe728f0f349ae",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x",
+                "logIndex": "0x1",
+                "removed": false,
                 "topics": [
                   "0x6ae172837ea30b801fbfcdd4108aa1d5bf8ff775444fd70256b44e6bf3dfc3f6",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744"
                 ],
-                "data": "0x",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0xbd4911ce9ae31b904dc23a92fd0156232e25bbdb99cfe1878b06a25fe332f777",
-                "transactionIndex": "0xc",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0x1",
-                "removed": false
+                "transactionIndex": "0xc"
               },
               {
                 "address": "0x5c12f41766335913a89bd11824afe728f0f349ae",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x",
+                "logIndex": "0x2",
+                "removed": false,
                 "topics": [
                   "0x6719d08c1888103bea251a4ed56406bd0c3e69723c8a1686e017e7bbe159b6f8",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744"
                 ],
-                "data": "0x",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0xbd4911ce9ae31b904dc23a92fd0156232e25bbdb99cfe1878b06a25fe332f777",
-                "transactionIndex": "0xc",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0x2",
-                "removed": false
+                "transactionIndex": "0xc"
               },
               {
                 "address": "0x5c12f41766335913a89bd11824afe728f0f349ae",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+                "logIndex": "0x3",
+                "removed": false,
                 "topics": [
                   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
                   "0x0000000000000000000000000000000000000000000000000000000000000000",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744"
                 ],
-                "data": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0xbd4911ce9ae31b904dc23a92fd0156232e25bbdb99cfe1878b06a25fe332f777",
-                "transactionIndex": "0xc",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0x3",
-                "removed": false
+                "transactionIndex": "0xc"
               }
             ],
             "logsBloom": "0x00800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000080000000000008000000000000000010040000000000000000000000000000020000000000000000000800000000008000000000000010000000000000001000000000000000000000000040000000000000000000000000000000000000020000000000000000000000020000000000000000000000000000000000000002000000000000010000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000800000000",
@@ -1868,15 +983,15 @@
             "transactionHash": "0xbd4911ce9ae31b904dc23a92fd0156232e25bbdb99cfe1878b06a25fe332f777"
           },
           "trace": {
-            "type": "CREATE",
             "from": "0x0f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
-            "to": "0x5c12f41766335913a89bd11824afe728f0f349ae",
-            "value": "0x0",
-            "gasUsed": "0x22e320",
             "gas": "0x5e194e8",
+            "gasUsed": "0x22e320",
             "input": "0x60806040523480156200001157600080fd5b50604051620030e4380380620030e483398181016040526080811015620000",
             "output": "0x608060405234801561001057600080fd5b506004361061018e5760003560e01c80636ef8d66d116100de578063983b2d56",
-            "time": "412.52µs"
+            "time": "412.52µs",
+            "to": "0x5c12f41766335913a89bd11824afe728f0f349ae",
+            "type": "CREATE",
+            "value": "0x0"
           }
         }
       },
@@ -1906,72 +1021,6 @@
             "operation_identifier": {
               "index": 1
             },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "30825828000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "48958668000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "10879704000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
             "type": "CREATE",
             "status": "SUCCESS",
             "account": {
@@ -1980,11 +1029,11 @@
           },
           {
             "operation_identifier": {
-              "index": 5
+              "index": 2
             },
             "related_operations": [
               {
-                "index": 4
+                "index": 1
               }
             ],
             "type": "CREATE",
@@ -1995,55 +1044,55 @@
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x5f5e100",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": "0x88827e941532a1866c981907150927692b692db8",
             "gasUsed": "0x375648",
             "logs": [
               {
                 "address": "0x88827e941532a1866c981907150927692b692db8",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x",
+                "logIndex": "0x4",
+                "removed": false,
                 "topics": [
                   "0x6ae172837ea30b801fbfcdd4108aa1d5bf8ff775444fd70256b44e6bf3dfc3f6",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744"
                 ],
-                "data": "0x",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0x61ff801199df31080523c98da173c6a432b7c22215d79b0d0b7b23991a3bead6",
-                "transactionIndex": "0xd",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0x4",
-                "removed": false
+                "transactionIndex": "0xd"
               },
               {
                 "address": "0x88827e941532a1866c981907150927692b692db8",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x",
+                "logIndex": "0x5",
+                "removed": false,
                 "topics": [
                   "0x6719d08c1888103bea251a4ed56406bd0c3e69723c8a1686e017e7bbe159b6f8",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744"
                 ],
-                "data": "0x",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0x61ff801199df31080523c98da173c6a432b7c22215d79b0d0b7b23991a3bead6",
-                "transactionIndex": "0xd",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0x5",
-                "removed": false
+                "transactionIndex": "0xd"
               },
               {
                 "address": "0x88827e941532a1866c981907150927692b692db8",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+                "logIndex": "0x6",
+                "removed": false,
                 "topics": [
                   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
                   "0x0000000000000000000000000000000000000000000000000000000000000000",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744"
                 ],
-                "data": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0x61ff801199df31080523c98da173c6a432b7c22215d79b0d0b7b23991a3bead6",
-                "transactionIndex": "0xd",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0x6",
-                "removed": false
+                "transactionIndex": "0xd"
               }
             ],
             "logsBloom": "0x00800000000000200000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000001000000000000000000000000080000000000008000000000000000000040000000000000000000000000000020000000000000000000800000000008000000000000010000000000000001000000000000000000000000000000000000000000000000000000000000000020000000000000000000000020000000000000000000000000000000000000002000000000000010000000000000000000000000000000000000020000000000000000000000000002000000000000000000000000000000000000000",
@@ -2051,15 +1100,15 @@
             "transactionHash": "0x61ff801199df31080523c98da173c6a432b7c22215d79b0d0b7b23991a3bead6"
           },
           "trace": {
-            "type": "CREATE",
             "from": "0x0f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
-            "to": "0x88827e941532a1866c981907150927692b692db8",
-            "value": "0x0",
-            "gasUsed": "0x22e320",
             "gas": "0x5e16dd8",
+            "gasUsed": "0x22e320",
             "input": "0x60806040523480156200001157600080fd5b50604051620030e4380380620030e483398181016040526080811015620000",
             "output": "0x608060405234801561001057600080fd5b506004361061018e5760003560e01c80636ef8d66d116100de578063983b2d56",
-            "time": "406.789µs"
+            "time": "406.789µs",
+            "to": "0x88827e941532a1866c981907150927692b692db8",
+            "type": "CREATE",
+            "value": "0x0"
           }
         }
       },
@@ -2106,81 +1155,6 @@
             "operation_identifier": {
               "index": 2
             },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "30868328000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "49026168000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "10894704000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 5
-            },
             "type": "CREATE",
             "status": "SUCCESS",
             "account": {
@@ -2189,11 +1163,11 @@
           },
           {
             "operation_identifier": {
-              "index": 6
+              "index": 3
             },
             "related_operations": [
               {
-                "index": 5
+                "index": 2
               }
             ],
             "type": "CREATE",
@@ -2204,55 +1178,55 @@
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x5f5e100",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": "0xf29d7e170cc5a280a02a12585e38b573d9c9b5b7",
             "gasUsed": "0x3769d0",
             "logs": [
               {
                 "address": "0xf29d7e170cc5a280a02a12585e38b573d9c9b5b7",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x",
+                "logIndex": "0x7",
+                "removed": false,
                 "topics": [
                   "0x6ae172837ea30b801fbfcdd4108aa1d5bf8ff775444fd70256b44e6bf3dfc3f6",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744"
                 ],
-                "data": "0x",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0x4f69fdcbb557fd6492f6846cdb1fa149dc7cc0e960ac0e12552a8cc5a4ab6bcf",
-                "transactionIndex": "0xe",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0x7",
-                "removed": false
+                "transactionIndex": "0xe"
               },
               {
                 "address": "0xf29d7e170cc5a280a02a12585e38b573d9c9b5b7",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x",
+                "logIndex": "0x8",
+                "removed": false,
                 "topics": [
                   "0x6719d08c1888103bea251a4ed56406bd0c3e69723c8a1686e017e7bbe159b6f8",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744"
                 ],
-                "data": "0x",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0x4f69fdcbb557fd6492f6846cdb1fa149dc7cc0e960ac0e12552a8cc5a4ab6bcf",
-                "transactionIndex": "0xe",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0x8",
-                "removed": false
+                "transactionIndex": "0xe"
               },
               {
                 "address": "0xf29d7e170cc5a280a02a12585e38b573d9c9b5b7",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+                "logIndex": "0x9",
+                "removed": false,
                 "topics": [
                   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
                   "0x0000000000000000000000000000000000000000000000000000000000000000",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744"
                 ],
-                "data": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0x4f69fdcbb557fd6492f6846cdb1fa149dc7cc0e960ac0e12552a8cc5a4ab6bcf",
-                "transactionIndex": "0xe",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0x9",
-                "removed": false
+                "transactionIndex": "0xe"
               }
             ],
             "logsBloom": "0x00800000010000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000001000000000000000000000000080000000000008000000000000000000040000004000000000000000000000020000000000000000000800000000008000000000000010000000000000001000000000000000000000000000000000000000000000000000000000000000020000000000000000000000020000000000000000000000000000000000000002000000000000010000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000",
@@ -2260,15 +1234,15 @@
             "transactionHash": "0x4f69fdcbb557fd6492f6846cdb1fa149dc7cc0e960ac0e12552a8cc5a4ab6bcf"
           },
           "trace": {
-            "type": "CREATE",
             "from": "0x0f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
-            "to": "0xf29d7e170cc5a280a02a12585e38b573d9c9b5b7",
-            "value": "0x0",
-            "gasUsed": "0x3769d0",
             "gas": "0x5e15a50",
+            "gasUsed": "0x3769d0",
             "input": "0x60806040523480156200001157600080fd5b50604051620030e4380380620030e483398181016040526080811015620000",
             "output": "0x608060405234801561001057600080fd5b506004361061018e5760003560e01c80636ef8d66d116100de578063983b2d56",
-            "time": "388.542µs"
+            "time": "388.542µs",
+            "to": "0xf29d7e170cc5a280a02a12585e38b573d9c9b5b7",
+            "type": "CREATE",
+            "value": "0x0"
           }
         }
       },
@@ -2293,96 +1267,30 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 1
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "496408500000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "788413500000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "175203000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x493e0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0xe421",
             "logs": [
               {
                 "address": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "logIndex": "0xa",
+                "removed": false,
                 "topics": [
                   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
                   "0x0000000000000000000000004a70ea39cb5f3a564518ca9f1eb8acd90ef663ec"
                 ],
-                "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0x6cc534f4c1dbb85f77e446d1df5a32c850dc1420d0c2d13d54accc9fbb7fd89b",
-                "transactionIndex": "0xf",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0xa",
-                "removed": false
+                "transactionIndex": "0xf"
               }
             ],
             "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000010000100000000000000000000000000002000000000000010000000000000000000000000000000000000000000004000000000000000000000000000000000400000008000000000000000000",
@@ -2390,15 +1298,15 @@
             "transactionHash": "0x6cc534f4c1dbb85f77e446d1df5a32c850dc1420d0c2d13d54accc9fbb7fd89b"
           },
           "trace": {
-            "type": "CALL",
             "from": "0x0f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
-            "to": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
-            "value": "0x0",
-            "gasUsed": "0x7789",
             "gas": "0x42748",
+            "gasUsed": "0x7789",
             "input": "0xa9059cbb0000000000000000000000004a70ea39cb5f3a564518ca9f1eb8acd90ef663ec00000000000000000000000000",
             "output": "0x0000000000000000000000000000000000000000000000000000000000000001",
-            "time": "142.201µs"
+            "time": "142.201µs",
+            "to": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
+            "type": "CALL",
+            "value": "0x0"
           }
         }
       },
@@ -2423,96 +1331,30 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 1
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "581408500000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "923413500000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "205203000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x30d40",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x10b31",
             "logs": [
               {
                 "address": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "logIndex": "0xb",
+                "removed": false,
                 "topics": [
                   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
                   "0x000000000000000000000000403c5589936033af481c61aaa2ad9121f49ffdb7"
                 ],
-                "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0xf84e743c09043075fceaf3a55999968f2628114fc613c255bcb21d8a9efeb8ed",
-                "transactionIndex": "0x10",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0xb",
-                "removed": false
+                "transactionIndex": "0x10"
               }
             ],
             "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000001000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000020080000000000000000000000000000000100000000000000000000000000002000000000000010000000000000000000000000000000000000000000004000000000000000000000000000000000400000000000000000000000000",
@@ -2520,15 +1362,15 @@
             "transactionHash": "0xf84e743c09043075fceaf3a55999968f2628114fc613c255bcb21d8a9efeb8ed"
           },
           "trace": {
-            "type": "CALL",
             "from": "0x0f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
-            "to": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
-            "value": "0x0",
-            "gasUsed": "0x7789",
             "gas": "0x27998",
+            "gasUsed": "0x7789",
             "input": "0xa9059cbb000000000000000000000000403c5589936033af481c61aaa2ad9121f49ffdb700000000000000000000000000",
             "output": "0x0000000000000000000000000000000000000000000000000000000000000001",
-            "time": "104.808µs"
+            "time": "104.808µs",
+            "to": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
+            "type": "CALL",
+            "value": "0x0"
           }
         }
       },
@@ -2570,105 +1412,30 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "623908500000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "990913500000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "220203000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x30d40",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x11eb9",
             "logs": [
               {
                 "address": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
+                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
+                "blockNumber": "0x51cc9",
+                "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "logIndex": "0xc",
+                "removed": false,
                 "topics": [
                   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
                   "0x0000000000000000000000000f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
                   "0x000000000000000000000000b51ff73d58a098542dcf16bebd993073bbb59b7e"
                 ],
-                "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
-                "blockNumber": "0x51cc9",
                 "transactionHash": "0x79d45408665ef54d21e00e7b42a4a96b6393247af64852c47dab4e9b7c48852f",
-                "transactionIndex": "0x11",
-                "blockHash": "0xe9562bcab826324b0241052f8d866d6943a18b4ce8ab7d777daa0cefbec559a6",
-                "logIndex": "0xc",
-                "removed": false
+                "transactionIndex": "0x11"
               }
             ],
             "logsBloom": "0x20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000080000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000100000000000000000000000000002000000000000010000000000000000000000000000000000000000000004000000000000000000000000000000000400000000000000000001000000",
@@ -2676,15 +1443,15 @@
             "transactionHash": "0x79d45408665ef54d21e00e7b42a4a96b6393247af64852c47dab4e9b7c48852f"
           },
           "trace": {
-            "type": "CALL",
             "from": "0x0f6d4ab3f6fde74e7f5dd2b88487fffa32ede744",
-            "to": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
-            "value": "0x0",
-            "gasUsed": "0x7789",
             "gas": "0x26610",
+            "gasUsed": "0x7789",
             "input": "0xa9059cbb000000000000000000000000403c5589936033af481c61aaa2ad9121f49ffdb700000000000000000000000000",
             "output": "0x0000000000000000000000000000000000000000000000000000000000000001",
-            "time": "95.919µs"
+            "time": "95.919µs",
+            "to": "0x72fd3591326acb91ab907ab8e88e14e6edf3119d",
+            "type": "CALL",
+            "value": "0x0"
           }
         }
       },
@@ -2709,78 +1476,12 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 1
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "178500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "283500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "63000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x5208",
@@ -2816,78 +1517,12 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 1
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "263500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "418500000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "93000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x7918",
@@ -2940,87 +1575,12 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "306000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "486000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "108000000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0x8ca0",
@@ -3056,78 +1616,12 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 1
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "372300000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "591300000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "131400000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0xab18",
@@ -3163,78 +1657,12 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 1
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "457300000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "726300000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "161400000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0xd228",
@@ -3287,87 +1715,12 @@
                 "decimals": 18
               }
             }
-          },
-          {
-            "operation_identifier": {
-              "index": 2
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x0F6d4ab3f6fDE74e7f5dd2b88487FFfA32eDe744"
-            },
-            "amount": {
-              "value": "499800000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 3
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x2bcf9D3E4a846015e7e3152A614C684DE16F37c6"
-            },
-            "amount": {
-              "value": "793800000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
-          },
-          {
-            "operation_identifier": {
-              "index": 4
-            },
-            "related_operations": [
-              {
-                "index": 0
-              },
-              {
-                "index": 1
-              }
-            ],
-            "type": "FEE",
-            "status": "SUCCESS",
-            "account": {
-              "address": "0x716f89D9bc333286c79DB4EBb05516897C8D208a"
-            },
-            "amount": {
-              "value": "176400000000000",
-              "currency": {
-                "symbol": "KLAY",
-                "decimals": 18
-              }
-            }
           }
         ],
         "metadata": {
+          "effective_gas_price": "0x5d21dba00",
           "gas_limit": "0x186a0",
           "gas_price": "0x5d21dba00",
-          "effective_gas_price": "0x5d21dba00",
           "receipt": {
             "contractAddress": null,
             "gasUsed": "0xe5b0",
@@ -3385,4 +1738,3 @@
     ]
   }
 }
-

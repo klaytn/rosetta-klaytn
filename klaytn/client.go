@@ -22,13 +22,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/klaytn/klaytn/node/cn/tracers"
 	"log"
 	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/klaytn/klaytn/node/cn/tracers"
 
 	"github.com/klaytn/klaytn"
 	"github.com/klaytn/klaytn/blockchain/types"
@@ -305,7 +306,7 @@ func (kc *Client) Transaction(
 	// Since populateTransaction calculates the transaction fee,
 	// the addresses receiving the fee and the fee distribution ratios must be passed together as
 	// parameters.
-	tx, err := kc.populateTransaction(ctx, header.Number, loadedTx, rewardAddrs, ratioMap)
+	tx, _, err := kc.populateTransaction(ctx, header.Number, loadedTx, rewardAddrs, ratioMap)
 	if err != nil {
 		return nil, fmt.Errorf("%w: cannot parse %s", err, loadedTx.Transaction.Hash().Hex())
 	}
@@ -1034,34 +1035,6 @@ func createSuccessFeeOperation(idx int64, account string, amount *big.Int) *Rose
 	}
 }
 
-func createSuccessFeeOperationWithRelatedOperations(
-	idx int64,
-	relatedOperationsIdx []int64,
-	account string,
-	amount *big.Int,
-) *RosettaTypes.Operation { // nolint
-	op := RosettaTypes.Operation{
-		OperationIdentifier: &RosettaTypes.OperationIdentifier{
-			Index: idx,
-		},
-		RelatedOperations: []*RosettaTypes.OperationIdentifier{},
-		Type:              FeeOpType,
-		Status:            RosettaTypes.String(SuccessStatus),
-		Account: &RosettaTypes.AccountIdentifier{
-			Address: MustChecksum(account),
-		},
-		Amount: &RosettaTypes.Amount{
-			Value:    amount.String(),
-			Currency: Currency,
-		},
-	}
-	for _, rid := range relatedOperationsIdx {
-		ridOp := RosettaTypes.OperationIdentifier{Index: rid}
-		op.RelatedOperations = append(op.RelatedOperations, &ridOp)
-	}
-	return &op
-}
-
 // feeOps returns the transaction's fee operations.
 // In the case of Klaytn, depending on the transaction type, the address where the fee is paid may
 // be different. In addition, transaction fees must be allocated to CN, KIR, and KGF addresses
@@ -1073,7 +1046,7 @@ func (kc *Client) feeOps(
 	tx *loadedTransaction,
 	rewardAddresses []string,
 	rewardRatioMap map[string]*big.Int,
-) ([]*RosettaTypes.Operation, error) { // nolint
+) ([]*RosettaTypes.Operation, *big.Int, error) { // nolint
 	var proposerEarnedAmount *big.Int
 	if tx.FeeBurned == nil {
 		proposerEarnedAmount = tx.FeeAmount
@@ -1091,13 +1064,13 @@ func (kc *Client) feeOps(
 	if tx.Transaction.Type().IsFeeDelegatedTransaction() {
 		feePayerAddress, err := tx.Transaction.FeePayer()
 		if err != nil {
-			return nil, fmt.Errorf("could not extract fee payer from %v", tx.Transaction)
+			return nil, nil, fmt.Errorf("could not extract fee payer from %v", tx.Transaction)
 		}
 		if tx.Transaction.Type().IsFeeDelegatedWithRatioTransaction() {
 			// Partial Fee Delegation transaction (sender and fee payer will pay the tx fee)
 			ratio, ok := tx.Transaction.FeeRatio()
 			if !ok {
-				return nil, fmt.Errorf("could not extract fee ratio from %v", tx.Transaction)
+				return nil, nil, fmt.Errorf("could not extract fee ratio from %v", tx.Transaction)
 			}
 			feePayerRatio := big.NewInt(int64(ratio))
 
@@ -1171,73 +1144,19 @@ func (kc *Client) feeOps(
 		}
 	}
 
-	// Transaction fee reward is also allocated to CN, KGF, and KIR addresses according to the
-	// ratios.
-	idx := len(ops)
-
-	// If there are more than one operation that pays a fee (if the fee is partially paid),
-	// add all fee payment operations as related operation id.
-	relatedOpID := make([]int64, idx)
-	for i := 0; i < idx; i++ {
-		relatedOpID[i] = int64(i)
-	}
-
 	// In a specific block (84715206) on the Baobab testnet,
 	// the fee reward must be recalculated with the gas price at that block.
 	if bn.Cmp(big.NewInt(84715206)) == 0 && tx.Transaction.ChainId().Cmp(big.NewInt(1001)) == 0 { // nolint: gomnd
 		gasPriceAt, err := kc.GasPriceAt(ctx, bn.Int64())
 		if err != nil {
-			return nil, fmt.Errorf("could not get gas price at %v", bn.Int64())
+			return nil, nil, fmt.Errorf("could not get gas price at %v", bn.Int64())
 		}
 		gasUsed := new(big.Int).Div(proposerEarnedAmount, tx.Transaction.GasPrice())
 		proposerEarnedAmount = new(big.Int).Mul(gasUsed, gasPriceAt)
 	}
-	rewardSum := new(big.Int)
-	rewardOperations := []*RosettaTypes.Operation{}
-	for _, addr := range rewardAddresses {
-		if addr == "" {
-			// That means there are no address set for KGF or KIR roles.
-			// In that case, we do not create another rewardOperation because
-			// that reward is already given to reward base(= block proposer).
-			continue
-		}
-		// reward * ratio / 100
-		partialReward := new(
-			big.Int,
-		).Div(new(big.Int).Mul(proposerEarnedAmount, rewardRatioMap[addr]), big.NewInt(100)) // nolint: gomnd
-		rewardSum = new(big.Int).Add(rewardSum, partialReward)
-		op := createSuccessFeeOperationWithRelatedOperations(
-			int64(idx),
-			relatedOpID,
-			addr,
-			partialReward,
-		)
-		rewardOperations = append(rewardOperations, op)
-		idx++
-	}
 
-	// If there are remaining rewards due to decimal points,
-	// additional rewards are paid to the KGF(known as PoC before) account.
-	remain := new(big.Int).Sub(proposerEarnedAmount, rewardSum)
-	if remain.Cmp(big.NewInt(0)) != 0 {
-		ratioIndex := kgfRatioIndex
-		if rewardAddresses[kgfRatioIndex] == "" {
-			// There is no address set for KGF role.
-			// In that case, reward will be given to reward(= block proposer).
-			ratioIndex = cnRatioIndex
-		}
-		ogReward, ok := new(
-			big.Int,
-		).SetString(rewardOperations[ratioIndex].Amount.Value, 10) // nolint:gomnd
-		if !ok {
-			return nil, errors.New("could not add remain rewards to KGF address")
-		}
-		rewardOperations[ratioIndex].Amount.Value = new(big.Int).Add(ogReward, remain).String()
-	}
+	return ops, proposerEarnedAmount, nil
 
-	ops = append(ops, rewardOperations...)
-
-	return ops, nil
 }
 
 // transactionReceipt returns the receipt of a transaction by transaction hash.
@@ -1431,6 +1350,7 @@ func (kc *Client) populateTransactions(
 	var rewardRatioMap map[string]*big.Int
 	var rewardAddresses []string
 	var rewardTx *RosettaTypes.Transaction
+	var feeTotal = big.NewInt(0)
 	// Genesis block does not distribute the block rewards. So skip this process for genesis block.
 	if block.Number().Int64() != GenesisBlockIndex {
 		rewardTx, rewardAddresses, rewardRatioMap, err = kc.blockRewardTransaction(block)
@@ -1441,7 +1361,7 @@ func (kc *Client) populateTransactions(
 	}
 
 	for _, tx := range loadedTransactions {
-		transaction, err := kc.populateTransaction(
+		transaction, feeAmount, err := kc.populateTransaction(
 			ctx,
 			block.Number(),
 			tx,
@@ -1451,8 +1371,53 @@ func (kc *Client) populateTransactions(
 		if err != nil {
 			return nil, fmt.Errorf("%w: cannot parse %s", err, tx.Transaction.Hash().Hex())
 		}
-
+		if feeAmount != nil {
+			feeTotal = new(big.Int).Add(feeTotal, feeAmount)
+		}
 		transactions = append(transactions, transaction)
+	}
+	if feeTotal.Cmp(big.NewInt(0)) != 0 {
+		feeSum := big.NewInt(0)
+		idx := 0
+		for _, addr := range rewardAddresses {
+			ratio := rewardRatioMap[addr]
+			// reward * ratio / 100
+			if ratio != nil {
+				partialReward := new(
+					big.Int,
+				).Div(new(big.Int).Mul(feeTotal, ratio), big.NewInt(100)) // nolint:gomnd
+				feeSum = new(big.Int).Add(feeSum, partialReward)
+
+				ogReward, ok := new(
+					big.Int,
+				).SetString(transactions[0].Operations[idx].Amount.Value, 10) // nolint:gomnd
+				if !ok {
+					return nil, errors.New("could not add txfee rewards to the address")
+				}
+				transactions[0].Operations[idx].Amount.Value = new(big.Int).Add(ogReward, partialReward).String()
+			}
+			idx++
+		}
+
+		// If there are remaining rewards due to decimal points,
+		// additional rewards are paid to the KGF(known as PoC before) account.
+		remain := new(big.Int).Sub(feeTotal, feeSum)
+		if remain.Cmp(big.NewInt(0)) != 0 {
+			ratioIndex := kgfRatioIndex
+			if rewardAddresses[kgfRatioIndex] == "" {
+				// If there is no address set for KGF role, that reward
+				// will be given to reward base(= block proposer).
+				ratioIndex = cnRatioIndex
+			}
+
+			ogReward, ok := new(
+				big.Int,
+			).SetString(transactions[0].Operations[ratioIndex].Amount.Value, 10) // nolint:gomnd
+			if !ok {
+				return nil, errors.New("could not add txfee rewards to the address")
+			}
+			transactions[0].Operations[ratioIndex].Amount.Value = new(big.Int).Add(ogReward, remain).String()
+		}
 	}
 
 	return transactions, nil
@@ -1464,13 +1429,13 @@ func (kc *Client) populateTransaction(
 	tx *loadedTransaction,
 	rewardAddresses []string,
 	rewardRatioMap map[string]*big.Int,
-) (*RosettaTypes.Transaction, error) {
+) (*RosettaTypes.Transaction, *big.Int, error) {
 	var ops []*RosettaTypes.Operation
 
 	// Compute fee operations
-	feeOperations, err := kc.feeOps(ctx, blockNumber, tx, rewardAddresses, rewardRatioMap)
+	feeOperations, feeAmount, err := kc.feeOps(ctx, blockNumber, tx, rewardAddresses, rewardRatioMap)
 	if err != nil {
-		return nil, err
+		return nil, feeAmount, err
 	}
 	ops = append(ops, feeOperations...)
 
@@ -1483,12 +1448,12 @@ func (kc *Client) populateTransaction(
 	// Marshal receipt and trace data
 	receiptBytes, err := tx.Receipt.MarshalJSON()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	var receiptMap map[string]interface{}
 	if err := json.Unmarshal(receiptBytes, &receiptMap); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// If the contractAddress of receiptMap is an empty address,
@@ -1500,7 +1465,7 @@ func (kc *Client) populateTransaction(
 
 	var traceMap map[string]interface{}
 	if err := json.Unmarshal(tx.RawTrace, &traceMap); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	populatedTransaction := &RosettaTypes.Transaction{
@@ -1517,7 +1482,7 @@ func (kc *Client) populateTransaction(
 		},
 	}
 
-	return populatedTransaction, nil
+	return populatedTransaction, feeAmount, nil
 }
 
 // getRewardAndRatioInfo returns the block minting reward and reward ratio of the given block
