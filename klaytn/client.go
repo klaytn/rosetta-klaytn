@@ -347,6 +347,10 @@ func (kc *Client) blockHeaderByNumber(ctx context.Context, number *big.Int) (*ty
 		return nil, klaytn.NotFound
 	}
 
+	if head != nil && head.BaseFee != nil && head.BaseFee.Cmp(common.Big0) == 0 {
+		head.BaseFee = nil
+	}
+
 	return head, err
 }
 
@@ -360,6 +364,10 @@ func (kc *Client) blockHeaderByHash(ctx context.Context, hash string) (*types.He
 	err := kc.c.CallContext(ctx, &head, "klay_getBlockByHash", hash, false)
 	if err == nil && head == nil {
 		return nil, klaytn.NotFound
+	}
+
+	if head != nil && head.BaseFee != nil && head.BaseFee.Cmp(common.Big0) == 0 {
+		head.BaseFee = nil
 	}
 
 	return head, err
@@ -397,6 +405,9 @@ func (kc *Client) getBlock(
 		return nil, nil, err
 	}
 
+	if head.BaseFee != nil && head.BaseFee.Cmp(common.Big0) == 0 {
+		head.BaseFee = nil
+	}
 	// Get all transaction receipts
 	receipts, err := kc.getBlockReceipts(ctx, head.Hash(), len(body.Transactions))
 	if err != nil {
