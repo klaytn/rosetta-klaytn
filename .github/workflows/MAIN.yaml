@@ -1,8 +1,8 @@
-name: rosetta-klaytn Master workflow
+name: rosetta-klaytn main workflow
 on:
   pull_request:
     branches:
-      - master
+      - main
     types: [closed]
 jobs:
   tagging-master:
