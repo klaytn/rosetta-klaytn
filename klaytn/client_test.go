@@ -1264,7 +1264,26 @@ func TestBlock_Current(t *testing.T) {
 			*r = json.RawMessage(file)
 		},
 	).Once()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x2af0",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -1370,6 +1389,26 @@ func TestBlock_Hash(t *testing.T) {
 			assert.NoError(t, err)
 
 			*r = json.RawMessage(file)
+		},
+	).Once()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x2af0",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
+
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
 		},
 	).Once()
 
@@ -1484,7 +1523,26 @@ func TestBlock_Index(t *testing.T) {
 			*r = json.RawMessage(file)
 		},
 	).Once()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x2af0",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -1745,46 +1803,6 @@ func TestTransaction_Hash(t *testing.T) {
 		},
 	).Once()
 
-	mockJSONRPC.On(
-		"CallContext",
-		ctx,
-		mock.Anything,
-		"governance_itemsAt",
-		"0x5369ac3",
-	).Return(
-		nil,
-	).Run(
-		func(args mock.Arguments) {
-			r := args.Get(1).(*map[string]interface{})
-
-			file, err := os.ReadFile("testdata/governance.json")
-			assert.NoError(t, err)
-
-			err = json.Unmarshal(file, r)
-			assert.NoError(t, err)
-		},
-	).Once()
-
-	mockJSONRPC.On(
-		"CallContext",
-		ctx,
-		mock.Anything,
-		"governance_getStakingInfo",
-		"0x5369ac3",
-	).Return(
-		nil,
-	).Run(
-		func(args mock.Arguments) {
-			r := args.Get(1).(*reward.StakingInfo)
-
-			file, err := os.ReadFile("testdata/stakingInfo.json")
-			assert.NoError(t, err)
-
-			err = json.Unmarshal(file, r)
-			assert.NoError(t, err)
-		},
-	).Once()
-
 	correctRaw, err := os.ReadFile(
 		"testdata/transaction_response_0x99a7de4441bcac267741a269aecf4a498fcd6b33bbe442955eac1d17b74ab547.json",
 	) // nolint
@@ -1905,7 +1923,26 @@ func TestBlock_2500994(t *testing.T) {
 			assert.NoError(t, err)
 		},
 	).Once()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x262982",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -2061,7 +2098,26 @@ func TestBlock_87561170(t *testing.T) {
 			assert.NoError(t, err)
 		},
 	).Once()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x53813d2",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -2217,7 +2273,26 @@ func TestBlock_363415(t *testing.T) {
 			assert.NoError(t, err)
 		},
 	)
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x58b97",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -2373,7 +2448,26 @@ func TestBlock_363753(t *testing.T) {
 			assert.NoError(t, err)
 		},
 	)
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x58ce9",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -2613,7 +2707,26 @@ func TestBlock_468179(t *testing.T) {
 			assert.NoError(t, err)
 		},
 	)
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x724d3",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -2769,7 +2882,26 @@ func TestBlock_363366(t *testing.T) {
 			assert.NoError(t, err)
 		},
 	)
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x58b66",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -3010,7 +3142,26 @@ func TestBlock_468194(t *testing.T) {
 			assert.NoError(t, err)
 		},
 	)
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x724e2",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -3166,7 +3317,26 @@ func TestBlock_1078(t *testing.T) {
 			assert.NoError(t, err)
 		},
 	)
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x436",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -3487,7 +3657,26 @@ func TestBlock_335049(t *testing.T) {
 			assert.NoError(t, err)
 		},
 	)
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x51cc9",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -3641,7 +3830,26 @@ func TestBlock_1665(t *testing.T) {
 			assert.NoError(t, err)
 		},
 	)
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x681",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,
@@ -3756,7 +3964,26 @@ func TestBlock_4219(t *testing.T) {
 			*r = json.RawMessage(file)
 		},
 	).Once()
+	mockJSONRPC.On(
+		"CallContext",
+		ctx,
+		mock.Anything,
+		"governance_chainConfigAt",
+		"0x107b",
+	).Return(
+		nil,
+	).Run(
+		func(args mock.Arguments) {
+			r := args.Get(1).(*params.ChainConfig)
 
+			file, err := os.ReadFile("testdata/chainConfig.json")
+			assert.NoError(t, err)
+
+			err = json.Unmarshal(file, r)
+
+			assert.NoError(t, err)
+		},
+	).Once()
 	mockJSONRPC.On(
 		"CallContext",
 		ctx,

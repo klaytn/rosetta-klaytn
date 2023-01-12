@@ -1,0 +1,36 @@
+{
+  "chainId": 940625,
+  "istanbulCompatibleBlock": 0,
+  "londonCompatibleBlock": 0,
+  "ethTxTypeCompatibleBlock": 0,
+  "magmaCompatibleBlock": 0,
+  "istanbul": {
+    "epoch": 30,
+    "policy": 2,
+    "sub": 1
+  },
+  "unitPrice": 25000000000,
+  "deriveShaImpl": 2,
+  "governance": {
+    "governingNode": "0x6573e6b0b1e1841e3569b9783b8192761c7414ea",
+    "governanceMode": "single",
+    "govParamContract": "0x0000000000000000000000000000000000000000",
+    "reward": {
+      "mintingAmount": 9600000000000000000,
+      "ratio": "34/54/12",
+      "kip82ratio": "20/80",
+      "useGiniCoeff": false,
+      "deferredTxFee": true,
+      "stakingUpdateInterval": 60,
+      "proposerUpdateInterval": 30,
+      "minimumStake": 50000000
+    },
+    "kip71": {
+      "lowerboundbasefee": 25000000000,
+      "upperboundbasefee": 750000000000,
+      "gastarget": 30000000,
+      "maxblockgasusedforbasefee": 60000000,
+      "basefeedenominator": 20
+    }
+  }
+}
