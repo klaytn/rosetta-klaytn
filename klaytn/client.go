@@ -1390,8 +1390,10 @@ func (kc *Client) populateTransactions(
 			}
 			transactions = append(transactions, transaction)
 		}
+
+		// add transaction fee to blockRewardTransaction's operation
 		if feeTotal.Cmp(big.NewInt(0)) != 0 {
-			feeSum := big.NewInt(0)
+			txRewardTotal := big.NewInt(0)
 			idx := 0
 			for _, addr := range rewardAddresses {
 				ratio := rewardRatioMap[addr]
@@ -1400,22 +1402,22 @@ func (kc *Client) populateTransactions(
 					partialReward := new(
 						big.Int,
 					).Div(new(big.Int).Mul(feeTotal, ratio), big.NewInt(100)) // nolint:gomnd
-					feeSum = new(big.Int).Add(feeSum, partialReward)
+					txRewardTotal = new(big.Int).Add(txRewardTotal, partialReward)
 
-					ogReward, ok := new(
+					origReward, ok := new(
 						big.Int,
 					).SetString(transactions[0].Operations[idx].Amount.Value, 10) // nolint:gomnd
 					if !ok {
 						return nil, errors.New("could not add txfee rewards to the address")
 					}
-					transactions[0].Operations[idx].Amount.Value = new(big.Int).Add(ogReward, partialReward).String()
+					transactions[0].Operations[idx].Amount.Value = new(big.Int).Add(origReward, partialReward).String()
 				}
 				idx++
 			}
 
 			// If there are remaining rewards due to decimal points,
 			// additional rewards are paid to the KGF(known as PoC before) account.
-			remain := new(big.Int).Sub(feeTotal, feeSum)
+			remain := new(big.Int).Sub(feeTotal, txRewardTotal)
 			if remain.Cmp(big.NewInt(0)) != 0 {
 				ratioIndex := kgfRatioIndex
 				if rewardAddresses[kgfRatioIndex] == "" {
@@ -1424,13 +1426,13 @@ func (kc *Client) populateTransactions(
 					ratioIndex = cnRatioIndex
 				}
 
-				ogReward, ok := new(
+				origReward, ok := new(
 					big.Int,
 				).SetString(transactions[0].Operations[ratioIndex].Amount.Value, 10) // nolint:gomnd
 				if !ok {
 					return nil, errors.New("could not add txfee rewards to the address")
 				}
-				transactions[0].Operations[ratioIndex].Amount.Value = new(big.Int).Add(ogReward, remain).String()
+				transactions[0].Operations[ratioIndex].Amount.Value = new(big.Int).Add(origReward, remain).String()
 			}
 		}
 
@@ -1476,16 +1478,13 @@ func (kc *Client) populateTransactions(
 	transactions = append(transactions, rewardTx)
 
 	for _, tx := range loadedTransactions {
-		transaction, feeAmount, err := kc.populateTransaction(
+		transaction, _, err := kc.populateTransaction(
 			ctx,
 			block.Number(),
 			tx,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("%w: cannot parse %s", err, tx.Transaction.Hash().Hex())
-		}
-		if feeAmount != nil {
-			feeTotal = new(big.Int).Add(feeTotal, feeAmount)
 		}
 		transactions = append(transactions, transaction)
 	}
