@@ -297,16 +297,10 @@ func (kc *Client) Transaction(
 		loadedTx.RawTrace = rawTraces
 	}
 
-	bn := toBlockNumArg(header.Number)
-	rb := header.Rewardbase.String()
-	rewardAddrs, ratioMap, _, err := kc.getRewardAndRatioInfo(ctx, bn, rb)
-	if err != nil {
-		return nil, fmt.Errorf("%w: cannot get reward ratio %v", err, header)
-	}
 	// Since populateTransaction calculates the transaction fee,
 	// the addresses receiving the fee and the fee distribution ratios must be passed together as
 	// parameters.
-	tx, _, err := kc.populateTransaction(ctx, header.Number, loadedTx, rewardAddrs, ratioMap)
+	tx, _, err := kc.populateTransaction(ctx, header.Number, loadedTx)
 	if err != nil {
 		return nil, fmt.Errorf("%w: cannot parse %s", err, loadedTx.Transaction.Hash().Hex())
 	}
@@ -1055,8 +1049,6 @@ func (kc *Client) feeOps(
 	ctx context.Context,
 	bn *big.Int,
 	tx *loadedTransaction,
-	rewardAddresses []string,
-	rewardRatioMap map[string]*big.Int,
 ) ([]*RosettaTypes.Operation, *big.Int, error) { // nolint
 	var proposerEarnedAmount *big.Int
 	if tx.FeeBurned == nil {
@@ -1505,13 +1497,11 @@ func (kc *Client) populateTransaction(
 	ctx context.Context,
 	blockNumber *big.Int,
 	tx *loadedTransaction,
-	rewardAddresses []string,
-	rewardRatioMap map[string]*big.Int,
 ) (*RosettaTypes.Transaction, *big.Int, error) {
 	var ops []*RosettaTypes.Operation
 
 	// Compute fee operations
-	feeOperations, feeAmount, err := kc.feeOps(ctx, blockNumber, tx, rewardAddresses, rewardRatioMap)
+	feeOperations, feeAmount, err := kc.feeOps(ctx, blockNumber, tx)
 	if err != nil {
 		return nil, feeAmount, err
 	}
