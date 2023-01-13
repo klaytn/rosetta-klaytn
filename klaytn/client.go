@@ -297,16 +297,10 @@ func (kc *Client) Transaction(
 		loadedTx.RawTrace = rawTraces
 	}
 
-	bn := toBlockNumArg(header.Number)
-	rb := header.Rewardbase.String()
-	rewardAddrs, ratioMap, _, err := kc.getRewardAndRatioInfo(ctx, bn, rb)
-	if err != nil {
-		return nil, fmt.Errorf("%w: cannot get reward ratio %v", err, header)
-	}
 	// Since populateTransaction calculates the transaction fee,
 	// the addresses receiving the fee and the fee distribution ratios must be passed together as
 	// parameters.
-	tx, _, err := kc.populateTransaction(ctx, header.Number, loadedTx, rewardAddrs, ratioMap)
+	tx, _, err := kc.populateTransaction(ctx, header.Number, loadedTx)
 	if err != nil {
 		return nil, fmt.Errorf("%w: cannot parse %s", err, loadedTx.Transaction.Hash().Hex())
 	}
@@ -347,6 +341,10 @@ func (kc *Client) blockHeaderByNumber(ctx context.Context, number *big.Int) (*ty
 		return nil, klaytn.NotFound
 	}
 
+	if head != nil && head.BaseFee != nil && head.BaseFee.Cmp(common.Big0) == 0 {
+		head.BaseFee = nil
+	}
+
 	return head, err
 }
 
@@ -360,6 +358,10 @@ func (kc *Client) blockHeaderByHash(ctx context.Context, hash string) (*types.He
 	err := kc.c.CallContext(ctx, &head, "klay_getBlockByHash", hash, false)
 	if err == nil && head == nil {
 		return nil, klaytn.NotFound
+	}
+
+	if head != nil && head.BaseFee != nil && head.BaseFee.Cmp(common.Big0) == 0 {
+		head.BaseFee = nil
 	}
 
 	return head, err
@@ -397,6 +399,9 @@ func (kc *Client) getBlock(
 		return nil, nil, err
 	}
 
+	if head.BaseFee != nil && head.BaseFee.Cmp(common.Big0) == 0 {
+		head.BaseFee = nil
+	}
 	// Get all transaction receipts
 	receipts, err := kc.getBlockReceipts(ctx, head.Hash(), len(body.Transactions))
 	if err != nil {
@@ -1044,8 +1049,6 @@ func (kc *Client) feeOps(
 	ctx context.Context,
 	bn *big.Int,
 	tx *loadedTransaction,
-	rewardAddresses []string,
-	rewardRatioMap map[string]*big.Int,
 ) ([]*RosettaTypes.Operation, *big.Int, error) { // nolint
 	var proposerEarnedAmount *big.Int
 	if tx.FeeBurned == nil {
@@ -1347,77 +1350,143 @@ func (kc *Client) populateTransactions(
 	transactions := []*RosettaTypes.Transaction{}
 
 	var err error
+	var chainConfig params.ChainConfig
 	var rewardRatioMap map[string]*big.Int
 	var rewardAddresses []string
 	var rewardTx *RosettaTypes.Transaction
 	var feeTotal = big.NewInt(0)
+
 	// Genesis block does not distribute the block rewards. So skip this process for genesis block.
-	if block.Number().Int64() != GenesisBlockIndex {
-		rewardTx, rewardAddresses, rewardRatioMap, err = kc.blockRewardTransaction(block)
-		transactions = append(transactions, rewardTx)
-	}
-	if err != nil {
-		return nil, fmt.Errorf("cannot calculate block(%s) reward: %w", block.Hash().String(), err)
+	if block.Number().Int64() == GenesisBlockIndex {
+		return transactions, nil
 	}
 
+	// Call `governance_chainConfigAt to check KoreCompatibleBlock Number.
+	err = kc.c.CallContext(ctx, &chainConfig, "governance_chainConfigAt", toBlockNumArg(block.Number()))
+	if err != nil {
+		return nil, fmt.Errorf("cannot get block(%d) chainConfig: %w", block.Number(), err)
+	}
+
+	// before Kore Hardfork
+	if chainConfig.KoreCompatibleBlock == nil || block.Number().Cmp(chainConfig.KoreCompatibleBlock) < 0 {
+		rewardTx, rewardAddresses, rewardRatioMap, err = kc.blockRewardTransaction(block)
+		transactions = append(transactions, rewardTx)
+
+		if err != nil {
+			return nil, fmt.Errorf("cannot calculate block(%s) reward: %w", block.Hash().String(), err)
+		}
+
+		for _, tx := range loadedTransactions {
+			transaction, feeAmount, err := kc.populateTransaction(
+				ctx,
+				block.Number(),
+				tx,
+			)
+			if err != nil {
+				return nil, fmt.Errorf("%w: cannot parse %s", err, tx.Transaction.Hash().Hex())
+			}
+			if feeAmount != nil {
+				feeTotal = new(big.Int).Add(feeTotal, feeAmount)
+			}
+			transactions = append(transactions, transaction)
+		}
+
+		// add transaction fee to blockRewardTransaction's operation
+		if feeTotal.Cmp(big.NewInt(0)) != 0 {
+			txRewardTotal := big.NewInt(0)
+			idx := 0
+			for _, addr := range rewardAddresses {
+				ratio := rewardRatioMap[addr]
+				// reward * ratio / 100
+				if ratio != nil {
+					partialReward := new(
+						big.Int,
+					).Div(new(big.Int).Mul(feeTotal, ratio), big.NewInt(100)) // nolint:gomnd
+					txRewardTotal = new(big.Int).Add(txRewardTotal, partialReward)
+
+					origReward, ok := new(
+						big.Int,
+					).SetString(transactions[0].Operations[idx].Amount.Value, 10) // nolint:gomnd
+					if !ok {
+						return nil, errors.New("could not add txfee rewards to the address")
+					}
+					transactions[0].Operations[idx].Amount.Value = new(big.Int).Add(origReward, partialReward).String()
+				}
+				idx++
+			}
+
+			// If there are remaining rewards due to decimal points,
+			// additional rewards are paid to the KGF(known as PoC before) account.
+			remain := new(big.Int).Sub(feeTotal, txRewardTotal)
+			if remain.Cmp(big.NewInt(0)) != 0 {
+				ratioIndex := kgfRatioIndex
+				if rewardAddresses[kgfRatioIndex] == "" {
+					// If there is no address set for KGF role, that reward
+					// will be given to reward base(= block proposer).
+					ratioIndex = cnRatioIndex
+				}
+
+				origReward, ok := new(
+					big.Int,
+				).SetString(transactions[0].Operations[ratioIndex].Amount.Value, 10) // nolint:gomnd
+				if !ok {
+					return nil, errors.New("could not add txfee rewards to the address")
+				}
+				transactions[0].Operations[ratioIndex].Amount.Value = new(big.Int).Add(origReward, remain).String()
+			}
+		}
+
+		return transactions, nil
+	}
+
+	// after Kore Hardfork
+	var ops []*RosettaTypes.Operation
+	var rewardInfo reward.RewardSpec
+
+	// Call `klay_getRewards` to get reward.
+	err = kc.c.CallContext(ctx, &rewardInfo, "klay_getRewards", toBlockNumArg(block.Number()))
+	if err != nil {
+		return nil, fmt.Errorf("cannot get block(%d) reward: %w", block.Number(), err)
+	}
+
+	idx := int64(0)
+	for addr, amount := range rewardInfo.Rewards {
+		miningRewardOp := &RosettaTypes.Operation{
+			OperationIdentifier: &RosettaTypes.OperationIdentifier{
+				Index: idx,
+			},
+			Type:   BlockRewardOpType,
+			Status: RosettaTypes.String(SuccessStatus),
+			Account: &RosettaTypes.AccountIdentifier{
+				Address: MustChecksum(addr.String()),
+			},
+			Amount: &RosettaTypes.Amount{
+				Value:    amount.String(),
+				Currency: Currency,
+			},
+		}
+		ops = append(ops, miningRewardOp)
+		idx++
+	}
+
+	rewardTx = &RosettaTypes.Transaction{
+		TransactionIdentifier: &RosettaTypes.TransactionIdentifier{
+			Hash: block.Hash().String(),
+		},
+		Operations: ops,
+	}
+	transactions = append(transactions, rewardTx)
+
 	for _, tx := range loadedTransactions {
-		transaction, feeAmount, err := kc.populateTransaction(
+		transaction, _, err := kc.populateTransaction(
 			ctx,
 			block.Number(),
 			tx,
-			rewardAddresses,
-			rewardRatioMap,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("%w: cannot parse %s", err, tx.Transaction.Hash().Hex())
 		}
-		if feeAmount != nil {
-			feeTotal = new(big.Int).Add(feeTotal, feeAmount)
-		}
 		transactions = append(transactions, transaction)
-	}
-	if feeTotal.Cmp(big.NewInt(0)) != 0 {
-		feeSum := big.NewInt(0)
-		idx := 0
-		for _, addr := range rewardAddresses {
-			ratio := rewardRatioMap[addr]
-			// reward * ratio / 100
-			if ratio != nil {
-				partialReward := new(
-					big.Int,
-				).Div(new(big.Int).Mul(feeTotal, ratio), big.NewInt(100)) // nolint:gomnd
-				feeSum = new(big.Int).Add(feeSum, partialReward)
-
-				ogReward, ok := new(
-					big.Int,
-				).SetString(transactions[0].Operations[idx].Amount.Value, 10) // nolint:gomnd
-				if !ok {
-					return nil, errors.New("could not add txfee rewards to the address")
-				}
-				transactions[0].Operations[idx].Amount.Value = new(big.Int).Add(ogReward, partialReward).String()
-			}
-			idx++
-		}
-
-		// If there are remaining rewards due to decimal points,
-		// additional rewards are paid to the KGF(known as PoC before) account.
-		remain := new(big.Int).Sub(feeTotal, feeSum)
-		if remain.Cmp(big.NewInt(0)) != 0 {
-			ratioIndex := kgfRatioIndex
-			if rewardAddresses[kgfRatioIndex] == "" {
-				// If there is no address set for KGF role, that reward
-				// will be given to reward base(= block proposer).
-				ratioIndex = cnRatioIndex
-			}
-
-			ogReward, ok := new(
-				big.Int,
-			).SetString(transactions[0].Operations[ratioIndex].Amount.Value, 10) // nolint:gomnd
-			if !ok {
-				return nil, errors.New("could not add txfee rewards to the address")
-			}
-			transactions[0].Operations[ratioIndex].Amount.Value = new(big.Int).Add(ogReward, remain).String()
-		}
 	}
 
 	return transactions, nil
@@ -1427,13 +1496,11 @@ func (kc *Client) populateTransaction(
 	ctx context.Context,
 	blockNumber *big.Int,
 	tx *loadedTransaction,
-	rewardAddresses []string,
-	rewardRatioMap map[string]*big.Int,
 ) (*RosettaTypes.Transaction, *big.Int, error) {
 	var ops []*RosettaTypes.Operation
 
 	// Compute fee operations
-	feeOperations, feeAmount, err := kc.feeOps(ctx, blockNumber, tx, rewardAddresses, rewardRatioMap)
+	feeOperations, feeAmount, err := kc.feeOps(ctx, blockNumber, tx)
 	if err != nil {
 		return nil, feeAmount, err
 	}
