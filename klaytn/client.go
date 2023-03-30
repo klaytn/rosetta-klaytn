@@ -1615,7 +1615,7 @@ func (kc *Client) getRewardAndRatioInfo(
 		return nil, nil, nil, fmt.Errorf("could not convert minting amount type from %s", minted)
 	}
 
-	// Call `governance_getStakingInfo` to get KIR and KGF addresses.
+	// Call `governance_getStakingInfo` to get KCF and KFF addresses.
 	var stakingInfo reward.StakingInfo
 	err = kc.c.CallContext(ctx, &stakingInfo, "governance_getStakingInfo", block)
 	if err != nil {
@@ -1627,8 +1627,7 @@ func (kc *Client) getRewardAndRatioInfo(
 	rewardAddresses := []string{rewardbase}
 	var kgfAddress, kirAddress string
 
-	// TODO-Klaytn: Have to use stakingInfo.KGFAddr instead of stakingInfo.PoCAddr
-	if common.EmptyAddress(stakingInfo.PoCAddr) {
+	if common.EmptyAddress(stakingInfo.KFFAddr) {
 		kgfAddress = rewardbase
 		rewardAddresses = append(rewardAddresses, "")
 	} else {
@@ -1636,11 +1635,11 @@ func (kc *Client) getRewardAndRatioInfo(
 		// For more info, please check the below source code.
 		// nolint:lll
 		// https://github.com/klaytn/klaytn/blob/7584e71de602ce0367a4fb4e19643b49b076b93c/reward/reward_distributor.go#L116-L121
-		kgfAddress = stakingInfo.PoCAddr.String()
+		kgfAddress = stakingInfo.KFFAddr.String()
 		rewardAddresses = append(rewardAddresses, kgfAddress)
 	}
 
-	if common.EmptyAddress(stakingInfo.KIRAddr) {
+	if common.EmptyAddress(stakingInfo.KCFAddr) {
 		kirAddress = rewardbase
 		rewardAddresses = append(rewardAddresses, "")
 	} else {
@@ -1648,7 +1647,7 @@ func (kc *Client) getRewardAndRatioInfo(
 		// For more info, please check the below source code.
 		// nolint:lll
 		// https://github.com/klaytn/klaytn/blob/7584e71de602ce0367a4fb4e19643b49b076b93c/reward/reward_distributor.go#L123-L127
-		kirAddress = stakingInfo.KIRAddr.String()
+		kirAddress = stakingInfo.KCFAddr.String()
 		rewardAddresses = append(rewardAddresses, kirAddress)
 	}
 
