@@ -1816,7 +1816,7 @@ type kip103Memo struct {
 }
 
 /*
-  get memo() from tresuray rebalance contract
+  get memo() from treasury rebalance contract
   https://github.com/klaytn/treasury-rebalance/blob/main/contracts/TreasuryRebalance.sol
   parse the memo and make it to rosetta operation of the block reward transaction
 */
