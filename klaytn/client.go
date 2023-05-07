@@ -1816,7 +1816,7 @@ type kip103Memo struct {
 }
 
 /*
-  get memo() from treasury rebalance contract
+  get memo() from treasuray rebalance contract
   https://github.com/klaytn/treasury-rebalance/blob/main/contracts/TreasuryRebalance.sol
   parse the memo and make it to rosetta operation of the block reward transaction
 */
@@ -1827,9 +1827,10 @@ func (kc *Client) rebalanceOperation(
 	idx int64,
 ) ([]*RosettaTypes.Operation, error) {
 	var ops []*RosettaTypes.Operation
-	var params map[string]interface{}
-	params["to"] = chainConfig.Kip103ContractAddress
-	params["input"] = "0x58c3b870" // Function Signature for memo()
+	params := map[string]interface{}{
+		"to":    chainConfig.Kip103ContractAddress,
+		"input": "0x58c3b870", // Function Signature for memo()
+	}
 
 	// ABI for Treasury Rebalance Contract
 	abi, err := abi.JSON(strings.NewReader(kip103.TreasuryRebalanceABI))
