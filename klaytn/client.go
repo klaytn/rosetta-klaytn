@@ -19,6 +19,7 @@ package klaytn
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -29,19 +30,20 @@ import (
 	"strings"
 	"time"
 
+	"github.com/klaytn/klaytn/accounts/abi"
+	"github.com/klaytn/klaytn/contracts/kip103"
 	"github.com/klaytn/klaytn/node/cn/tracers"
 
 	"github.com/klaytn/klaytn"
 	"github.com/klaytn/klaytn/blockchain/types"
 	"github.com/klaytn/klaytn/blockchain/types/account"
 	"github.com/klaytn/klaytn/common"
+	"github.com/klaytn/klaytn/common/hexutil"
 	"github.com/klaytn/klaytn/networks/p2p"
 	"github.com/klaytn/klaytn/networks/rpc"
 	"github.com/klaytn/klaytn/params"
 	"github.com/klaytn/klaytn/reward"
 	"github.com/klaytn/klaytn/rlp"
-
-	"github.com/klaytn/klaytn/common/hexutil"
 	RosettaTypes "github.com/klaytn/rosetta-sdk-go-klaytn/types"
 	"golang.org/x/sync/semaphore"
 )
@@ -1469,6 +1471,14 @@ func (kc *Client) populateTransactions(
 		idx++
 	}
 
+	if block.Number().Cmp(chainConfig.Kip103CompatibleBlock) == 0 {
+		rebalanceOps, err := kc.rebalanceOperation(ctx, chainConfig, idx)
+		if err != nil {
+			return nil, err
+		}
+		ops = append(ops, rebalanceOps...)
+	}
+
 	rewardTx = &RosettaTypes.Transaction{
 		TransactionIdentifier: &RosettaTypes.TransactionIdentifier{
 			Hash: block.Hash().String(),
@@ -1615,7 +1625,7 @@ func (kc *Client) getRewardAndRatioInfo(
 		return nil, nil, nil, fmt.Errorf("could not convert minting amount type from %s", minted)
 	}
 
-	// Call `governance_getStakingInfo` to get KIR and KGF addresses.
+	// Call `governance_getStakingInfo` to get KCF and KFF addresses.
 	var stakingInfo reward.StakingInfo
 	err = kc.c.CallContext(ctx, &stakingInfo, "governance_getStakingInfo", block)
 	if err != nil {
@@ -1627,8 +1637,7 @@ func (kc *Client) getRewardAndRatioInfo(
 	rewardAddresses := []string{rewardbase}
 	var kgfAddress, kirAddress string
 
-	// TODO-Klaytn: Have to use stakingInfo.KGFAddr instead of stakingInfo.PoCAddr
-	if common.EmptyAddress(stakingInfo.PoCAddr) {
+	if common.EmptyAddress(stakingInfo.KFFAddr) {
 		kgfAddress = rewardbase
 		rewardAddresses = append(rewardAddresses, "")
 	} else {
@@ -1636,11 +1645,11 @@ func (kc *Client) getRewardAndRatioInfo(
 		// For more info, please check the below source code.
 		// nolint:lll
 		// https://github.com/klaytn/klaytn/blob/7584e71de602ce0367a4fb4e19643b49b076b93c/reward/reward_distributor.go#L116-L121
-		kgfAddress = stakingInfo.PoCAddr.String()
+		kgfAddress = stakingInfo.KFFAddr.String()
 		rewardAddresses = append(rewardAddresses, kgfAddress)
 	}
 
-	if common.EmptyAddress(stakingInfo.KIRAddr) {
+	if common.EmptyAddress(stakingInfo.KCFAddr) {
 		kirAddress = rewardbase
 		rewardAddresses = append(rewardAddresses, "")
 	} else {
@@ -1648,7 +1657,7 @@ func (kc *Client) getRewardAndRatioInfo(
 		// For more info, please check the below source code.
 		// nolint:lll
 		// https://github.com/klaytn/klaytn/blob/7584e71de602ce0367a4fb4e19643b49b076b93c/reward/reward_distributor.go#L123-L127
-		kirAddress = stakingInfo.KIRAddr.String()
+		kirAddress = stakingInfo.KCFAddr.String()
 		rewardAddresses = append(rewardAddresses, kirAddress)
 	}
 
@@ -1756,6 +1765,147 @@ func (kc *Client) blockRewardTransaction(
 		},
 		Operations: ops,
 	}, rewardAddresses, rewardRatioMap, nil
+}
+
+/*
+  type for kip103 treasury-rebalance contract's memo
+  {
+    "retirees": [
+        {
+            "retired": "0x2bcf9d3e4a846015e7e3152a614c684de16f37c6",
+            "balance": 423137197918247524183438005
+        },
+        {
+            "retired": "0x716f89d9bc333286c79db4ebb05516897c8d208a",
+            "balance": 125112416844433105491822174
+        },
+        {
+            "retired": "0x571f50dFD1c92C46CD4CECC540e9214Ff5B3421e",
+            "balance": 100000000000000000000
+        }
+    ],
+    "newbies": [
+        {
+            "newbie": "0xaa8d19a5e17e9e1bA693f13aB0E079d274a7e51E",
+            "fundAllocated": 300000000000000000000000000
+        },
+        {
+            "newbie": "0x8B537f5BC7d176a94D7bF63BeFB81586EB3D1c0E",
+            "fundAllocated": 50000000000000000000000000
+        },
+        {
+            "newbie": "0x47E3DbB8c1602BdB0DAeeE89Ce59452c4746CA1C",
+            "fundAllocated": 70000000000000000000000000
+        }
+    ],
+    "burnt": 128249714762680629675260179,
+    "success": true
+}
+*/
+type kip103Memo struct {
+	Retirees []struct {
+		Retired string   `json:"retired"`
+		Balance *big.Int `json:"balance"`
+	} `json:"retirees"`
+	Newbies []struct {
+		Newbie        string   `json:"newbie"`
+		FundAllocated *big.Int `json:"fundAllocated"`
+	} `json:"newbies"`
+	Burnt   *big.Int `json:"burnt"`
+	Success bool     `json:"success"`
+}
+
+/*
+  get memo() from treasuray rebalance contract
+  https://github.com/klaytn/treasury-rebalance/blob/main/contracts/TreasuryRebalance.sol
+  parse the memo and make it to rosetta operation of the block reward transaction
+*/
+
+func (kc *Client) rebalanceOperation(
+	ctx context.Context,
+	chainConfig params.ChainConfig,
+	idx int64,
+) ([]*RosettaTypes.Operation, error) {
+	var ops []*RosettaTypes.Operation
+	params := map[string]interface{}{
+		"to":    chainConfig.Kip103ContractAddress,
+		"input": "0x58c3b870", // Function Signature for memo()
+	}
+
+	// ABI for Treasury Rebalance Contract
+	abi, err := abi.JSON(strings.NewReader(kip103.TreasuryRebalanceABI))
+	if err != nil {
+		return nil, err
+	}
+
+	// contract call for Treasury Rebalance Contract
+	// convert response -> string -> abi unpack -> JSON
+	resp, err := kc.contractCall(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	result, ok := resp["result"].(string)
+	if !ok {
+		return nil, errors.New("could not convert result to String")
+	}
+
+	encb, err := hex.DecodeString(result)
+	if err != nil {
+		return nil, err
+	}
+
+	var memoStr string
+	err = abi.Unpack(&memoStr, "memo", encb)
+	if err != nil {
+		return nil, err
+	}
+
+	var memoResult kip103Memo
+	err = json.Unmarshal([]byte(memoStr), &memoResult)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, retiree := range memoResult.Retirees {
+		retiredBalanceOp := &RosettaTypes.Operation{
+			OperationIdentifier: &RosettaTypes.OperationIdentifier{
+				Index: idx,
+			},
+			Type:   BlockRewardOpType,
+			Status: RosettaTypes.String(SuccessStatus),
+			Account: &RosettaTypes.AccountIdentifier{
+				Address: MustChecksum(retiree.Retired),
+			},
+			Amount: &RosettaTypes.Amount{
+				Value:    new(big.Int).Neg(retiree.Balance).String(),
+				Currency: Currency,
+			},
+		}
+		ops = append(ops, retiredBalanceOp)
+		idx++
+	}
+
+	for _, newbie := range memoResult.Newbies {
+		newbieFundOp := &RosettaTypes.Operation{
+			OperationIdentifier: &RosettaTypes.OperationIdentifier{
+				Index: idx,
+			},
+			Type:   BlockRewardOpType,
+			Status: RosettaTypes.String(SuccessStatus),
+			Account: &RosettaTypes.AccountIdentifier{
+				Address: MustChecksum(newbie.Newbie),
+			},
+			Amount: &RosettaTypes.Amount{
+				Value:    newbie.FundAllocated.String(),
+				Currency: Currency,
+			},
+		}
+		ops = append(ops, newbieFundOp)
+		idx++
+	}
+	return ops, nil
+
 }
 
 type rpcProgress struct {

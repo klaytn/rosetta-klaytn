@@ -86,7 +86,7 @@ const (
 	SkipAdminEnv = "SKIP_ADMIN"
 
 	// MiddlewareVersion is the version of rosetta-klaytn.
-	MiddlewareVersion = "1.0.5"
+	MiddlewareVersion = "1.0.7"
 )
 
 // Configuration determines how
