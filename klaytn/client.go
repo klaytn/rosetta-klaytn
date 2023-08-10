@@ -1363,8 +1363,8 @@ func (kc *Client) populateTransactions(
 		return transactions, nil
 	}
 
-	// Call `governance_chainConfigAt to check KoreCompatibleBlock Number.
-	err = kc.c.CallContext(ctx, &chainConfig, "governance_chainConfigAt", toBlockNumArg(block.Number()))
+	// Call `governance_getChainConfig to check KoreCompatibleBlock Number.
+	err = kc.c.CallContext(ctx, &chainConfig, "governance_getChainConfig", toBlockNumArg(block.Number()))
 	if err != nil {
 		return nil, fmt.Errorf("cannot get block(%d) chainConfig: %w", block.Number(), err)
 	}
@@ -1572,13 +1572,13 @@ func (kc *Client) getRewardAndRatioInfo(
 	rewardbase string,
 ) ([]string, map[string]*big.Int, *big.Int, error) { // nolint
 	govItems := make(map[string]interface{})
-	// Call `governance_itemsAt` to get reward ratio.
-	err := kc.c.CallContext(ctx, &govItems, "governance_itemsAt", block)
+	// Call `governance_getParams` to get reward ratio.
+	err := kc.c.CallContext(ctx, &govItems, "governance_getParams", block)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	// `governance_itemsAt` has a field `reward.ratio`
+	// `governance_getParams` has a field `reward.ratio`
 	// where the reward ratios of cn, kgf and kir are defined using the `/` delimiter.
 	ratio, found := govItems["reward.ratio"].(string)
 	if !found {
@@ -1614,7 +1614,7 @@ func (kc *Client) getRewardAndRatioInfo(
 		)
 	}
 
-	// In `governance_itemsAt`, there is a field `reward.mintingamount`
+	// In `governance_getParams`, there is a field `reward.mintingamount`
 	// which is the amount of Peb minted when a block is generated. (e.g., "9600000000000000000")
 	minted, found := govItems["reward.mintingamount"].(string)
 	if !found {
@@ -1768,39 +1768,39 @@ func (kc *Client) blockRewardTransaction(
 }
 
 /*
-  type for kip103 treasury-rebalance contract's memo
-  {
-    "retirees": [
-        {
-            "retired": "0x2bcf9d3e4a846015e7e3152a614c684de16f37c6",
-            "balance": 423137197918247524183438005
-        },
-        {
-            "retired": "0x716f89d9bc333286c79db4ebb05516897c8d208a",
-            "balance": 125112416844433105491822174
-        },
-        {
-            "retired": "0x571f50dFD1c92C46CD4CECC540e9214Ff5B3421e",
-            "balance": 100000000000000000000
-        }
-    ],
-    "newbies": [
-        {
-            "newbie": "0xaa8d19a5e17e9e1bA693f13aB0E079d274a7e51E",
-            "fundAllocated": 300000000000000000000000000
-        },
-        {
-            "newbie": "0x8B537f5BC7d176a94D7bF63BeFB81586EB3D1c0E",
-            "fundAllocated": 50000000000000000000000000
-        },
-        {
-            "newbie": "0x47E3DbB8c1602BdB0DAeeE89Ce59452c4746CA1C",
-            "fundAllocated": 70000000000000000000000000
-        }
-    ],
-    "burnt": 128249714762680629675260179,
-    "success": true
-}
+	  type for kip103 treasury-rebalance contract's memo
+	  {
+	    "retirees": [
+	        {
+	            "retired": "0x2bcf9d3e4a846015e7e3152a614c684de16f37c6",
+	            "balance": 423137197918247524183438005
+	        },
+	        {
+	            "retired": "0x716f89d9bc333286c79db4ebb05516897c8d208a",
+	            "balance": 125112416844433105491822174
+	        },
+	        {
+	            "retired": "0x571f50dFD1c92C46CD4CECC540e9214Ff5B3421e",
+	            "balance": 100000000000000000000
+	        }
+	    ],
+	    "newbies": [
+	        {
+	            "newbie": "0xaa8d19a5e17e9e1bA693f13aB0E079d274a7e51E",
+	            "fundAllocated": 300000000000000000000000000
+	        },
+	        {
+	            "newbie": "0x8B537f5BC7d176a94D7bF63BeFB81586EB3D1c0E",
+	            "fundAllocated": 50000000000000000000000000
+	        },
+	        {
+	            "newbie": "0x47E3DbB8c1602BdB0DAeeE89Ce59452c4746CA1C",
+	            "fundAllocated": 70000000000000000000000000
+	        }
+	    ],
+	    "burnt": 128249714762680629675260179,
+	    "success": true
+	}
 */
 type kip103Memo struct {
 	Retirees []struct {

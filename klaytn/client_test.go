@@ -1268,7 +1268,7 @@ func TestBlock_Current(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x2af0",
 	).Return(
 		nil,
@@ -1288,7 +1288,7 @@ func TestBlock_Current(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x2af0",
 	).Return(
 		nil,
@@ -1395,7 +1395,7 @@ func TestBlock_Hash(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x2af0",
 	).Return(
 		nil,
@@ -1416,7 +1416,7 @@ func TestBlock_Hash(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x2af0",
 	).Return(
 		nil,
@@ -1527,7 +1527,7 @@ func TestBlock_Index(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x2af0",
 	).Return(
 		nil,
@@ -1547,7 +1547,7 @@ func TestBlock_Index(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x2af0",
 	).Return(
 		nil,
@@ -1927,7 +1927,7 @@ func TestBlock_2500994(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x262982",
 	).Return(
 		nil,
@@ -1947,7 +1947,7 @@ func TestBlock_2500994(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x262982",
 	).Return(
 		nil,
@@ -2102,7 +2102,7 @@ func TestBlock_87561170(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x53813d2",
 	).Return(
 		nil,
@@ -2122,7 +2122,7 @@ func TestBlock_87561170(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x53813d2",
 	).Return(
 		nil,
@@ -2277,7 +2277,7 @@ func TestBlock_363415(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x58b97",
 	).Return(
 		nil,
@@ -2297,7 +2297,7 @@ func TestBlock_363415(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x58b97",
 	).Return(
 		nil,
@@ -2452,7 +2452,7 @@ func TestBlock_363753(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x58ce9",
 	).Return(
 		nil,
@@ -2472,7 +2472,7 @@ func TestBlock_363753(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x58ce9",
 	).Return(
 		nil,
@@ -2711,7 +2711,7 @@ func TestBlock_468179(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x724d3",
 	).Return(
 		nil,
@@ -2731,7 +2731,7 @@ func TestBlock_468179(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x724d3",
 	).Return(
 		nil,
@@ -2886,7 +2886,7 @@ func TestBlock_363366(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x58b66",
 	).Return(
 		nil,
@@ -2906,7 +2906,7 @@ func TestBlock_363366(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x58b66",
 	).Return(
 		nil,
@@ -3146,7 +3146,7 @@ func TestBlock_468194(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x724e2",
 	).Return(
 		nil,
@@ -3166,7 +3166,7 @@ func TestBlock_468194(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x724e2",
 	).Return(
 		nil,
@@ -3321,7 +3321,7 @@ func TestBlock_1078(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x436",
 	).Return(
 		nil,
@@ -3341,7 +3341,7 @@ func TestBlock_1078(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x436",
 	).Return(
 		nil,
@@ -3661,7 +3661,7 @@ func TestBlock_335049(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x51cc9",
 	).Return(
 		nil,
@@ -3681,7 +3681,7 @@ func TestBlock_335049(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x51cc9",
 	).Return(
 		nil,
@@ -3834,7 +3834,7 @@ func TestBlock_1665(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x681",
 	).Return(
 		nil,
@@ -3854,7 +3854,7 @@ func TestBlock_1665(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x681",
 	).Return(
 		nil,
@@ -3968,7 +3968,7 @@ func TestBlock_4219(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_chainConfigAt",
+		"governance_getChainConfig",
 		"0x107b",
 	).Return(
 		nil,
@@ -3988,7 +3988,7 @@ func TestBlock_4219(t *testing.T) {
 		"CallContext",
 		ctx,
 		mock.Anything,
-		"governance_itemsAt",
+		"governance_getParams",
 		"0x107b",
 	).Return(
 		nil,
